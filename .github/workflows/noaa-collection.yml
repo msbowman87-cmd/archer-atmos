@@ -1,0 +1,35 @@
+name: Atmos NOAA Daily Research Capture
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '30 18 * * *'
+permissions:
+  contents: read
+concurrency:
+  group: atmos-noaa-daily
+  cancel-in-progress: false
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check source
+        run: python -m unittest discover -s tests -v
+      - name: Collect bounded worldwide NOAA GFS research samples
+        run: |
+          python -m atmos.collector \
+            --locations examples/global_sample.json \
+            --date "$(date -u +%Y%m%d)" --cycle 00 \
+            --steps 24,27 --max-requests 12 --output capture
+      - name: Archive unmodified model data and issue-time manifest
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: atmos-gfs-${{ github.run_id }}
+          path: capture/
+          if-no-files-found: warn
+          retention-days: 30
