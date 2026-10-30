@@ -1,5 +1,9 @@
 name: Atmos Historical Observation Study
 'on':
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/historical-study.yml'
   workflow_dispatch:
     inputs:
       batch:
@@ -42,12 +46,12 @@ jobs:
       - name: Validate study code
         run: python -m unittest discover -s tests -v
       - name: Collect observation coverage
-        run: python -m atmos.study_batch --batch ${{ inputs.batch }} --limit ${{ inputs.locations }} --output study-results
+        run: python -m atmos.study_batch --batch ${{ inputs.batch || '0' }} --limit ${{ inputs.locations || '200' }} --output study-results
       - name: Save data and missingness report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: atmos-study-batch-${{ inputs.batch }}-${{ github.run_id }}
+          name: atmos-study-batch-${{ inputs.batch || '0' }}-${{ github.run_id }}
           path: study-results/
           if-no-files-found: warn
           retention-days: 30
