@@ -1,0 +1,30 @@
+name: Atmos Forecast Skill Pilot
+'on':
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/forecast-skill-pilot.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  forecast-verification:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Unit tests
+        run: python -m unittest discover -s tests -v
+      - name: Compare previous-run forecasts with historical archive
+        run: python -m atmos.forecast_pilot --days 30 --locations 10
+      - name: Upload paired forecasts and skill report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: atmos-forecast-skill-pilot-${{ github.run_id }}
+          path: verification-results/
+          retention-days: 30
+          if-no-files-found: warn
