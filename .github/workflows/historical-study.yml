@@ -1,5 +1,5 @@
 name: Atmos Historical Observation Study
-on:
+'on':
   workflow_dispatch:
     inputs:
       batch:
@@ -7,13 +7,27 @@ on:
         required: true
         default: '0'
         type: choice
-        options: ['0','1','2','3','4','5','6','7','8','9']
+        options:
+          - '0'
+          - '1'
+          - '2'
+          - '3'
+          - '4'
+          - '5'
+          - '6'
+          - '7'
+          - '8'
+          - '9'
       locations:
         description: 'Number of 200 global locations to audit'
         required: true
         default: '200'
         type: choice
-        options: ['5','20','50','200']
+        options:
+          - '5'
+          - '20'
+          - '50'
+          - '200'
 permissions:
   contents: read
 jobs:
