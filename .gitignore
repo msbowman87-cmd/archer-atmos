@@ -1,0 +1,10 @@
+__pycache__/
+.pytest_cache/
+*.pyc
+.env
+.env.*
+!*.example
+capture/
+data/raw/
+*.grib2
+*.grib
