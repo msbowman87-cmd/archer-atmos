@@ -1,0 +1,8 @@
+[
+  {"name":"Twin Falls, Idaho", "lat":42.563, "lon":-114.46},
+  {"name":"Quito, Ecuador", "lat":-0.18, "lon":-78.47},
+  {"name":"Reykjavik, Iceland", "lat":64.15, "lon":-21.94},
+  {"name":"Nairobi, Kenya", "lat":-1.29, "lon":36.82},
+  {"name":"Tokyo, Japan", "lat":35.68, "lon":139.69},
+  {"name":"Sydney, Australia", "lat":-33.87, "lon":151.21}
+]
