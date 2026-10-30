@@ -1,0 +1,39 @@
+name: Atmos Historical Observation Study
+on:
+  workflow_dispatch:
+    inputs:
+      batch:
+        description: 'Year batch 0-9 (0 = Oct 2016 to Oct 2017)'
+        required: true
+        default: '0'
+        type: choice
+        options: ['0','1','2','3','4','5','6','7','8','9']
+      locations:
+        description: 'Number of 200 global locations to audit'
+        required: true
+        default: '200'
+        type: choice
+        options: ['5','20','50','200']
+permissions:
+  contents: read
+jobs:
+  observations:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate study code
+        run: python -m unittest discover -s tests -v
+      - name: Collect observation coverage
+        run: python -m atmos.study_batch --batch ${{ inputs.batch }} --limit ${{ inputs.locations }} --output study-results
+      - name: Save data and missingness report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: atmos-study-batch-${{ inputs.batch }}-${{ github.run_id }}
+          path: study-results/
+          if-no-files-found: warn
+          retention-days: 30
