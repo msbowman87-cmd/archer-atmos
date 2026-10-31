@@ -1,0 +1,50 @@
+name: Atmos Rich Worldwide Historical Pilot
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/rich-worldwide-history.yml'
+  workflow_dispatch:
+    inputs:
+      year:
+        description: 'Historical research year'
+        default: '2025'
+        required: true
+        type: string
+      month:
+        description: 'Month (1-12)'
+        default: '1'
+        required: true
+        type: string
+      shard:
+        description: 'Five-location shard (0-999 at 5,000 points)'
+        default: '0'
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate collectors
+        run: python -m unittest discover -s tests -q
+      - name: Collect multi-variable global research sample
+        env:
+          ATMOS_YEAR: ${{ inputs.year || '2025' }}
+          ATMOS_MONTH: ${{ inputs.month || '1' }}
+          ATMOS_SHARD: ${{ inputs.shard || '0' }}
+        run: python -m atmos.rich_history --year "$ATMOS_YEAR" --month "$ATMOS_MONTH" --shard "$ATMOS_SHARD" --grid-count 5000 --shard-size 5 --output rich-history-results
+      - name: Archive raw monthly values and provenance
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: atmos-rich-${{ inputs.year || '2025' }}-${{ inputs.month || '1' }}-${{ inputs.shard || '0' }}-${{ github.run_id }}
+          path: rich-history-results/
+          if-no-files-found: warn
+          retention-days: 30
