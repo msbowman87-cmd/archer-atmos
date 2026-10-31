@@ -6,8 +6,11 @@ Run e.g. python -m atmos.station_backtest --station TWF --network ID_ASOS
  --latitude 42.4818 --longitude -114.4877 --timezone America/Boise
  --start 2026-09-01 --end 2026-09-07
 """
-import argparse,csv,io,json,time
-from datetime import date,datetime,timedelta
+import argparse,csv,io,json,time,random
+from collections import defaultdict
+from zoneinfo import ZoneInfo
+from urllib.error import URLError
+from datetime import date,datetime,timedelta,timezone
 from pathlib import Path
 from urllib.parse import urlencode
 from urllib.request import urlopen
@@ -15,11 +18,38 @@ from urllib.error import HTTPError
 from atmos.independent_validation import evaluate
 
 def get(url,params):
-    try:
-        with urlopen(url+'?'+urlencode(params),timeout=45) as response:
-            return response.read().decode('utf-8')
-    except HTTPError as exc:
-        raise RuntimeError('API HTTP '+str(exc.code)+': '+exc.read().decode('utf-8',errors='replace')[:500]) from exc
+    last=None
+    for attempt in range(4):
+        try:
+            with urlopen(url+'?'+urlencode(params),timeout=35) as response:
+                return response.read().decode('utf-8')
+        except HTTPError as exc:
+            detail=exc.read().decode('utf-8',errors='replace')[:500]
+            if exc.code not in (429,500,502,503,504):
+                raise RuntimeError('API HTTP '+str(exc.code)+': '+detail) from exc
+            last=RuntimeError('API HTTP '+str(exc.code)+': '+detail)
+        except (URLError,TimeoutError) as exc:
+            last=exc
+        if attempt<3: time.sleep(min(2**attempt,8)+random.random()*.25)
+    raise RuntimeError('API unavailable after four attempts: '+str(last))
+
+def aggregate_local_days(hourly, tz):
+    """UTC hourly forecasts -> complete station-local calendar days, including DST."""
+    zone=ZoneInfo(tz)
+    grouped=defaultdict(list)
+    for stamp,t,p in zip(hourly['time'],hourly['temperature_2m'],hourly['precipitation']):
+        utc=datetime.fromisoformat(stamp).replace(tzinfo=timezone.utc)
+        grouped[utc.astimezone(zone).date()].append((utc,t,p))
+    result={}
+    for day,values in grouped.items():
+        local_start=datetime(day.year,day.month,day.day,tzinfo=zone)
+        local_end=datetime.combine(day+timedelta(days=1),datetime.min.time(),tzinfo=zone)
+        expected=int((local_end.astimezone(timezone.utc)-local_start.astimezone(timezone.utc)).total_seconds()/3600)
+        timestamps={v[0] for v in values}
+        if len(values)!=expected or len(timestamps)!=expected or any(t is None or p is None for _,t,p in values):
+            continue
+        result[day]=(max(t for _,t,_ in values),sum(p for _,_,p in values))
+    return result
 
 def observations(station,network,start,end):
     params={'network':network,'stations':station,'year1':start.year,'month1':start.month,
@@ -42,24 +72,19 @@ def observations(station,network,start,end):
 
 def forecasts(station,lat,lon,tz,start,end):
     result=[]
-    # Issue-time is the archived run INITIALISATION, not the public availability time.
-    # Choose 00 UTC runs with UTC daily aggregation; compare UTC dates only.
-    # Station observations must be aligned to UTC daily boundaries before interpreting error.
     issue=start-timedelta(days=9)
     while issue<end:
         run=issue.isoformat()+'T00:00'
         params={'latitude':lat,'longitude':lon,'timezone':'UTC','run':run,
-                'models':'ecmwf_ifs','daily':'temperature_2m_max,precipitation_sum',
+                'models':'ecmwf_ifs','hourly':'temperature_2m,precipitation',
                 'forecast_days':10}
         try:
             obj=json.loads(get('https://single-runs-api.open-meteo.com/v1/forecast',params))
             if 'error' in obj: raise RuntimeError(obj.get('reason',str(obj)))
-            daily=obj['daily']
-            for ds,t,p in zip(daily['time'],daily['temperature_2m_max'],daily['precipitation_sum']):
-                d=date.fromisoformat(ds)
+            for d,(t,p) in aggregate_local_days(obj['hourly'],tz).items():
                 lead=(d-issue).days
-                if start<=d<=end and 1<=lead<=9 and t is not None and p is not None:
-                    result.append({'station_id':station,'date':ds,'issue_date':issue.isoformat(),
+                if start<=d<=end and 1<=lead<=9:
+                    result.append({'station_id':station,'date':d.isoformat(),'issue_date':issue.isoformat(),
                                    'forecast_temp_max_c':str(t),'forecast_precip_mm':str(p)})
         except Exception as exc:
             print('SKIPPED',run,str(exc)[:500],flush=True)
@@ -93,8 +118,8 @@ def main():
     report=evaluate(fc,obs)
     report['station']=a.station
     report['forecast_model']='ECMWF IFS archived 00 UTC initialisation'
-    report['observation_source']='Iowa Environmental Mesonet ASOS daily summary'
-    report['limitations']=['CRITICAL: UTC model days vs IEM station-local days are not aligned; metrics are exploratory until observation time boundaries are reconciled.',
+    report['observation_source']='Iowa Environmental Mesonet ASOS daily summary (local station day)'
+    report['limitations']=['Forecast UTC hours aggregated to complete station-local days; IEM daily station reporting conventions still require independent verification.',
       'Run initialisation is not the publication timestamp.',
       'This tests ECMWF baseline, not Atmos improvements.',
       'ECMWF archive does not cover 30-day forecast horizon.']
