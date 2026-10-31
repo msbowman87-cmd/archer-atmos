@@ -1,0 +1,36 @@
+name: Atmos Global Forecast Backtest
+'on':
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/global-forecast-backtest.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  archived-forecast-coverage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        year: [2024, 2025, 2026]
+        shard: [0,1,2,3,4,5,6,7,8,9]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Unit tests
+        run: python -m unittest discover -s tests -v
+      - name: Collect archived forecasts and compare model-derived reference
+        run: python -m atmos.global_forecast --year ${{ matrix.year }} --shard ${{ matrix.shard }}
+      - name: Upload paired data and coverage report even on failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: atmos-global-${{ matrix.year }}-shard-${{ matrix.shard }}-${{ github.run_id }}
+          path: global-forecast-results/
+          retention-days: 30
+          if-no-files-found: warn
