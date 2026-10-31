@@ -4,6 +4,13 @@
 
 ## Current status
 
+**Search-time weather data:** `atmos/on_demand.py` gathers rich regional model
+inputs for arbitrary coordinates and reuses a short-lived local cache. This is
+research infrastructure, **not yet wired to the public site** or an approved
+calibrated forecast. `atmos/rich_history.py` collects bounded, multi-variable
+historical shards; see [`docs/on-demand-data-architecture.md`](docs/on-demand-data-architecture.md).
+
+
 **Global-first verification:** `atmos/global_validation.py` provides a strict paired
 GFS/ECMWF/equal-blend scorer and uses the 200-point equal-area worldwide research
 sample as a benchmark design. It does not yet have a 12-month independent station
