@@ -11,11 +11,15 @@ from datetime import date,datetime,timedelta
 from pathlib import Path
 from urllib.parse import urlencode
 from urllib.request import urlopen
+from urllib.error import HTTPError
 from atmos.independent_validation import evaluate
 
 def get(url,params):
-    with urlopen(url+'?'+urlencode(params),timeout=90) as response:
-        return response.read().decode('utf-8')
+    try:
+        with urlopen(url+'?'+urlencode(params),timeout=45) as response:
+            return response.read().decode('utf-8')
+    except HTTPError as exc:
+        raise RuntimeError('API HTTP '+str(exc.code)+': '+exc.read().decode('utf-8',errors='replace')[:500]) from exc
 
 def observations(station,network,start,end):
     params={'network':network,'stations':station,'year1':start.year,'month1':start.month,
@@ -57,7 +61,7 @@ def forecasts(station,lat,lon,tz,start,end):
                     result.append({'station_id':station,'date':ds,'issue_date':issue.isoformat(),
                                    'forecast_temp_max_c':str(t),'forecast_precip_mm':str(p)})
         except Exception as exc:
-            print('SKIPPED',run,str(exc)[:160])
+            print('SKIPPED',run,str(exc)[:500],flush=True)
         issue+=timedelta(days=1)
         time.sleep(.25)
     return result
