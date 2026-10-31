@@ -9,12 +9,20 @@ on:
       - 'atmos/independent_validation.py'
       - 'atmos/paired_comparison.py'
       - 'tests/test_station_backtest.py'
+      - 'tests/test_local_day.py'
 permissions:
   contents: read
 jobs:
   twin-falls-station:
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {station: TWF, network: ID_ASOS, lat: 42.4818, lon: -114.4877, tz: America/Boise}
+          - {station: PHX, network: AZ_ASOS, lat: 33.4343, lon: -112.0116, tz: America/Phoenix}
+          - {station: SEA, network: WA_ASOS, lat: 47.4489, lon: -122.3094, tz: America/Los_Angeles}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -22,15 +30,15 @@ jobs:
           python-version: '3.12'
       - name: Unit tests
         run: python -m unittest discover -s tests -v
-      - name: Independent Twin Falls ASOS vs archived ECMWF forecasts
-        run: python -m atmos.station_backtest --station TWF --network ID_ASOS --latitude 42.4818 --longitude -114.4877 --timezone America/Boise --start 2026-08-01 --end 2026-09-30
+      - name: Independent station ASOS vs archived ECMWF forecasts
+        run: python -m atmos.station_backtest --station ${{ matrix.station }} --network ${{ matrix.network }} --latitude ${{ matrix.lat }} --longitude ${{ matrix.lon }} --timezone ${{ matrix.tz }} --start 2026-08-01 --end 2026-09-30
       - name: Held-out paired baseline vs correction experiment (exploratory UTC/local mismatch)
         run: python -m atmos.paired_comparison station-validation-results/forecasts.csv station-validation-results/observations.csv --split 2026-09-01
       - name: Upload raw paired inputs and report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: independent-twf-pilot
+          name: independent-${{ matrix.station }}-pilot
           path: station-validation-results/
           retention-days: 30
           if-no-files-found: warn
