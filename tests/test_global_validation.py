@@ -14,8 +14,8 @@ class GlobalValidationTests(unittest.TestCase):
 
     def test_global_coordinates_across_hemispheres(self):
         points=manifest()
-        self.assertEqual(len(points),200)
-        self.assertEqual(len({(p['lat'],p['lon']) for p in points}),200)
+        self.assertEqual(len(points),5000)
+        self.assertEqual(len({(p['lat'],p['lon']) for p in points}),5000)
         self.assertEqual({p['hemisphere'] for p in points},{'north','south'})
         self.assertEqual({p['latitude_zone'] for p in points},{'polar','midlatitude','tropical'})
         self.assertTrue(all(p['observation_status']=='unverified' for p in points))

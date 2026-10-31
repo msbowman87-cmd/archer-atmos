@@ -1,0 +1,52 @@
+name: Atmos Expanded Worldwide Grid Research
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/global-grid-expansion.yml'
+  workflow_dispatch:
+    inputs:
+      grid_count:
+        description: 'Total grid coordinates'
+        required: true
+        type: choice
+        default: '5000'
+        options: ['5000','20000']
+      batch:
+        description: 'Annual historical batch 0-9'
+        required: true
+        type: choice
+        default: '0'
+        options: ['0','1','2','3','4','5','6','7','8','9']
+      shard:
+        description: '50-coordinate shard index, 0-99 or 0-399'
+        required: true
+        default: '0'
+        type: string
+permissions:
+  contents: read
+jobs:
+  sample:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Offline tests
+        run: python -m unittest discover -s tests -q
+      - name: Collect bounded historical grid sample
+        env:
+          ATMOS_BATCH: ${{ inputs.batch || '0' }}
+          ATMOS_GRID_COUNT: ${{ inputs.grid_count || '5000' }}
+          ATMOS_SHARD: ${{ inputs.shard || '0' }}
+        run: python -m atmos.study_batch --batch "$ATMOS_BATCH" --grid-count "$ATMOS_GRID_COUNT" --shard "$ATMOS_SHARD" --shard-size 50 --output expanded-study-results
+      - name: Upload data and missingness
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: expanded-grid-${{ inputs.grid_count || '5000' }}-year-${{ inputs.batch || '0' }}-shard-${{ inputs.shard || '0' }}-${{ github.run_id }}
+          path: expanded-study-results/
+          if-no-files-found: warn
+          retention-days: 30

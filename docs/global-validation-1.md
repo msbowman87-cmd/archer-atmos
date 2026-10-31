@@ -2,7 +2,7 @@
 
 ## Coverage and honesty requirements
 
-- Start with `atmos.study_batch.locations()`'s 200 equal-area worldwide coordinates. These are **benchmark points**, never an end-user forecast coverage limit.
+- Preserve the original 200-point cohort for reproducible comparisons. The expanded `atmos.global_grid.points()` cohort defaults to 5,000 equal-area worldwide coordinates and supports up to 20,000. These are **benchmark points**, never an end-user forecast coverage limit.
 - The points cover both hemispheres and three latitude bands. They are **not** guaranteed to cover land, oceans, mountains, deserts, or particular Köppen climates. A curated, metadata-verified station cohort must complement them before claiming climate-stratified skill.
 - Target at least twelve consecutive months of *issued forecasts* from GFS and ECMWF (not reanalysis masquerading as forecasts). Collect matching independently measured observations. Older 10-year Open-Meteo gridded archives support coverage research only.
 - Record exact issue timestamp, UTC validity start/end, location/station identity, variable, units, quality flags, and source provenance. Unknown or unmatched values remain missing.
@@ -13,6 +13,9 @@
 - Temperature MAE is not a severe-weather skill measure. Precipitation occurrence, amount, wind, and hazards require their own independent verification and uncertainty estimates.
 
 ## Implemented starting point
+
+Generate the expanded manifest: `python -m atmos.global_grid --count 5000 --output global-grid-5000.csv`. These are geographic samples, not independent ground stations.
+
 
 `python -m atmos.global_validation --forecasts issued.csv --observations truth.csv --output global-validation-report.json`
 

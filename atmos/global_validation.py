@@ -11,7 +11,7 @@ from datetime import date
 from math import isfinite
 from pathlib import Path
 
-from atmos.study_batch import locations
+from atmos.global_grid import points as global_points, DEFAULT_COUNT
 
 LEAD_BUCKETS = ((1, 3, '1-3'), (4, 7, '4-7'), (8, 14, '8-14'), (15, 30, '15-30'))
 
@@ -21,12 +21,12 @@ def latitude_zone(lat):
     return 'tropical' if a < 23.5 else 'midlatitude' if a < 66.5 else 'polar'
 
 
-def manifest():
+def manifest(count=DEFAULT_COUNT):
     """Equal-area global coordinate sample; not a curated station list."""
     return [dict(point, hemisphere='north' if point['lat'] >= 0 else 'south',
                  latitude_zone=latitude_zone(point['lat']),
                  observation_status='unverified', surface_type='unknown')
-            for point in locations()]
+            for point in global_points(count)]
 
 
 def lead_bucket(issue, valid):
@@ -37,7 +37,7 @@ def lead_bucket(issue, valid):
     raise ValueError('Forecast lead outside 1-30 days')
 
 
-def evaluate(forecasts, observations, *, required_locations=200):
+def evaluate(forecasts, observations, *, required_locations=DEFAULT_COUNT):
     """Compare models only on the same issue/date/location/metric truth.
 
     Forecast CSV: location_id, model, issue_date, date, metric, unit, value,
@@ -108,8 +108,14 @@ def evaluate(forecasts, observations, *, required_locations=200):
 def latitude_zone_for_location(location_id):
     # Only predeclared validation IDs get geographic labels; no guessing for
     # external stations. Extend with a verified station metadata registry.
-    index = {p['id']:p['latitude_zone'] for p in manifest()}
-    return index.get(location_id, 'unclassified')
+    return _location_zones().get(location_id, 'unclassified')
+
+_location_cache = None
+def _location_zones():
+    global _location_cache
+    if _location_cache is None:
+        _location_cache = {p['id']:p['latitude_zone'] for p in manifest()}
+    return _location_cache
 
 
 def main():
