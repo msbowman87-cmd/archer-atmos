@@ -7,6 +7,7 @@ on:
       - '.github/workflows/independent-station-pilot.yml'
       - 'atmos/station_backtest.py'
       - 'atmos/independent_validation.py'
+      - 'atmos/paired_comparison.py'
       - 'tests/test_station_backtest.py'
 permissions:
   contents: read
@@ -22,7 +23,9 @@ jobs:
       - name: Unit tests
         run: python -m unittest discover -s tests -v
       - name: Independent Twin Falls ASOS vs archived ECMWF forecasts
-        run: python -m atmos.station_backtest --station TWF --network ID_ASOS --latitude 42.4818 --longitude -114.4877 --timezone America/Boise --start 2026-09-01 --end 2026-09-07
+        run: python -m atmos.station_backtest --station TWF --network ID_ASOS --latitude 42.4818 --longitude -114.4877 --timezone America/Boise --start 2026-08-01 --end 2026-09-30
+      - name: Held-out paired baseline vs correction experiment (exploratory UTC/local mismatch)
+        run: python -m atmos.paired_comparison station-validation-results/forecasts.csv station-validation-results/observations.csv --split 2026-09-01
       - name: Upload raw paired inputs and report
         if: always()
         uses: actions/upload-artifact@v4
