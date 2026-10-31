@@ -31,16 +31,24 @@ def run(start,end,count,out):
                 "timezone":"UTC"}
         try:
             fc=fetch("https://previous-runs-api.open-meteo.com/v1/forecast",
-                {**common,"daily":"temperature_2m_max_previous_day1,precipitation_sum_previous_day1"})
+                {**common,"hourly":"temperature_2m_previous_day1,precipitation_previous_day1"})
             obs=fetch("https://archive-api.open-meteo.com/v1/archive",
                 {**common,"daily":"temperature_2m_max,precipitation_sum"})
-            f=fc["daily"];o=obs["daily"]
+            h=fc["hourly"];o=obs["daily"]
+            byday={}
+            for i,timestamp in enumerate(h["time"]):
+                day=timestamp[:10]
+                temp=h["temperature_2m_previous_day1"][i]
+                rain=h["precipitation_previous_day1"][i]
+                bucket=byday.setdefault(day,{"temps":[],"rain":[]})
+                if temp is not None: bucket["temps"].append(temp)
+                if rain is not None: bucket["rain"].append(rain)
             dates={day:i for i,day in enumerate(o["time"])}
-            for i,day in enumerate(f["time"]):
-                if day not in dates: continue
+            for day,bucket in byday.items():
+                if day not in dates or len(bucket["temps"])!=24 or len(bucket["rain"])!=24:
+                    continue
                 j=dates[day]
-                temp=f["temperature_2m_max_previous_day1"][i]
-                rain=f["precipitation_sum_previous_day1"][i]
+                temp=max(bucket["temps"]);rain=sum(bucket["rain"])
                 ot=o["temperature_2m_max"][j];orr=o["precipitation_sum"][j]
                 if any(x is None for x in (temp,rain,ot,orr)): continue
                 rows.append({"location":loc["id"],"date":day,"issue_time":day+"T00:00:00",
@@ -54,9 +62,9 @@ def run(start,end,count,out):
         fields=["location","date","issue_time","valid_time","horizon_hours","predicted_temp_c",
                 "observed_temp_c","predicted_rain_mm","observed_rain_mm"]
         w=csv.DictWriter(f,fieldnames=fields);w.writeheader();w.writerows(rows)
-    report={"status":"pilot verification only","forecast_source":"Open-Meteo Previous Runs API, previous_day1",
+    report={"status":"pilot verification only","forecast_source":"Open-Meteo Previous Runs API hourly previous_day1, aggregated into UTC days",
             "reference_source":"Open-Meteo historical archive, model-derived; not independent observations",
-            "caveat":"Previous-day1 daily aggregate is a 24h lead-time model series, not necessarily a single fixed issuance daily forecast. Issue_time in CSV is a synthetic placeholder and MUST NOT be used to assert issuance provenance.",
+            "caveat":"Hourly previous_day1 offsets aggregated into UTC daily extrema/totals; not a single fixed issuance daily forecast, not necessarily a single fixed issuance daily forecast. Issue_time in CSV is a synthetic placeholder and MUST NOT be used to assert issuance provenance.",
             "start":str(start),"end":str(end),"locations_requested":count,
             "locations_with_data":len(set(r["location"] for r in rows)),
             "matched_days":len(rows),"failures":failures,
