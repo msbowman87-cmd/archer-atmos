@@ -4,6 +4,7 @@ name: Atmos Forecast Skill Pilot
     branches: [main]
     paths:
       - '.github/workflows/forecast-skill-pilot.yml'
+      - 'atmos/forecast_pilot.py'
   workflow_dispatch:
 permissions:
   contents: read
