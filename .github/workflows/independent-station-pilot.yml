@@ -8,6 +8,7 @@ on:
       - 'atmos/station_backtest.py'
       - 'atmos/independent_validation.py'
       - 'atmos/paired_comparison.py'
+      - 'tests/test_guarded_comparison.py'
       - 'tests/test_station_backtest.py'
       - 'tests/test_local_day.py'
 permissions:
