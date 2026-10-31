@@ -5,6 +5,9 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/independent-station-pilot.yml'
+      - 'atmos/station_backtest.py'
+      - 'atmos/independent_validation.py'
+      - 'tests/test_station_backtest.py'
 permissions:
   contents: read
 jobs:
