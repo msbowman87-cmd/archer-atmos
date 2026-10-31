@@ -1,0 +1,32 @@
+name: UTC-Aligned Multi-Station Verification
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/utc-station-verification.yml'
+      - 'atmos/utc_station_pilot.py'
+      - 'tests/test_utc_station_pilot.py'
+permissions:
+  contents: read
+jobs:
+  station-verification:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Unit tests
+        run: python -m unittest discover -s tests -v
+      - name: Verify Twin Falls, Boise and Pocatello with UTC ASOS observations
+        run: python -m atmos.utc_station_pilot --start 2026-08-01 --end 2026-09-30 --split 2026-09-01
+      - name: Upload raw forecasts, observations and comparison
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: utc-station-verification
+          path: utc-station-results/
+          retention-days: 30
+          if-no-files-found: warn
