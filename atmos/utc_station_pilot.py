@@ -26,21 +26,25 @@ def utc_observations(station,network,start,end,fetch=None,min_hours=20):
     url="https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?"+urlencode(params)
     raw=fetch(url)
     rows=csv.DictReader(io.StringIO(raw))
+    if rows.fieldnames is None:raise RuntimeError("ASOS response has no CSV header")
+    rows.fieldnames=[x.strip().lstrip("\\ufeff") for x in rows.fieldnames]
+    print("ASOS",station,"columns",rows.fieldnames,"response_bytes",len(raw),flush=True)
     hours=defaultdict(set)
     temperatures=defaultdict(list)
     for row in rows:
-        if row.get("station","").strip()!=station:continue
-        stamp=(row.get("valid") or "").strip()
+        if row.get("station","").strip().upper()!=station.upper():continue
+        stamp=(row.get("valid") or "").strip().replace("T"," ").replace("Z","")
         value=(row.get("tmpf") or "").strip()
         if not stamp or value in ("","M","None","null"):continue
         try:
-            ts=datetime.strptime(stamp[:19],"%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
+            ts=datetime.fromisoformat(stamp).replace(tzinfo=timezone.utc)
             temp=(float(value)-32)*5/9
         except ValueError:continue
         day=ts.date()
         if not start<=day<=end:continue
         hours[day].add(ts.hour)
         temperatures[day].append(temp)
+    print("ASOS",station,"UTC days found",len(temperatures),"coverage",sorted((str(d),len(h)) for d,h in hours.items())[:5],flush=True)
     return [{"station_id":station,"date":d.isoformat(),
         "observed_temp_max_c":str(max(temperatures[d])),
         "observed_precip_mm":"","utc_hours_covered":str(len(hours[d]))}
