@@ -4,6 +4,12 @@
 
 ## Current status
 
+**Global-first verification:** `atmos/global_validation.py` provides a strict paired
+GFS/ECMWF/equal-blend scorer and uses the 200-point equal-area worldwide research
+sample as a benchmark design. It does not yet have a 12-month independent station
+dataset and does not substantiate global skill. See
+[`docs/global-validation-1.md`](docs/global-validation-1.md) for data requirements.
+
 This repository starts with a **small, scheduled research collector** for the public NOAA GFS global forecast grid. It accepts arbitrary latitude/longitude pairs; the six locations in `examples/global_sample.json` are only a worldwide sample, **not a forecast coverage limit**.
 
 - `.github/workflows/ci.yml` runs offline tests on changes.
