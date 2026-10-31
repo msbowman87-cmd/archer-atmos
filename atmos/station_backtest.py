@@ -43,11 +43,12 @@ def observations(station,network,start,end):
 def forecasts(station,lat,lon,tz,start,end):
     result=[]
     # Issue-time is the archived run INITIALISATION, not the public availability time.
-    # Choose 00 UTC runs; forecast lead is based on station-local calendar dates.
+    # Choose 00 UTC runs with UTC daily aggregation; compare UTC dates only.
+    # Station observations must be aligned to UTC daily boundaries before interpreting error.
     issue=start-timedelta(days=9)
     while issue<end:
         run=issue.isoformat()+'T00:00'
-        params={'latitude':lat,'longitude':lon,'timezone':tz,'run':run,
+        params={'latitude':lat,'longitude':lon,'timezone':'UTC','run':run,
                 'models':'ecmwf_ifs','daily':'temperature_2m_max,precipitation_sum',
                 'forecast_days':10}
         try:
@@ -93,7 +94,7 @@ def main():
     report['station']=a.station
     report['forecast_model']='ECMWF IFS archived 00 UTC initialisation'
     report['observation_source']='Iowa Environmental Mesonet ASOS daily summary'
-    report['limitations']=['Station local-day boundary must be checked against IEM reporting convention.',
+    report['limitations']=['CRITICAL: UTC model days vs IEM station-local days are not aligned; metrics are exploratory until observation time boundaries are reconciled.',
       'Run initialisation is not the publication timestamp.',
       'This tests ECMWF baseline, not Atmos improvements.',
       'ECMWF archive does not cover 30-day forecast horizon.']
