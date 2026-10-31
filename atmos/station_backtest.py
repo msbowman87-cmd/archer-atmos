@@ -40,12 +40,12 @@ def forecasts(station,lat,lon,tz,start,end):
     result=[]
     # Issue-time is the archived run INITIALISATION, not the public availability time.
     # Choose 00 UTC runs; forecast lead is based on station-local calendar dates.
-    issue=start-timedelta(days=15)
+    issue=start-timedelta(days=9)
     while issue<end:
         run=issue.isoformat()+'T00:00'
         params={'latitude':lat,'longitude':lon,'timezone':tz,'run':run,
                 'models':'ecmwf_ifs','daily':'temperature_2m_max,precipitation_sum',
-                'forecast_days':16}
+                'forecast_days':10}
         try:
             obj=json.loads(get('https://single-runs-api.open-meteo.com/v1/forecast',params))
             if 'error' in obj: raise RuntimeError(obj.get('reason',str(obj)))
@@ -53,7 +53,7 @@ def forecasts(station,lat,lon,tz,start,end):
             for ds,t,p in zip(daily['time'],daily['temperature_2m_max'],daily['precipitation_sum']):
                 d=date.fromisoformat(ds)
                 lead=(d-issue).days
-                if start<=d<=end and 1<=lead<=15 and t is not None and p is not None:
+                if start<=d<=end and 1<=lead<=9 and t is not None and p is not None:
                     result.append({'station_id':station,'date':ds,'issue_date':issue.isoformat(),
                                    'forecast_temp_max_c':str(t),'forecast_precip_mm':str(p)})
         except Exception as exc:
