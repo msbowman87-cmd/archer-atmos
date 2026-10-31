@@ -7,6 +7,7 @@ from urllib.parse import urlencode
 from urllib.request import urlopen
 from atmos.station_backtest import forecasts,save
 from atmos.paired_comparison import compare
+from atmos.adaptive_correction import evaluate as adaptive_evaluate
 
 STATIONS={
  "TWF":("ID_ASOS",42.4818,-114.4877),
@@ -55,6 +56,7 @@ def main():
     p.add_argument("--start",default="2026-08-01")
     p.add_argument("--end",default="2026-09-30")
     p.add_argument("--split",default="2026-09-01")
+    p.add_argument("--validation-start",default="2026-09-15")
     p.add_argument("--stations",default="TWF,BOI,PIH")
     p.add_argument("--output",default="utc-station-results")
     a=p.parse_args()
@@ -74,6 +76,7 @@ def main():
             continue
         try:
             result=compare(fc,obs,a.split)
+            result["adaptive_three_way"]=adaptive_evaluate(fc,obs,a.split,a.validation_start)
             result["status"]="exploratory_sampled_utc_temperature"
             result["observed_days"]=len(obs)
             result["forecast_rows"]=len(fc)
