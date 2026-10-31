@@ -1,0 +1,31 @@
+name: Regional Weather Context Pilot
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'atmos/regional_backtest.py'
+      - 'tests/test_regional_backtest.py'
+      - '.github/workflows/regional-weather-pilot.yml'
+permissions:
+  contents: read
+jobs:
+  regional-twin-falls:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Unit tests
+        run: python -m unittest discover -s tests -v
+      - name: Compare local ECMWF baseline against regional spatial context
+        run: python -m atmos.regional_backtest --station TWF --network ID_ASOS --latitude 42.4818 --longitude -114.4877 --timezone America/Boise --start 2026-08-01 --end 2026-09-30
+      - name: Upload regional pilot data
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: regional-twf-experiment
+          path: regional-validation-results/
+          retention-days: 30
