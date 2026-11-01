@@ -10,7 +10,7 @@ function payload() {
   return {status:'raw_model_inputs_not_calibrated',
     retrieved_at_utc:'2026-11-01T09:00:00.000Z',
     cache_status:'hit', regional_points_requested:5,regional_points_received:5,
-    samples:[{data:{daily:{time,temperature_2m_max:[10,11,12,13,14],
+    samples:[{data:{daily:{time,weather_code:[0,2,63,75,95],temperature_2m_max:[10,11,12,13,14],
       temperature_2m_min:[1,2,3,4,5],precipitation_sum:[0,1,2,3,4],
       precipitation_probability_max:[0,10,20,30,40],
       wind_speed_10m_max:[1,2,3,4,5]}}}],
@@ -27,10 +27,20 @@ test('site uses relative same-origin backend and preserved forecast fields',asyn
   assert.equal(new URL(`https://archer-atmos.netlify.app${requests[0]}`).searchParams.get('days'),'16');
   assert.equal(result.forecasts.length,4);
   assert.equal(result.forecasts[0].rainChance,0.1);
+  assert.equal(result.forecasts[0].weatherCode,2);
+  assert.equal(result.forecasts[3].weatherCode,95);
   assert.equal(result.forecasts[0].lead,1);
   assert.equal(result.model_issue_time_utc,null);
   assert.equal(result.retrieved_at_utc,'2026-11-01T09:00:00.000Z');
   assert.equal(result.cache_status,'hit');
+});
+
+test('older caches without weather codes remain usable and show unknown conditions',async()=>{
+  const old=payload();
+  delete old.samples[0].data.daily.weather_code;
+  const result=await fetchNumericalForecast(location,issueAt,
+    async()=>({ok:true,json:async()=>old}));
+  assert.equal(result.forecasts[0].weatherCode,null);
 });
 
 test('site rejects malformed, unavailable, or falsely calibrated backend payloads',async()=>{

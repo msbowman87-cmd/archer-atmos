@@ -12,7 +12,7 @@ test('site adapter preserves existing forecast format and labels retrieval time'
       status:'raw_model_inputs_not_calibrated',
       retrieved_at_utc:'2026-11-01T09:00:00Z',cache_status:'hit',
       regional_points_requested:5,regional_points_received:5,
-      samples:[{data:{daily:{time:['2026-11-02','2026-11-03','2026-11-04'],
+      samples:[{data:{daily:{time:['2026-11-02','2026-11-03','2026-11-04'],weather_code:[0,63,75],
         temperature_2m_max:[10,11,12],temperature_2m_min:[1,2,3],
         precipitation_sum:[0,1,2],precipitation_probability_max:[20,30,40],
         wind_speed_10m_max:[5,6,7]}}}],
@@ -23,6 +23,7 @@ test('site adapter preserves existing forecast format and labels retrieval time'
   assert.equal(calls,1);
   assert.equal(result.forecasts[0].windMs,5);
   assert.equal(result.forecasts[0].rainChance,0.2);
+  assert.equal(result.forecasts[0].weatherCode,0);
   assert.equal(result.model_issue_time_utc,null);
   assert.equal(result.retrieved_at_utc,'2026-11-01T09:00:00Z');
 });

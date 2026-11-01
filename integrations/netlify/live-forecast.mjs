@@ -21,6 +21,7 @@ export async function fetchNumericalForecast(location, issueAt = new Date(),
   const today = issueAt.toISOString().slice(0,10);
   const forecasts = daily.time.map((date,i) => ({
     date,
+    weatherCode:Number.isInteger(daily.weather_code?.[i]) ? daily.weather_code[i] : null,
     hiC:daily.temperature_2m_max?.[i],
     loC:daily.temperature_2m_min?.[i],
     precipMm:daily.precipitation_sum?.[i],
