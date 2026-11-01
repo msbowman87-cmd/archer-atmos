@@ -26,15 +26,17 @@ jobs:
         env:
           RESEARCH_APPROVED: ${{ vars.ATMOS_NONCOMMERCIAL_RESEARCH_APPROVED }}
           ARCHIVE_BUCKET: ${{ vars.ATMOS_ARCHIVE_BUCKET }}
+          ARCHIVE_REGION: ${{ vars.ATMOS_ARCHIVE_REGION }}
+          ARCHIVE_ENDPOINT: ${{ vars.ATMOS_ARCHIVE_ENDPOINT }}
           ARCHIVE_ACCESS_ID: ${{ secrets.ATMOS_ARCHIVE_ACCESS_KEY_ID }}
           ARCHIVE_SECRET: ${{ secrets.ATMOS_ARCHIVE_SECRET_ACCESS_KEY }}
         run: |
-          if [[ "$RESEARCH_APPROVED" == 'true' && -n "$ARCHIVE_BUCKET" && -n "$ARCHIVE_ACCESS_ID" && -n "$ARCHIVE_SECRET" ]]; then
+          if [[ "$RESEARCH_APPROVED" == 'true' && -n "$ARCHIVE_BUCKET" && "$ARCHIVE_REGION" == 'auto' && -n "$ARCHIVE_ENDPOINT" && -n "$ARCHIVE_ACCESS_ID" && -n "$ARCHIVE_SECRET" ]]; then
             echo 'ready=yes' >> "$GITHUB_OUTPUT"
             echo 'Approved non-commercial research and durable object storage detected.' >> "$GITHUB_STEP_SUMMARY"
           else
             echo 'ready=no' >> "$GITHUB_OUTPUT"
-            echo 'Backfill PAUSED: set ATMOS_NONCOMMERCIAL_RESEARCH_APPROVED=true and the archive bucket/access secrets. No weather API calls were made.' >> "$GITHUB_STEP_SUMMARY"
+            echo 'Backfill PAUSED: needs noncommercial research approval, dedicated R2 bucket, region=auto, endpoint and secrets. No weather API calls were made.' >> "$GITHUB_STEP_SUMMARY"
           fi
       - name: Resume from persistent archive cursor or honor manual wave override
         id: cursor
@@ -75,6 +77,21 @@ jobs:
           echo 'ready=yes' >> "$GITHUB_OUTPUT"
           echo "start=$cursor" >> "$GITHUB_OUTPUT"
           echo "manual=$manual" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v4
+        if: steps.cursor.outputs.ready == 'yes'
+      - uses: actions/setup-python@v5
+        if: steps.cursor.outputs.ready == 'yes'
+        with:
+          python-version: '3.12'
+      - name: Check R2 storage headroom and reserve today's historical API budget
+        if: steps.cursor.outputs.ready == 'yes'
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ATMOS_ARCHIVE_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ATMOS_ARCHIVE_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ vars.ATMOS_ARCHIVE_REGION }}
+          ATMOS_ARCHIVE_BUCKET: ${{ vars.ATMOS_ARCHIVE_BUCKET }}
+          ATMOS_ARCHIVE_ENDPOINT: ${{ vars.ATMOS_ARCHIVE_ENDPOINT }}
+        run: python -m atmos.free_tier_guard --preflight
   collect:
     needs: preflight
     if: needs.preflight.outputs.ready == 'yes'
@@ -117,8 +134,12 @@ jobs:
           PY
       - name: Collect 25 site-months and package verified archives
         run: python -m atmos.backfill_wave --wave "${{ steps.wave.outputs.index }}" --per-wave 5 --years 2024,2025
-      - name: Persist compressed CSV and provenance to object storage
+      - name: Confirm archive stays under the 25 MB per-lane allowance
+        id: archive_guard
         if: always()
+        run: python -m atmos.free_tier_guard --local-archive atmos-backfill/archive
+      - name: Persist compressed CSV and provenance to object storage
+        if: always() && steps.archive_guard.outcome == 'success'
         run: |
           if [[ ! -d atmos-backfill/archive ]]; then
             echo 'No packaged data to archive' >&2
