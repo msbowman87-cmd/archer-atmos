@@ -65,13 +65,13 @@
             <div class="metrics">
               <div class="metric metric-primary"><span class="metric-label">FIRST DAY · HIGH</span><div class="metric-number"><span id="high-value">--</span><sup>°F</sup></div><span id="high-footnote" class="metric-footnote">Awaiting observation history</span></div>
               <div class="metric"><span class="metric-label">FIRST DAY · LOW</span><div class="metric-number"><span id="low-value">--</span><sup>°F</sup></div><span class="metric-footnote">Estimated overnight minimum</span></div>
-              <div class="metric"><span class="metric-label">CHANCE OF RAIN</span><div class="metric-number"><span id="rain-value">--</span><sup>%</sup></div><span class="metric-footnote">Daily precipitation ≥ 1 mm</span></div>
-              <div class="metric"><span class="metric-label">AVERAGE WIND</span><div class="metric-number"><span id="wind-value">--</span><sup>mph</sup></div><span class="metric-footnote">10-meter daily mean</span></div>
+              <div class="metric"><span id="rain-label" class="metric-label">PRECIPITATION CHANCE</span><div class="metric-number"><span id="rain-value">--</span><sup>%</sup></div><span id="rain-footnote" class="metric-footnote">Probability details loading</span></div>
+              <div class="metric"><span id="wind-label" class="metric-label">WIND</span><div class="metric-number"><span id="wind-value">--</span><sup>mph</sup></div><span id="wind-footnote" class="metric-footnote">Wind details loading</span></div>
             </div>
             <div class="outlook-toolbar"><div><h4>Looking ahead</h4><p>Daily trends—not hourly predictions</p></div><div class="period-options" role="group" aria-label="Forecast range"><button class="selected" type="button" data-days="7" aria-pressed="true">7 days</button><button type="button" data-days="14" aria-pressed="false">14 days</button><button type="button" data-days="30" aria-pressed="false">30 days</button></div></div>
             <div class="chart-header"><span>DAILY TEMPERATURE · °F</span><div class="chart-legend"><span><i class="legend-high"></i> High</span><span><i class="legend-low"></i> Low</span></div></div>
             <div class="chart-holder"><svg id="temperature-chart" role="img" aria-label="Daily forecast high and low temperatures" viewBox="0 0 900 218" preserveAspectRatio="none"><text x="450" y="100" text-anchor="middle" fill="#6e8498">Loading history...</text></svg></div>
-            <div class="rain-title">DAILY FORECAST · SELECT A DATE</div><div id="daily-strip" class="daily-strip" aria-label="Daily forecasts; select a date to view details"></div>
+            <div class="rain-title">DAILY FORECAST · AT A GLANCE · SELECT A DATE FOR MORE</div><div id="daily-strip" class="daily-strip" aria-label="Daily weather cards; select a date to view details"></div><p id="daily-strip-note" class="daily-strip-note"></p>
             <div class="forecast-foot"><span id="forecast-data-status">Live numerical forecast or Atmos historical fallback • UTC days</span><span>↗ Outlook uncertainty increases with time</span></div>
           </div>
         </div>

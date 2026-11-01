@@ -2,3 +2,43 @@
 
 /* Accessible date selection and daily forecast details */
 button.daily-chip{font:inherit;color:inherit;cursor:pointer;text-align:center;border:1px solid transparent}button.daily-chip:hover,button.daily-chip:focus-visible{border-color:#50c9ce;outline:2px solid #50c9ce;outline-offset:2px}.day-details{width:min(94vw,620px);max-height:85vh;overflow:auto;border:1px solid #467482;border-radius:18px;padding:25px;background:#101f2b;color:#f2f8fa;box-shadow:0 24px 80px #000a}.day-details::backdrop{background:#000b}.day-details-head{display:flex;justify-content:space-between;align-items:start;gap:15px}.day-details-head small{color:#6ad3d4;letter-spacing:.12em}.day-details-head h2{margin:8px 0 22px;font-size:1.5rem}.day-details-close{border:1px solid #57727c;border-radius:8px;background:#233b48;color:white;font-size:28px;width:44px;height:44px;cursor:pointer}.day-details-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.detail-cell{background:#1b3440;border:1px solid #36515c;border-radius:10px;padding:15px;display:flex;flex-direction:column;gap:8px}.detail-cell span{font-size:12px;color:#a7c0c9}.detail-cell strong{font-size:20px}.day-details-note{color:#b1c6cf;font-size:13px;line-height:1.6;margin:20px 0 0}@media(max-width:480px){.day-details-grid{grid-template-columns:1fr}.day-details{padding:17px}}
+.daily-strip{
+  overflow-x:auto;
+  overscroll-behavior-inline:contain;
+  padding:3px 2px 13px;
+  scrollbar-color:#a6c7d6 #eef5f8;
+}
+button.daily-chip{
+  min-height:207px;
+  padding:12px 9px 10px;
+  gap:5px;
+  border:1px solid #dce9f0;
+  border-radius:13px;
+  background:linear-gradient(160deg,#fff,#f0f8fb);
+  box-shadow:0 2px 5px #1c4d6210;
+  justify-content:flex-start;
+  scroll-snap-align:start;
+  transition:box-shadow .2s,transform .2s,border-color .2s;
+}
+button.daily-chip:hover{
+  border-color:#84c7dd;
+  box-shadow:0 8px 16px #23506820;
+  transform:translateY(-2px);
+}
+.daily-chip .daily-chip-date{font-size:12px;font-weight:800;color:#3d6176;line-height:1.25;}
+.daily-chip-sky{display:flex;justify-content:center;align-items:center;height:50px;}
+.daily-weather-icon{width:46px;height:46px;display:block;overflow:visible;}
+.daily-chip-condition{font-size:11px;font-weight:700;color:#425f71;line-height:1.25;min-height:28px;display:grid;place-items:center;}
+.daily-chip-temperatures{display:flex;gap:9px;align-items:center;justify-content:center;white-space:nowrap;font-family:'Outfit',sans-serif;}
+.daily-chip-temperatures b{font-size:18px;line-height:1.1;}
+.daily-chip-high{color:#cf753b;}
+.daily-chip-low{color:#368ba9;}
+.daily-chip-likelihood{display:flex;gap:2px;flex-direction:column;align-items:center;justify-content:center;margin-top:2px;}
+.daily-chip-likelihood b{font-size:17px;color:#2b718b;line-height:1.1;}
+.daily-chip .daily-chip-likelihood small{font-size:9px;font-weight:700;color:#65879a;letter-spacing:.02em;}
+.daily-chip-wind{font-size:10px;color:#607f90;white-space:nowrap;margin-top:auto;}
+.daily-strip-note{font-size:11px;color:#7b93a3;line-height:1.5;margin:0 0 18px;}
+@media(max-width:780px){
+  .daily-strip{scroll-snap-type:x proximity;}
+  .daily-strip:focus-within{scroll-behavior:smooth;}
+}

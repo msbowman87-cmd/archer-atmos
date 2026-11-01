@@ -1,5 +1,6 @@
 import { fetchNumericalForecast } from './live-forecast.mjs';
 import { parsePowerData, generateOutlook, toFahrenheit, toMph, daysAfter, isoDay } from './forecast.mjs';
+import { describeWeather, precipitationPercent } from './weather-condition.mjs';
 
 const locations = {
   'grand-view': {name:'Grand View, Idaho', lat:42.98961, lon:-116.09343},
@@ -81,6 +82,37 @@ function svg(tag, attrs, text) {
   if (text!==undefined) item.textContent = text;
   return item;
 }
+function weatherIcon(kind) {
+  const icon=svg('svg',{viewBox:'0 0 48 48',class:'daily-weather-icon','aria-hidden':'true'});
+  const add=(tag,attrs,label)=>icon.append(svg(tag,attrs,label));
+  const sun=(cx,cy,r)=>{
+    add('circle',{cx,cy,r,fill:'#ffdda0',stroke:'#e8a04b','stroke-width':2});
+    for(let i=0;i<8;i++){
+      const a=i*Math.PI/4;
+      add('line',{x1:cx+Math.cos(a)*(r+3),y1:cy+Math.sin(a)*(r+3),
+        x2:cx+Math.cos(a)*(r+7),y2:cy+Math.sin(a)*(r+7),
+        stroke:'#e8a04b','stroke-width':2.2,'stroke-linecap':'round'});
+    }
+  };
+  const cloud=()=>add('path',{d:'M12 34h23c4.6 0 7.5-3.2 7.5-7.2S39.5 20 35 20h-1.2c-1.3-6-5.7-9.7-11.5-9.7-6.4 0-10.5 4.4-11.7 10.2C6.3 21.1 4 24 4 27.5 4 31.3 7.2 34 12 34Z',
+    fill:'#e7f1f7',stroke:'#6c93ab','stroke-width':2,'stroke-linejoin':'round'});
+  if(kind==='clear') sun(24,24,9);
+  else if(kind==='partly'){sun(17,16,7);cloud();}
+  else if(kind==='unknown'){
+    add('circle',{cx:24,cy:24,r:17,fill:'#edf3f6',stroke:'#a4b8c5','stroke-width':2});
+    add('text',{x:24,y:32,'text-anchor':'middle',fill:'#688094','font-size':22,'font-weight':700},'?');
+  }else{
+    cloud();
+    if(kind==='fog') for(const y of [39,44]) add('line',{x1:10,x2:39,y1:y,y2:y,stroke:'#83a4b8','stroke-width':2,'stroke-linecap':'round'});
+    if(kind==='rain') for(const x of [15,26,37]) add('line',{x1:x+1,x2:x-2,y1:38,y2:44,stroke:'#429dce','stroke-width':2.7,'stroke-linecap':'round'});
+    if(kind==='snow') for(const x of [15,26,37]){
+      add('line',{x1:x,y1:37,x2:x,y2:45,stroke:'#429dce','stroke-width':2});
+      add('line',{x1:x-3,y1:41,x2:x+3,y2:41,stroke:'#429dce','stroke-width':2});
+    }
+    if(kind==='storm')add('path',{d:'M27 32 19 42h6l-3 5 13-13h-7l4-5',fill:'#f7b44a',stroke:'#d89931','stroke-width':1.3,'stroke-linejoin':'round'});
+  }
+  return icon;
+}
 function renderChart(forecasts) {
   const target = $('temperature-chart');target.replaceChildren();
   target.setAttribute('aria-label', `${forecasts.length}-day high/low temperature outlook, UTC daily periods`);
@@ -109,30 +141,50 @@ function renderChart(forecasts) {
 function showDayDetails(r) {
   const dialog=$('day-details');
   $('day-details-title').textContent=dayLabel(r.date,{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  const condition=describeWeather(r.weatherCode);
+  const live=Boolean(latestOutlook?.source);
   const fields=[
+    ['Weather condition',condition.label],
     ['High temperature',Number.isFinite(r.hiC)?`${Math.round(toFahrenheit(r.hiC))} °F`:'Unavailable'],
     ['Low temperature',Number.isFinite(r.loC)?`${Math.round(toFahrenheit(r.loC))} °F`:'Unavailable'],
-    ['Precipitation probability',Number.isFinite(r.rainChance)?`${Math.round(r.rainChance*100)}%`:'Unavailable'],
+    [live?'Peak hourly precipitation chance':'Estimated wet-day chance',Number.isFinite(r.rainChance)?precipitationPercent(r.rainChance):'Unavailable'],
     ['Expected precipitation',Number.isFinite(r.precipMm)?`${(r.precipMm/25.4).toFixed(2)} in (${r.precipMm.toFixed(1)} mm)`:'Unavailable'],
-    ['Maximum wind speed',Number.isFinite(r.windMs)?`${Math.round(toMph(r.windMs))} mph`:'Unavailable'],
+    [live?'Maximum wind speed':'Estimated average wind',Number.isFinite(r.windMs)?`${Math.round(toMph(r.windMs))} mph`:'Unavailable'],
     ['Forecast lead',Number.isFinite(r.lead)?`Day ${r.lead}`:'Unavailable']
   ];
   const grid=$('day-details-grid');grid.replaceChildren();
   fields.forEach(([name,value])=>{const cell=document.createElement('div');cell.className='detail-cell';const a=document.createElement('span');a.textContent=name;const b=document.createElement('strong');b.textContent=value;cell.append(a,b);grid.append(cell)});
-  $('day-details-note').textContent=latestOutlook?.source?'Live, uncalibrated numerical model outlook. More hourly variables are collected for research but are not yet displayed here.':'Experimental historical-analog outlook, not a live numerical forecast. Longer-range predictions have substantial uncertainty.';
+  $('day-details-note').textContent=live?'Daily weather code shows the most significant modeled condition; the percentage is the highest hourly precipitation chance, not a confidence score. Live numerical model inputs are not independently calibrated.':'Experimental historical-analog outlook, not a live numerical forecast. Sky conditions are unavailable; wet-day percentages are experimental estimates, not accuracy scores.';
   if(typeof dialog.showModal==='function')dialog.showModal();else dialog.hidden=false;
 }
-function renderRain(forecasts) {
+function renderDailyCards(forecasts) {
   const target=$('daily-strip');target.replaceChildren();
-  target.style.gridTemplateColumns=`repeat(${Math.min(forecasts.length,7)},minmax(0,1fr))`;
-  forecasts.forEach((r,i)=>{
-    const card=document.createElement('button');card.type='button';card.className='daily-chip';card.setAttribute('aria-label',`View full forecast for ${dayLabel(r.date,{weekday:'long',month:'long',day:'numeric'})}`);card.addEventListener('click',()=>showDayDetails(r));
-    const label=document.createElement('strong');label.textContent=dayLabel(r.date,{weekday:'short',day:'numeric'});
-    const track=document.createElement('span');track.className='rain-track';
-    const bar=document.createElement('i');bar.style.height=`${Math.round(r.rainChance*100)}%`;track.append(bar);
-    const pct=document.createElement('small');pct.textContent=`${fmt(100*r.rainChance)}%`;
-    card.title=`${r.date}: ${fmt(r.rainChance*100)}% chance of ≥1 mm precipitation; expected ${r.precipMm.toFixed(1)} mm`;
-    card.append(label,track,pct);target.append(card);
+  target.style.gridTemplateColumns=`repeat(${Math.min(forecasts.length,7)},minmax(118px,1fr))`;
+  const live=Boolean(latestOutlook?.source);
+  forecasts.forEach(r=>{
+    const day=dayLabel(r.date,{weekday:'long',month:'long',day:'numeric'});
+    const condition=describeWeather(r.weatherCode);
+    const hi=Number.isFinite(r.hiC)?`${fmt(toFahrenheit(r.hiC))}°`:'—';
+    const lo=Number.isFinite(r.loC)?`${fmt(toFahrenheit(r.loC))}°`:'—';
+    const wind=Number.isFinite(r.windMs)?`${fmt(toMph(r.windMs))} mph`:'—';
+    const chance=precipitationPercent(r.rainChance);
+    const card=document.createElement('button');card.type='button';card.className='daily-chip';
+    card.setAttribute('aria-label',`${day}. ${condition.label}. High ${hi}, low ${lo}. ${live?'Peak hourly precipitation chance':'Estimated wet-day chance'} ${chance}. ${live?'Maximum':'Average'} wind ${wind}. View details.`);
+    card.addEventListener('click',()=>showDayDetails(r));
+    const date=document.createElement('strong');date.className='daily-chip-date';date.textContent=dayLabel(r.date,{weekday:'short',day:'numeric'});
+    const sky=document.createElement('span');sky.className='daily-chip-sky';sky.append(weatherIcon(condition.kind));
+    const name=document.createElement('span');name.className='daily-chip-condition';name.textContent=condition.label;
+    const temps=document.createElement('span');temps.className='daily-chip-temperatures';
+    const high=document.createElement('b');high.className='daily-chip-high';high.textContent=hi;
+    const low=document.createElement('b');low.className='daily-chip-low';low.textContent=lo;
+    temps.append(high,low);
+    const likelihood=document.createElement('span');likelihood.className='daily-chip-likelihood';
+    const pct=document.createElement('b');pct.textContent=chance;
+    const pctLabel=document.createElement('small');pctLabel.textContent=live?'Peak precip':'Wet-day est.';
+    likelihood.append(pct,pctLabel);
+    const breeze=document.createElement('span');breeze.className='daily-chip-wind';breeze.textContent=`Wind ${wind} ${live?'max':'avg'}`;
+    card.title=`${day}: ${condition.label}; high ${hi}, low ${lo}; ${live?'peak hourly precipitation':'estimated wet-day'} chance ${chance}; wind ${wind}`;
+    card.append(date,sky,name,temps,likelihood,breeze);target.append(card);
   });
 }
 function renderOutlook() {
@@ -144,7 +196,12 @@ function renderOutlook() {
   $('rain-value').textContent=fmt(first.rainChance*100);
   $('wind-value').textContent=fmt(toMph(first.windMs));
   $('high-footnote').textContent=`${dayLabel(first.date,{weekday:'short',month:'short',day:'numeric'})} · UTC day`;
-  const rows=info.forecasts.slice(0,selectedDays);renderChart(rows);renderRain(rows);
+  const rows=info.forecasts.slice(0,selectedDays);renderChart(rows);renderDailyCards(rows);
+  $('rain-label').textContent=info.source?'PEAK PRECIP. CHANCE':'WET-DAY ESTIMATE';
+  $('rain-footnote').textContent=info.source?'Highest hourly precipitation chance':'Estimated chance of ≥1 mm';
+  $('wind-label').textContent=info.source?'MAX WIND':'AVERAGE WIND';
+  $('wind-footnote').textContent=info.source?'10-meter daily maximum':'10-meter daily mean';
+  $('daily-strip-note').textContent=info.source?'Icon: most significant modeled condition · %: highest hourly precipitation chance, not forecast confidence.':'Historical fallback: precipitation % is an experimental wet-day estimate; sky conditions are unavailable.';
   $('run-state').textContent=info.source ? '● Live numerical forecast ready' : '● History-based outlook ready';
   $('run-cutoff').textContent=info.source ? 'Live forecast model · Not independently verified by Atmos' : `Last available day: ${info.lastObservedDate} UTC · ${info.historicalDays.toLocaleString()} valid days`;
   $('forecast-data-status').textContent=info.source ? `${info.model} · Retrieved ${new Date(info.retrieved_at_utc || info.issueAt).toLocaleString()} · Model run time unavailable · Source: Open-Meteo` : `Atmos Analog 0.1 · Issued ${new Date(info.issueAt).toLocaleString()} · Archive ${info.historyStart}–${info.lastObservedDate} UTC`;

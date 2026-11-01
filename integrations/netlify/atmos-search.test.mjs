@@ -13,6 +13,7 @@ function fixture({fail = false, centerOnly = false} = {}) {
     calls++;
     if (fail || (centerOnly && calls > 1)) throw new Error('provider offline');
     assert.equal(url.hostname,'api.open-meteo.com');
+    assert.ok(url.searchParams.get('daily').split(',').includes('weather_code'));
     return {ok:true,async json() {return {hourly:{time:['2026-11-01T00:00'],temperature_2m:[9]},daily:{time:[]}};}};
   };
   let clock = 100_000_000;

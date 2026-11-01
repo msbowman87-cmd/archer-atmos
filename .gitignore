@@ -8,3 +8,7 @@ capture/
 data/raw/
 *.grib2
 *.grib
+
+# Local Netlify CLI metadata and installed dependencies
+.netlify/
+node_modules/

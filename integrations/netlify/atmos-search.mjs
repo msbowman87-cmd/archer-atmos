@@ -13,7 +13,7 @@ export const HOURLY = [
   'wind_speed_500hPa', 'geopotential_height_500hPa',
 ];
 export const DAILY = [
-  'temperature_2m_max', 'temperature_2m_min', 'precipitation_sum',
+  'weather_code', 'temperature_2m_max', 'temperature_2m_min', 'precipitation_sum',
   'precipitation_probability_max', 'snowfall_sum',
   'wind_speed_10m_max', 'wind_gusts_10m_max',
 ];
@@ -105,8 +105,9 @@ export function createHandler({store, fetchImpl = fetch, now = () => Date.now(),
       return jsonResponse({error:error.message}, 400, cors);
     }
 
-    const id = createHash('sha256').update(`v1:${lat}:${lon}:${days}:200`).digest('hex');
-    const key = `inputs/v1/${id}`;
+    // v2 ensures previously cached entries include the daily weather code.
+    const id = createHash('sha256').update(`v2:${lat}:${lon}:${days}:200`).digest('hex');
+    const key = `inputs/v2/${id}`;
     const stamp = now();
     let cached;
     try {

@@ -5,7 +5,7 @@
   "version": "0.1.0",
   "description": "Static Atmos website with a shared-cache weather-input function",
   "scripts": {
-    "test:site": "node --check site/app.js && node --check site/live-forecast.mjs && node --check netlify/functions/atmos-search.mjs && node --test site/live-forecast.test.mjs"
+    "test:site": "node --check site/app.js && node --check site/live-forecast.mjs && node --check site/weather-condition.mjs && node --check netlify/functions/atmos-search.mjs && node --test site/*.test.mjs integrations/netlify/*.test.mjs"
   },
   "dependencies": {
     "@netlify/blobs": "11.1.7"
