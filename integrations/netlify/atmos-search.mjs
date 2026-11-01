@@ -156,8 +156,8 @@ export function createHandler({store, fetchImpl = fetch, now = () => Date.now(),
 export default async function handler(request) {
   // The package is resolved from the existing Netlify site on deployment.
   const {getStore} = await import('@netlify/blobs');
-  const store = getStore({name:'atmos-live-search-v1',
-    region:process.env.ATMOS_BLOB_REGION || 'us-east-2'});
+  const store = getStore('atmos-live-search-v1',
+    {region:process.env.ATMOS_BLOB_REGION || 'us-east-2'});
   const origins = (process.env.ATMOS_ALLOWED_ORIGINS || '').split(',')
     .map(s => s.trim()).filter(Boolean);
   return createHandler({store,allowedOrigins:origins})(request);

@@ -5,14 +5,19 @@
 ## Current status
 
 **Search-time weather data:** `atmos/on_demand.py` gathers rich regional model
-inputs for arbitrary coordinates and reuses a short-lived local cache. This is
-research infrastructure, **not yet wired to the public site** or an approved
-calibrated forecast. `atmos/rich_history.py` collects bounded, multi-variable
-historical shards; see [`docs/on-demand-data-architecture.md`](docs/on-demand-data-architecture.md).
+inputs for arbitrary coordinates and reuses a short-lived local cache. The
+`site/` folder contains a staged copy of the existing public website, wired to
+a Netlify Function and shared cache. **The public Netlify site is still a
+separate manually deployed site until its owner connects and deploys this
+GitHub repository.** This is not an approved calibrated forecast.
+`atmos/rich_history.py` collects bounded, multi-variable historical shards;
+see [`docs/on-demand-data-architecture.md`](docs/on-demand-data-architecture.md).
 
-**Deployment-ready components:** `integrations/netlify/atmos-search.mjs` is a
-Netlify Function using site-wide durable shared caching; it still must be
-installed in the **separate existing Netlify website**. The gated
+**Deployment-ready components:** `netlify/functions/atmos-search.mjs` exposes
+the shared-cache search service from `integrations/netlify/atmos-search.mjs`.
+`site/` preserves the current public site's layout and connects its daily
+forecast to the local endpoint. See [`docs/site-netlify-rollout.md`](docs/site-netlify-rollout.md)
+for tests, rollout, rollback, and free-tier caveats. The gated
 `.github/workflows/atmos-archival-backfill.yml` interleaves global monthly
 history cohorts and can upload verified gzip/manifest files to an S3-compatible
 archive once license approval, bucket and secrets are configured. It will
