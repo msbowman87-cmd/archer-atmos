@@ -1,0 +1,158 @@
+name: Atmos Durable Global History Backfill
+on:
+  schedule:
+    - cron: '23 3 * * *'
+  workflow_dispatch:
+    inputs:
+      wave_start:
+        description: 'Optional first wave number (four consecutive waves per dispatch)'
+        required: false
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: atmos-global-backfill
+  cancel-in-progress: false
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    outputs:
+      ready: ${{ steps.cursor.outputs.ready }}
+      start: ${{ steps.cursor.outputs.start }}
+      manual: ${{ steps.cursor.outputs.manual }}
+    steps:
+      - name: Check research approval and persistent storage before any provider calls
+        id: guard
+        env:
+          RESEARCH_APPROVED: ${{ vars.ATMOS_NONCOMMERCIAL_RESEARCH_APPROVED }}
+          ARCHIVE_BUCKET: ${{ vars.ATMOS_ARCHIVE_BUCKET }}
+          ARCHIVE_ACCESS_ID: ${{ secrets.ATMOS_ARCHIVE_ACCESS_KEY_ID }}
+          ARCHIVE_SECRET: ${{ secrets.ATMOS_ARCHIVE_SECRET_ACCESS_KEY }}
+        run: |
+          if [[ "$RESEARCH_APPROVED" == 'true' && -n "$ARCHIVE_BUCKET" && -n "$ARCHIVE_ACCESS_ID" && -n "$ARCHIVE_SECRET" ]]; then
+            echo 'ready=yes' >> "$GITHUB_OUTPUT"
+            echo 'Approved non-commercial research and durable object storage detected.' >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo 'ready=no' >> "$GITHUB_OUTPUT"
+            echo 'Backfill PAUSED: set ATMOS_NONCOMMERCIAL_RESEARCH_APPROVED=true and the archive bucket/access secrets. No weather API calls were made.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Resume from persistent archive cursor or honor manual wave override
+        id: cursor
+        env:
+          GUARD_READY: ${{ steps.guard.outputs.ready }}
+          WAVE_OVERRIDE: ${{ inputs.wave_start }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.ATMOS_ARCHIVE_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ATMOS_ARCHIVE_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ vars.ATMOS_ARCHIVE_REGION || 'us-east-1' }}
+          BUCKET: ${{ vars.ATMOS_ARCHIVE_BUCKET }}
+          ENDPOINT: ${{ vars.ATMOS_ARCHIVE_ENDPOINT }}
+        run: |
+          if [[ "$GUARD_READY" != 'yes' ]]; then
+            echo 'ready=no' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          options=()
+          if [[ -n "$ENDPOINT" ]]; then options+=(--endpoint-url "$ENDPOINT"); fi
+          manual=false
+          if [[ -n "$WAVE_OVERRIDE" ]]; then
+            manual=true
+            cursor="$WAVE_OVERRIDE"
+          else
+            if ! cursor="$(aws s3 cp "s3://${BUCKET}/atmos/rich/v1/grid-5000/cursor.txt" - "${options[@]}" --only-show-errors)"; then
+              echo 'Archive cursor missing or inaccessible. Initialize cursor.txt to 0 before enabling scheduled collection.' >&2
+              exit 1
+            fi
+          fi
+          if [[ ! "$cursor" =~ ^[0-9]+$ ]] || (( cursor % 4 != 0 )); then
+            echo 'Archive cursor must be a non-negative multiple of four' >&2
+            exit 1
+          fi
+          if (( cursor >= 4800 )); then
+            echo 'ready=no' >> "$GITHUB_OUTPUT"
+            echo 'Global 2024-2025 research plan complete; no additional provider calls.' >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          echo 'ready=yes' >> "$GITHUB_OUTPUT"
+          echo "start=$cursor" >> "$GITHUB_OUTPUT"
+          echo "manual=$manual" >> "$GITHUB_OUTPUT"
+  collect:
+    needs: preflight
+    if: needs.preflight.outputs.ready == 'yes'
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        lane: [0, 1, 2, 3]
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.ATMOS_ARCHIVE_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.ATMOS_ARCHIVE_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: ${{ vars.ATMOS_ARCHIVE_REGION || 'us-east-1' }}
+      ATMOS_ARCHIVE_BUCKET: ${{ vars.ATMOS_ARCHIVE_BUCKET }}
+      ATMOS_ARCHIVE_ENDPOINT: ${{ vars.ATMOS_ARCHIVE_ENDPOINT }}
+      ATMOS_WAVE_START: ${{ needs.preflight.outputs.start }}
+      ATMOS_LANE: ${{ matrix.lane }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate local collectors and archival integrity
+        run: python -m unittest discover -s tests -q
+      - name: Compute bounded wave index from the stored archive cursor
+        id: wave
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          base = os.environ.get('ATMOS_WAVE_START','').strip()
+          if not base.isdecimal():raise ValueError('The persistent starting wave is missing')
+          start = int(base)
+          wave = start+int(os.environ['ATMOS_LANE'])
+          if wave < 0 or wave >= 4800:raise ValueError('Wave outside the 2024-2025 backfill plan')
+          with Path(os.environ['GITHUB_OUTPUT']).open('a') as out:
+              out.write(f'index={wave}\n')
+          print('Wave:',wave)
+          PY
+      - name: Collect 25 site-months and package verified archives
+        run: python -m atmos.backfill_wave --wave "${{ steps.wave.outputs.index }}" --per-wave 5 --years 2024,2025
+      - name: Persist compressed CSV and provenance to object storage
+        if: always()
+        run: |
+          if [[ ! -d atmos-backfill/archive ]]; then
+            echo 'No packaged data to archive' >&2
+            exit 1
+          fi
+          options=()
+          if [[ -n "$ATMOS_ARCHIVE_ENDPOINT" ]]; then
+            options+=(--endpoint-url "$ATMOS_ARCHIVE_ENDPOINT")
+          fi
+          aws s3 sync atmos-backfill/archive "s3://${ATMOS_ARCHIVE_BUCKET}/atmos/rich/v1/grid-5000/" "${options[@]}" --no-progress
+      - name: Retain temporary evidence in GitHub Actions
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: atmos-backfill-wave-${{ steps.wave.outputs.index }}-${{ github.run_id }}
+          path: atmos-backfill/archive/
+          if-no-files-found: warn
+          retention-days: 30
+  advance_cursor:
+    needs: [preflight, collect]
+    if: needs.preflight.outputs.manual == 'false'
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.ATMOS_ARCHIVE_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.ATMOS_ARCHIVE_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: ${{ vars.ATMOS_ARCHIVE_REGION || 'us-east-1' }}
+      BUCKET: ${{ vars.ATMOS_ARCHIVE_BUCKET }}
+      ENDPOINT: ${{ vars.ATMOS_ARCHIVE_ENDPOINT }}
+      WAVE_START: ${{ needs.preflight.outputs.start }}
+    steps:
+      - name: Advance persistent cursor only after all four archival lanes succeed
+        run: |
+          options=()
+          if [[ -n "$ENDPOINT" ]]; then options+=(--endpoint-url "$ENDPOINT"); fi
+          next=$(( WAVE_START + 4 ))
+          printf '%s' "$next" | aws s3 cp - "s3://${BUCKET}/atmos/rich/v1/grid-5000/cursor.txt" "${options[@]}" --only-show-errors
+          echo "All four lanes archived; next scheduled wave is $next." >> "$GITHUB_STEP_SUMMARY"

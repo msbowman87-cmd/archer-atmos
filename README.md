@@ -10,6 +10,15 @@ research infrastructure, **not yet wired to the public site** or an approved
 calibrated forecast. `atmos/rich_history.py` collects bounded, multi-variable
 historical shards; see [`docs/on-demand-data-architecture.md`](docs/on-demand-data-architecture.md).
 
+**Deployment-ready components:** `integrations/netlify/atmos-search.mjs` is a
+Netlify Function using site-wide durable shared caching; it still must be
+installed in the **separate existing Netlify website**. The gated
+`.github/workflows/atmos-archival-backfill.yml` interleaves global monthly
+history cohorts and can upload verified gzip/manifest files to an S3-compatible
+archive once license approval, bucket and secrets are configured. It will
+**not** trigger provider downloads if the setup is incomplete. See
+[`docs/live-rollout-and-backfill.md`](docs/live-rollout-and-backfill.md).
+
 
 **Global-first verification:** `atmos/global_validation.py` provides a strict paired
 GFS/ECMWF/equal-blend scorer and uses the 200-point equal-area worldwide research
