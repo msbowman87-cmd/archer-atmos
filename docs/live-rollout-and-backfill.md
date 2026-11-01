@@ -65,16 +65,17 @@ reports `model_issue_time_utc: null` instead of inventing a run time.
 ## 2. Permanent historical archive
 
 The scheduled workflow `.github/workflows/atmos-archival-backfill.yml` is
-deliberately **paused unless both source-use approval and an S3-compatible
-archive are configured**. It does not silently begin large API downloads on a
+deliberately **paused unless both source-use approval and a dedicated Cloudflare
+R2 Standard archive are configured**. In free-tier mode, AWS S3 is rejected;
+the 8 GB guard is based on R2's free allowance. It does not silently begin large API downloads on a
 public repository. Set GitHub Actions repository variables:
 
 | Variable | Value |
 | --- | --- |
 | `ATMOS_NONCOMMERCIAL_RESEARCH_APPROVED` | `true` only after confirming this collection is noncommercial and within provider terms |
-| `ATMOS_ARCHIVE_BUCKET` | Dedicated S3-compatible bucket name |
-| `ATMOS_ARCHIVE_REGION` | Region, e.g. `us-east-1` for AWS S3 or `auto` for R2 |
-| `ATMOS_ARCHIVE_ENDPOINT` | Optional full HTTPS S3-compatible endpoint; omit for AWS S3 |
+| `ATMOS_ARCHIVE_BUCKET` | Dedicated R2 Standard bucket name |
+| `ATMOS_ARCHIVE_REGION` | `auto` (required) |
+| `ATMOS_ARCHIVE_ENDPOINT` | Cloudflare account's `https://ACCOUNT_ID.r2.cloudflarestorage.com` endpoint |
 
 And GitHub Actions repository **secrets** (never commit values or paste them
 into public issue comments):
@@ -93,6 +94,24 @@ If the cursor cannot be read, the workflow fails **before** making provider
 calls. It advances by four only after all four collection lanes and object
 uploads succeed; a failed run is retried from the same starting wave. Manual
 wave overrides do not advance it. There is no live connected archive today.
+
+### Free-tier safeguards
+
+Before each scheduled or manually triggered run, `atmos/free_tier_guard.py`
+lists the bucket's `atmos/` prefix and refuses to collect if its current size
+plus the run's 100 MB maximum output would exceed **8,000,000,000 bytes**.
+Each of four lanes is separately limited to **25 MB** before uploading. A
+persisted daily counter reserves up to **300 provider requests per run**
+(100 site-months times three possible HTTP attempts), with a cap of **1,200
+reserved historical requests per UTC day** across this workflow. Missing
+usage totals, permission failures or corrupt counters stop collection before
+the weather provider is contacted. A failed run keeps its request reservation.
+
+These are application limits, **not an account-wide hard billing cap**.
+Other Cloudflare buckets, the live website and separate GitHub workflows
+are outside these controls; Cloudflare budget alerts do not stop charges.
+Keep R2 usage isolated and review the provider's billing dashboard regularly.
+Neither unlimited worldwide archival nor a guaranteed $0 bill is promised.
 
 Once enabled, the schedule runs daily at 03:23 UTC. It uses four bounded
 lanes, two simultaneously, each collecting five five-location monthly shards:

@@ -16,7 +16,10 @@ installed in the **separate existing Netlify website**. The gated
 `.github/workflows/atmos-archival-backfill.yml` interleaves global monthly
 history cohorts and can upload verified gzip/manifest files to an S3-compatible
 archive once license approval, bucket and secrets are configured. It will
-**not** trigger provider downloads if the setup is incomplete. See
+**not** trigger provider downloads if the setup is incomplete. An additional
+R2-specific guard pauses when the archive approaches 8 GB, when a lane's
+package exceeds 25 MB, or when the day's historical request budget is used.
+See
 [`docs/live-rollout-and-backfill.md`](docs/live-rollout-and-backfill.md).
 
 
