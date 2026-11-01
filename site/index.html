@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071625">
+  <meta name="description" content="Archer Atmos is a free, independent experimental weather forecasting research project built on historical climate data.">
+  <title>Archer Atmos — An independent view of tomorrow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <div class="site-shell">
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="Archer Atmos home">
+        <svg class="brand-mark" viewBox="0 0 68 68" aria-hidden="true">
+          <defs><linearGradient id="brand-a" x1="0" y1="1" x2="1" y2="0"><stop stop-color="#ff8648"/><stop offset="1" stop-color="#ffb05f"/></linearGradient></defs>
+          <path d="M33 6C17.3 6 5.5 18.4 5.5 33.6c0 12.1 7.7 22.5 18.5 26.2" fill="none" stroke="url(#brand-a)" stroke-width="10.2" stroke-linecap="round"/>
+          <path d="M34.6 6C49.7 6.4 61 18.2 61 33.5c0 6.7-2.4 12.7-6.2 17.4" fill="none" stroke="#59c6a3" stroke-width="10.2" stroke-linecap="round"/>
+          <path d="M24 59.8c3.1 1.1 6.2 1.6 9.8 1.6 8.6 0 16.1-3.9 21.1-10.4" fill="none" stroke="#5aacf8" stroke-width="10.2" stroke-linecap="round"/>
+          <path d="M24 38.7 34.3 19l10.3 19.7M28.5 32.1h11.6" fill="none" stroke="#f8faff" stroke-width="4.9" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="brand-name">ARCHER <span>ATMOS</span></span>
+      </a>
+      <nav aria-label="Main navigation"><a href="#forecast">Forecast</a><a href="#method">Our approach</a><a href="#research">Research</a></nav>
+      <span class="header-chip"><span class="live-dot"></span> FREE &amp; INDEPENDENT</span>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <div class="eyebrow"><span class="eyebrow-line"></span> THE WEATHER, REIMAGINED</div>
+          <h1 id="hero-title">A clearer view of <span>what's ahead.</span></h1>
+          <p>Explore live numerical weather forecasts for places around the world, with an experimental historical fallback. Free to use. Open about what the science can—and can't—tell us.</p>
+          <form id="location-form" class="location-search" autocomplete="off">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.7"/><path d="m16 16 5 5"/></svg>
+            <label class="sr-only" for="location-input">City or latitude, longitude</label>
+            <input id="location-input" type="search" placeholder="Search a city or enter lat, lon" required>
+            <button id="search-button" type="submit">Explore <span aria-hidden="true">↗</span></button>
+          </form>
+          <div class="location-examples"><span>Try:</span><button type="button" data-location="grand-view">Grand View, ID</button><button type="button" data-location="seattle">Seattle</button><button type="button" data-location="miami">Miami</button><button type="button" data-location="tokyo">Tokyo</button></div>
+          <p class="hero-caveat"><span aria-hidden="true">ⓘ</span> Experimental research outlook. Not for severe-weather warnings or safety decisions.</p>
+        </div>
+        <div class="hero-art" aria-label="An abstract atmospheric globe graphic">
+          <div class="orbital orbit-one"></div><div class="orbital orbit-two"></div>
+          <div class="globe"><div class="globe-lat latitude-1"></div><div class="globe-lat latitude-2"></div><div class="globe-lat latitude-3"></div><div class="globe-meridian"></div><div class="globe-shine"></div></div>
+          <div class="floating-card signal-card"><span class="signal-icon">◉</span><span><small>OUR SIGNAL</small><strong>History in motion</strong></span></div>
+          <div class="floating-card data-card"><span class="data-label">DATA ARCHIVE</span><strong>1981 — NOW</strong><span class="data-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div>
+          <div class="orbit-note">ATMOS // 01</div>
+        </div>
+      </section>
+
+      <section id="forecast" class="forecast-section" aria-labelledby="forecast-title">
+        <div class="section-heading"><div><div class="small-kicker">THE ATMOS EXPERIENCE</div><h2 id="forecast-title">Your weather outlook<span class="title-dot">.</span></h2></div><div id="forecast-badge" class="status-badge">EXPERIMENTAL MODEL</div></div>
+        <div class="forecast-panel">
+          <div class="forecast-panel-top">
+            <div><div class="panel-overline">FORECAST LOCATION</div><h3 id="place-name">Grand View, Idaho</h3><div id="place-coordinates" class="coordinates">42.9896° N, 116.0934° W</div></div>
+            <div class="run-meta"><span id="run-state"><span class="pulse"></span> Loading archive...</span><small id="run-cutoff">Searching for available historic observations</small></div>
+          </div>
+          <div id="forecast-error" class="error-state" role="alert" hidden></div>
+          <div id="forecast-content" class="forecast-content" aria-live="polite">
+            <div class="metrics">
+              <div class="metric metric-primary"><span class="metric-label">FIRST DAY · HIGH</span><div class="metric-number"><span id="high-value">--</span><sup>°F</sup></div><span id="high-footnote" class="metric-footnote">Awaiting observation history</span></div>
+              <div class="metric"><span class="metric-label">FIRST DAY · LOW</span><div class="metric-number"><span id="low-value">--</span><sup>°F</sup></div><span class="metric-footnote">Estimated overnight minimum</span></div>
+              <div class="metric"><span class="metric-label">CHANCE OF RAIN</span><div class="metric-number"><span id="rain-value">--</span><sup>%</sup></div><span class="metric-footnote">Daily precipitation ≥ 1 mm</span></div>
+              <div class="metric"><span class="metric-label">AVERAGE WIND</span><div class="metric-number"><span id="wind-value">--</span><sup>mph</sup></div><span class="metric-footnote">10-meter daily mean</span></div>
+            </div>
+            <div class="outlook-toolbar"><div><h4>Looking ahead</h4><p>Daily trends—not hourly predictions</p></div><div class="period-options" role="group" aria-label="Forecast range"><button class="selected" type="button" data-days="7" aria-pressed="true">7 days</button><button type="button" data-days="14" aria-pressed="false">14 days</button><button type="button" data-days="30" aria-pressed="false">30 days</button></div></div>
+            <div class="chart-header"><span>DAILY TEMPERATURE · °F</span><div class="chart-legend"><span><i class="legend-high"></i> High</span><span><i class="legend-low"></i> Low</span></div></div>
+            <div class="chart-holder"><svg id="temperature-chart" role="img" aria-label="Daily forecast high and low temperatures" viewBox="0 0 900 218" preserveAspectRatio="none"><text x="450" y="100" text-anchor="middle" fill="#6e8498">Loading history...</text></svg></div>
+            <div class="rain-title">DAILY FORECAST · SELECT A DATE</div><div id="daily-strip" class="daily-strip" aria-label="Daily forecasts; select a date to view details"></div>
+            <div class="forecast-foot"><span id="forecast-data-status">Live numerical forecast or Atmos historical fallback • UTC days</span><span>↗ Outlook uncertainty increases with time</span></div>
+          </div>
+        </div>
+        <div class="warning-line"><span class="warning-icon">!</span><div><strong>Important:</strong> Short-range forecasts use third-party numerical weather models delivered by Open-Meteo; if unavailable, an experimental historical outlook is shown. Neither is an independently validated Atmos forecast or a severe-weather warning service. <a href="#method">How it works</a></div></div>
+      </section>
+
+      <section id="method" class="method-section" aria-labelledby="method-title">
+        <div class="method-intro"><div class="small-kicker">HOW WE THINK ABOUT WEATHER</div><h2 id="method-title">Not just another<br><span>weather app.</span></h2><p>We want to understand weather from the ground up—through historical evidence, transparent methods, and honest measurement.</p><div class="method-pill"><span></span> Transparent third-party model inputs · Atmos verification underway</div></div>
+        <div class="method-steps"><div class="method-step"><div class="step-index">01 <span>↗</span></div><h3>Look back to look ahead.</h3><p>For the experimental fallback, we pull daily historical temperature, rainfall, and wind measurements from NASA POWER, reaching back to 1981 for each selected location.</p></div><div class="method-step"><div class="step-index">02 <span>↗</span></div><h3>Find the local pattern.</h3><p>An experimental seasonal-analog calculation combines the entire available local archive with recent departures from normal. Live short-range forecasts use Open-Meteo numerical weather models; our experimental historical model remains a fallback.</p></div><div class="method-step"><div class="step-index">03 <span>↗</span></div><h3>Show our homework.</h3><p>Forecast dates, information cutoffs, model version, and research limitations stay visible. Our independent global forecasting model is still under development.</p></div></div>
+      </section>
+
+      <section id="research" class="research-section" aria-labelledby="research-title">
+        <div class="research-copy"><div class="small-kicker">THE RESEARCH LAB</div><h2 id="research-title">Built on curiosity.<br><span>Measured with honesty.</span></h2><p>Our historical research tested four forecast lead times on 1,000 unseen dates around the world. These are internal experimental scores against retrospective NASA gridded data—not accuracy percentages, and not validation of this live prototype model.</p><a href="https://power.larc.nasa.gov/docs/services/api/temporal/daily/" target="_blank" rel="noopener noreferrer" class="source-link">Explore our primary historical data source <span>↗</span></a></div>
+        <div class="research-stats"><div class="stat-heading">RESEARCH MODEL · INTERNAL SCORE / 100</div><div class="stat-grid"><div><strong>85.75</strong><span>3-DAY RESEARCH</span></div><div><strong>85.32</strong><span>7-DAY RESEARCH</span></div><div><strong>85.17</strong><span>14-DAY RESEARCH</span></div><div><strong>85.05</strong><span>30-DAY RESEARCH</span></div></div><div class="stat-warning">The historic research model missed every one of 18 heavy-rain events in the holdout sample. Do not use Atmos for weather warnings.</div></div>
+      </section>
+      <section class="bottom-cta"><div><span>ARCHER ATMOS</span><h2>The atmosphere is always changing.<br>So are we.</h2></div><a href="#top">Explore another location <span>↗</span></a></section>
+    </main>
+    <footer><a class="footer-logo" href="#top">ARCHER <span>ATMOS</span></a><span>Independent weather research · Always free</span><span>Prototype version 0.1 · © <span id="year"></span> Archer Atmos</span></footer>
+  </div>
+<!-- Forecast data attribution -->
+<div style="text-align:center;font-size:12px;padding:10px">Live numerical forecast data: <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Open-Meteo</a>. Experimental historical fallback: NASA POWER.</div>
+<dialog id="day-details" class="day-details" aria-labelledby="day-details-title"><div class="day-details-head"><div><small>ATMOS · DAILY FORECAST</small><h2 id="day-details-title">Daily forecast</h2></div><form method="dialog"><button class="day-details-close" aria-label="Close forecast details">×</button></form></div><div id="day-details-grid" class="day-details-grid"></div><p id="day-details-note" class="day-details-note"></p></dialog></body>
+</html>
