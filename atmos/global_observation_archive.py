@@ -69,7 +69,7 @@ def download_year(year,station,out,retries=2):
     url=f"https://noaa-global-hourly-pds.s3.amazonaws.com/{year}/{code}.csv"
     for attempt in range(retries+1):
         try:
-            raw=download(url,12_000_000)
+            raw=download(url,40_000_000)
             rows=extract(raw,year,code)
             if not rows:return {"station":code,"year":year,"status":"no_top_of_hour_records","url":url}
             path=out/f"{year}_{code}.csv.gz"
@@ -78,7 +78,7 @@ def download_year(year,station,out,retries=2):
             return {"station":code,"year":year,"status":"saved","rows":len(rows),
                     "file":str(path),"source_sha256":hashlib.sha256(raw).hexdigest(),
                     "url":url}
-        except (HTTPError,URLError,TimeoutError,ValueError,OSError) as exc:
+        except (HTTPError,URLError,TimeoutError,ValueError,OSError,RuntimeError) as exc:
             if isinstance(exc,HTTPError) and exc.code==404:
                 return {"station":code,"year":year,"status":"missing","error":"404"}
             if attempt==retries:return {"station":code,"year":year,"status":"failed","error":str(exc)[:180]}
