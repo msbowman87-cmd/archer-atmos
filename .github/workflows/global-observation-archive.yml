@@ -1,0 +1,46 @@
+name: Atmos Twenty-Year Global Observation Archive
+on:
+  push:
+    branches: [research/daily-walk-forward-20261101]
+    paths: ['.github/workflows/global-observation-archive.yml']
+  workflow_dispatch:
+    inputs:
+      station_start:
+        description: "0-based start in the deterministic 1,000-station list"
+        required: true
+        default: "0"
+      station_count:
+        description: "Batch size (1-25); use 25 for normal batches"
+        required: true
+        default: "5"
+      year_start:
+        required: true
+        default: "2006"
+      year_end:
+        required: true
+        default: "2025"
+permissions:
+  contents: read
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Pull bounded public observation archive shard
+        run: |
+          python -m atmos.global_observation_archive \
+            --station-start "${{ github.event.inputs.station_start || '0' }}" \
+            --station-count "${{ github.event.inputs.station_count || '5' }}" \
+            --year-start "${{ github.event.inputs.year_start || '2006' }}" \
+            --year-end "${{ github.event.inputs.year_end || '2025' }}"
+      - name: Upload station inventory and raw observation shards
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: atmos-global-archive-${{ github.run_id }}
+          path: global-archive/
+          retention-days: 30
