@@ -44,7 +44,7 @@ def noaa_hourly(station):
         except ValueError:continue
         if stamp.minute!=0 or stamp.second!=0:continue
         value=record.get("TMP","")
-        m=re.fullmatch(r'([+-]?\\d+),(\\d)',value)
+        m=re.fullmatch(r'([+-]?\d+),(\d)',value)
         if not m:continue
         temp=int(m.group(1))/10
         qc=m.group(2)
