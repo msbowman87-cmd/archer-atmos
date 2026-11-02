@@ -27,7 +27,7 @@ def station_manifest():
             lat=float(r["LAT"]);lon=float(r["LON"])
             if len(code)!=11 or r["USAF"]=="999999" or r["WBAN"]=="99999":continue
             if not (-90<=lat<=90 and -180<=lon<=180):continue
-            if r.get("BEGIN","")>"20060101" or r.get("END","")<"20251231":continue
+            if r.get("BEGIN","")>"20060101" or r.get("END","")<"20250101":continue
             if not (r.get("BEGIN","").isdigit() and r.get("END","").isdigit()):continue
             cell=(min(17,int((lat+90)//10)),min(23,int((lon+180)//15)))
             buckets[cell].append({"id":code,"lat":lat,"lon":lon,"name":r.get("STATION NAME",""),
