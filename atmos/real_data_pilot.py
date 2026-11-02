@@ -9,7 +9,7 @@ import csv,io,json,hashlib,re,urllib.request
 from datetime import datetime,timedelta,timezone
 from pathlib import Path
 from urllib.parse import urlencode
-from atmos.walk_forward import run
+from atmos.walk_forward import evaluate
 
 STATIONS=[
  ("denver","72565003017",39.8466,-104.6562),
@@ -100,7 +100,7 @@ def main():
     for path,records in [("forecasts.csv",predictions),("observations.csv",observations)]:
         with (out/path).open("w",newline="") as f:
             writer=csv.DictWriter(f,fieldnames=records[0].keys());writer.writeheader();writer.writerows(records)
-    result=run(predictions,observations,min_training=30,holdout_start="2024-04-01T00:00:00Z")
+    result=evaluate(predictions,observations,minimum_history=30,holdout_start="2024-04-01T00:00:00Z")
     (out/"walk-forward.json").write_text(json.dumps(result,indent=2))
     manifest={"status":"exploratory_real_observation_pilot","source_records":sources,"errors":errors,
         "paired_cases":len(predictions),"training_report_status":result["status"],
@@ -110,5 +110,5 @@ def main():
           "2-minute nominal interval represents point readings, not true hourly aggregates",
           "No claims of production/generalizable skill; no deployment to website"]}
     (out/"manifest.json").write_text(json.dumps(manifest,indent=2))
-    print(json.dumps({**manifest,"raw_mae":result["raw_mae"],"calibrated_mae":result["calibrated_mae"]},indent=2))
+    print(json.dumps({**manifest,"raw_mae":result["raw_mae"],"calibrated_mae":result["corrected_mae"]},indent=2))
 if __name__=="__main__":main()
