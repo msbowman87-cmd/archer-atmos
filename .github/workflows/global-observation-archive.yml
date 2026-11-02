@@ -2,7 +2,7 @@ name: Atmos Twenty-Year Global Observation Archive
 on:
   push:
     branches: [research/daily-walk-forward-20261101]
-    paths: ['.github/workflows/global-observation-archive.yml']
+    paths: ['.github/workflows/global-observation-archive.yml', 'atmos/global_observation_archive.py']
   workflow_dispatch:
     inputs:
       station_start:
