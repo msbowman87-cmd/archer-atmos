@@ -6,7 +6,7 @@ NOT proof that all 20 years contain high-quality measurements.
 
 This collector never invents observations or historical forecast issue times.
 """
-import argparse,csv,gzip,hashlib,io,json,re,time
+import argparse,csv,gzip,hashlib,io,json,re,time,os,tempfile,urllib.request,shutil,random
 from collections import defaultdict
 from pathlib import Path
 from urllib.error import HTTPError,URLError
@@ -64,25 +64,69 @@ def extract(raw,year,code):
                      "precip_aa1_raw":r.get("AA1",""),"source":"NOAA Global Hourly"})
     return rows
 
-def download_year(year,station,out,retries=2):
-    code=station["id"]
-    url=f"https://noaa-global-hourly-pds.s3.amazonaws.com/{year}/{code}.csv"
-    for attempt in range(retries+1):
+def stream_source(url,out_path,limit=250_000_000):
+    """Stream response to disk with a firm 250 MB safety cap and SHA-256."""
+    req=urllib.request.Request(url,headers={"User-Agent":"Archer-Atmos-Research/0.1"})
+    digest=hashlib.sha256();size=0
+    with urllib.request.urlopen(req,timeout=75) as response, open(out_path,"wb") as target:
+        while True:
+            chunk=response.read(1024*1024)
+            if not chunk:break
+            size+=len(chunk)
+            if size>limit:raise ValueError("NOAA source exceeded 250 MB safety ceiling")
+            digest.update(chunk);target.write(chunk)
+        target.flush();os.fsync(target.fileno())
+    return digest.hexdigest()
+
+def download_year(year,station,out,retries=3):
+    code=station["id"];url=f"https://noaa-global-hourly-pds.s3.amazonaws.com/{year}/{code}.csv"
+    path=out/f"{year}_{code}.csv.gz"
+    if path.exists():
         try:
-            raw=download(url,40_000_000)
-            rows=extract(raw,year,code)
-            if not rows:return {"station":code,"year":year,"status":"no_top_of_hour_records","url":url}
-            path=out/f"{year}_{code}.csv.gz"
-            with gzip.open(path,"wt",newline="") as f:
-                w=csv.DictWriter(f,fieldnames=rows[0].keys());w.writeheader();w.writerows(rows)
-            return {"station":code,"year":year,"status":"saved","rows":len(rows),
-                    "file":str(path),"source_sha256":hashlib.sha256(raw).hexdigest(),
-                    "url":url}
-        except (HTTPError,URLError,TimeoutError,ValueError,OSError,RuntimeError) as exc:
+            with gzip.open(path,"rt") as f:
+                first=f.readline()
+                if "station_id" in first and any(True for _ in f):
+                    return {"station":code,"year":year,"status":"reused","file":str(path)}
+        except (OSError,EOFError,UnicodeError):pass
+        path.unlink(missing_ok=True)
+    for attempt in range(retries+1):
+        source=None;destination=None
+        try:
+            with tempfile.NamedTemporaryFile(prefix="atmos-source-",suffix=".csv",delete=False) as t:source=t.name
+            digest=stream_source(url,source)
+            with open(source,"r",encoding="utf-8-sig",newline="") as incoming:
+                reader=csv.DictReader(incoming)
+                columns=["station_id","time_utc","temperature_raw","dewpoint_raw","wind_raw",
+                         "pressure_raw","visibility_raw","precip_aa1_raw","source"]
+                with tempfile.NamedTemporaryFile(prefix="atmos-output-",suffix=".csv.gz",dir=out,delete=False) as t:
+                    destination=t.name
+                count=0;seen=set()
+                with gzip.open(destination,"wt",newline="") as target:
+                    writer=csv.DictWriter(target,fieldnames=columns);writer.writeheader()
+                    for r in reader:
+                        moment=r.get("DATE","")
+                        if not moment.startswith(str(year)) or len(moment)<16 or moment[14:16]!="00":continue
+                        if moment in seen:continue
+                        seen.add(moment)
+                        writer.writerow({"station_id":code,"time_utc":moment,"temperature_raw":r.get("TMP",""),
+                            "dewpoint_raw":r.get("DEW",""),"wind_raw":r.get("WND",""),
+                            "pressure_raw":r.get("SLP",""),"visibility_raw":r.get("VIS",""),
+                            "precip_aa1_raw":r.get("AA1",""),"source":"NOAA Global Hourly"})
+                        count+=1
+            if not count:
+                return {"station":code,"year":year,"status":"no_top_of_hour_records","url":url}
+            os.replace(destination,path);destination=None
+            return {"station":code,"year":year,"status":"saved","rows":count,
+                    "file":str(path),"source_sha256":digest,"url":url}
+        except (HTTPError,URLError,TimeoutError,ValueError,OSError,RuntimeError,UnicodeError) as exc:
             if isinstance(exc,HTTPError) and exc.code==404:
                 return {"station":code,"year":year,"status":"missing","error":"404"}
-            if attempt==retries:return {"station":code,"year":year,"status":"failed","error":str(exc)[:180]}
-            time.sleep(1+attempt)
+            if attempt==retries:
+                return {"station":code,"year":year,"status":"failed","error":str(exc)[:180]}
+            time.sleep(min(20,2**attempt+random.random()))
+        finally:
+            if source:Path(source).unlink(missing_ok=True)
+            if destination:Path(destination).unlink(missing_ok=True)
     raise AssertionError("unreachable")
 
 def main():
