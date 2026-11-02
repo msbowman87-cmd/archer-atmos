@@ -35,11 +35,21 @@ def registry():
     for code,lat,lon in candidates:
         bucket=(int((lat+90)//10),int((lon+180)//15))
         cells.setdefault(bucket,[]).append((code,lat,lon))
+    # Round-robin through geographic cells: even if <100 occupied cells,
+    # draw second and later distinct stations without clustering first.
     selected=[]
-    for cell in sorted(cells):
-        values=sorted(cells[cell])
-        selected.append(values[0])
-    return sorted(selected,key=lambda x:(x[1],x[2]))[:MAX_STATIONS]
+    keys=sorted(cells)
+    for bucket in keys:cells[bucket].sort()
+    depth=0
+    while len(selected)<MAX_STATIONS:
+        added=0
+        for key in keys:
+            if len(cells[key])>depth:
+                selected.append(cells[key][depth]);added+=1
+                if len(selected)==MAX_STATIONS:break
+        if not added:break
+        depth+=1
+    return selected
 
 def main():
     selected=registry()
