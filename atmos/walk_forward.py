@@ -5,7 +5,7 @@ Truth CSV: location_id,available_at_utc,valid_start_utc,valid_end_utc,metric,uni
 """
 import argparse,csv,json,heapq
 from collections import defaultdict
-from datetime import datetime,timezone
+from datetime import datetime,timezone,timedelta
 from math import isfinite
 from pathlib import Path
 
@@ -50,25 +50,38 @@ def evaluate(forecasts,observations,*,minimum_history=30,holdout_start=None):
         key=tuple(item[x] for x in ['location_id','valid_start_utc','valid_end_utc','metric','unit'])
         if key in truth:pairs.append((item,truth[key]))
     pairs.sort(key=lambda p:(p[0]['issue_at_utc'],p[0]['location_id'],p[0]['model']))
-    # A min-heap of future-released verification outcomes is maintained for
-    # every model / variable / unit. No holdout outcome enters an earlier day.
+    # Recalibrate exactly once per UTC day using all verified data available
+    # strictly before its midnight cutoff, never intra-day updates.
     pending=defaultdict(list);totals=defaultdict(lambda:[0,0.0]);rows=[]
     cutoff=timestamp(holdout_start) if holdout_start else None
     for i,(prediction,actual) in enumerate(pairs):
         group=(prediction['model'],prediction['metric'],prediction['unit'])
-        queue=pending[group];aggregate=totals[group]
-        while queue and queue[0][0]<=prediction['issue_at_utc']:
-            _,_,correction=heapq.heappop(queue)
-            aggregate[0]+=1;aggregate[1]+=correction
-        count=aggregate[0]
-        bias=aggregate[1]/count if count>=minimum_history else 0.0
-        if cutoff is None or prediction['issue_at_utc']>=cutoff:
-            rows.append({'issued_at':prediction['issue_at_utc'].isoformat(),'location_id':prediction['location_id'],
-                         'model':prediction['model'],'metric':prediction['metric'],'training_cases':count,
-                         'raw_abs_error':abs(prediction['value']-actual['value']),
-                         'corrected_abs_error':abs(prediction['value']+bias-actual['value']),
-                         'correction':bias})
-        heapq.heappush(queue,(actual['available_at_utc'],i,actual['value']-prediction['value']))
+        heapq.heappush(pending[group],(actual['available_at_utc'],i,actual['value']-prediction['value']))
+    # Each day's snapshots must not ingest forecast outcomes that were not
+    # issued before the day's cutoff: remove them from the admission pool.
+    pending=defaultdict(list);totals=defaultdict(lambda:[0,0.0])
+    index=0
+    for day in sorted({p['issue_at_utc'].date() for p,_ in pairs}):
+        start=datetime.combine(day,datetime.min.time(),tzinfo=timezone.utc)
+        while index<len(pairs) and pairs[index][0]['issue_at_utc']<start:
+            pred,obs=pairs[index]
+            group=(pred['model'],pred['metric'],pred['unit'])
+            heapq.heappush(pending[group],(obs['available_at_utc'],index,obs['value']-pred['value']))
+            index+=1
+        for group,queue in pending.items():
+            while queue and queue[0][0]<=start:
+                _,_,correction=heapq.heappop(queue)
+                totals[group][0]+=1;totals[group][1]+=correction
+        for prediction,actual in (p for p in pairs if p[0]['issue_at_utc'].date()==day):
+            group=(prediction['model'],prediction['metric'],prediction['unit'])
+            count,total=totals[group]
+            bias=total/count if count>=minimum_history else 0.0
+            if cutoff is None or prediction['issue_at_utc']>=cutoff:
+                rows.append({'issued_at':prediction['issue_at_utc'].isoformat(),'location_id':prediction['location_id'],
+                             'model':prediction['model'],'metric':prediction['metric'],'training_cases':count,
+                             'raw_abs_error':abs(prediction['value']-actual['value']),
+                             'corrected_abs_error':abs(prediction['value']+bias-actual['value']),
+                             'correction':bias})
     eligible=[r for r in rows if r['training_cases']>=minimum_history]
     mean=lambda name:sum(r[name] for r in eligible)/len(eligible) if eligible else None
     raw=mean('raw_abs_error');adjusted=mean('corrected_abs_error')
