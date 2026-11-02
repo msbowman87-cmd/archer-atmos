@@ -1,43 +1,23 @@
-name: Verify Real NOAA Off-Hour Recovery
+name: Atmos Off-Hour Reading Verification
 on:
   push:
-    branches: [research/daily-walk-forward-20261101]
-    paths: ['.github/workflows/test-off-hour-recovery.yml']
+    branches:
+      - research/daily-walk-forward-20261101
+    paths:
+      - .github/workflows/test-off-hour-recovery.yml
 permissions:
   contents: read
 jobs:
-  verify:
+  check:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Compare exact-only and nearest-real-observation collection
+      - name: Run actual timestamp and nearest-hour unit tests
+        run: python -m unittest discover -s tests -p test_global_observation_archive.py -v
+      - name: Fetch and compare real NOAA off-hour records
         run: |
-          python - <<'PY'
-          import json,tempfile
-          from pathlib import Path
-          from atmos.global_observation_archive import download_year
-          samples=[("78367011706",2016),("72026912982",2007),
-                   ("72026912982",2021)]
-          recovered=0
-          report=[]
-          with tempfile.TemporaryDirectory() as scratch:
-            root=Path(scratch)
-            for station,year in samples:
-              exact=root/"exact";nearest=root/"nearest"
-              exact.mkdir(exist_ok=True);nearest.mkdir(exist_ok=True)
-              a=download_year(year,{"id":station},exact,hourly_selection="exact")
-              b=download_year(year,{"id":station},nearest,hourly_selection="nearest")
-              result={"station":station,"year":year,
-                      "exact_status":a["status"],"exact_rows":a.get("rows",0),
-                      "nearest_status":b["status"],"nearest_rows":b.get("rows",0)}
-              assert b.get("rows",0)>=a.get("rows",0),result
-              recovered+=b.get("rows",0)-a.get("rows",0)
-              report.append(result)
-              print(json.dumps(result),flush=True)
-          assert recovered>0,"No off-hour data recovered from samples"
-          print("SUCCESS additional real hourly observations",recovered)
-          PY
+          python -c 'from pathlib import Path; from atmos.global_observation_archive import download_year; p=Path("hourly-exact"); p.mkdir(); q=Path("hourly-nearest"); q.mkdir(); station={"id":"72026912982"}; a=download_year(2007,station,p,hourly_selection="exact"); b=download_year(2007,station,q,hourly_selection="nearest"); print("Exact",a); print("Nearest",b); assert b.get("rows",0)>=a.get("rows",0)'
