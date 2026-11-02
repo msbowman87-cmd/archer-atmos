@@ -30,7 +30,7 @@ def download(url,limit=15_000_000):
 
 def noaa_hourly(station):
     _,code,_,_=station
-    url=f"https://noaa-isd-pds.s3.amazonaws.com/{YEAR}/{code}.csv"
+    url=f"https://noaa-global-hourly-pds.s3.amazonaws.com/{YEAR}/{code}.csv"
     raw=download(url)
     digest=hashlib.sha256(raw).hexdigest()
     reader=csv.DictReader(io.StringIO(raw.decode('utf-8-sig')))
