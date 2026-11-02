@@ -54,14 +54,14 @@ def evaluate(forecasts,observations,*,minimum_history=30,holdout_start=None):
     # strictly before its midnight cutoff, never intra-day updates.
     pending=defaultdict(list);totals=defaultdict(lambda:[0,0.0]);rows=[]
     cutoff=timestamp(holdout_start) if holdout_start else None
-    for i,(prediction,actual) in enumerate(pairs):
-        group=(prediction['model'],prediction['metric'],prediction['unit'])
-        heapq.heappush(pending[group],(actual['available_at_utc'],i,actual['value']-prediction['value']))
     # Each day's snapshots must not ingest forecast outcomes that were not
     # issued before the day's cutoff: remove them from the admission pool.
     pending=defaultdict(list);totals=defaultdict(lambda:[0,0.0])
     index=0
-    for day in sorted({p['issue_at_utc'].date() for p,_ in pairs}):
+    daily=defaultdict(list)
+    for pair in pairs:
+        daily[pair[0]['issue_at_utc'].date()].append(pair)
+    for day in sorted(daily):
         start=datetime.combine(day,datetime.min.time(),tzinfo=timezone.utc)
         while index<len(pairs) and pairs[index][0]['issue_at_utc']<start:
             pred,obs=pairs[index]
@@ -72,7 +72,7 @@ def evaluate(forecasts,observations,*,minimum_history=30,holdout_start=None):
             while queue and queue[0][0]<=start:
                 _,_,correction=heapq.heappop(queue)
                 totals[group][0]+=1;totals[group][1]+=correction
-        for prediction,actual in (p for p in pairs if p[0]['issue_at_utc'].date()==day):
+        for prediction,actual in daily[day]:
             group=(prediction['model'],prediction['metric'],prediction['unit'])
             count,total=totals[group]
             bias=total/count if count>=minimum_history else 0.0
