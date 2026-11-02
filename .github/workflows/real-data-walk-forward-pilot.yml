@@ -19,6 +19,9 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_walk_forward.py' -v
       - name: Download genuine archived forecasts and station observations, then replay
         run: python -m atmos.real_data_pilot
+      - name: Print source collection diagnostics
+        if: failure()
+        run: cat pilot-results/collection-status.json || true
       - name: Archive real-source manifest and scored output
         if: always()
         uses: actions/upload-artifact@v4
