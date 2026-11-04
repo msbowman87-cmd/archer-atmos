@@ -5,7 +5,8 @@ on:
       - research/daily-walk-forward-20261101
     paths:
       - 'atmos/temporal_provenance.py'
-      - 'atmos/temporal_readiness.py'
+      - 'atmos/observation_walk_forward.py'
+      - 'tests/test_observation_walk_forward.py'
       - 'tests/test_temporal_provenance.py'
       - '.github/workflows/research-temporal-provenance.yml'
   workflow_dispatch:
@@ -21,4 +22,4 @@ jobs:
         with:
           python-version: '3.12'
       - name: Run temporal provenance tests
-        run: python -m unittest tests.test_temporal_provenance -v
+        run: python -m unittest tests.test_temporal_provenance tests.test_observation_walk_forward -v
