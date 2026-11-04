@@ -3,9 +3,13 @@ on:
   push:
     branches: [research/daily-walk-forward-20261101]
     paths: ['.github/workflows/replacement-streaming-995.yml']
+  workflow_dispatch:
 permissions:
   contents: write
   actions: read
+concurrency:
+  group: atmos-v2-global-observations
+  cancel-in-progress: false
 jobs:
   collect:
     name: Actual-hour shard ${{ matrix.shard }}
