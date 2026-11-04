@@ -40,7 +40,10 @@ class VerifiedPairingTests(unittest.TestCase):
 
     def test_declared_issue_after_measurement_is_excluded(self):
         f,o,a=data(1)
-        f[0]["issue_at_utc"]=o[0]["observed_at_utc"]
+        o[0]["observed_at_utc"]="2024-01-01T11:50:00+00:00"
+        a[0]["observed_at_utc"]=o[0]["observed_at_utc"]
+        a[0]["available_at_utc"]="2024-01-01T12:20:00+00:00"
+        f[0]["issue_at_utc"]="2024-01-01T11:55:00+00:00"
         r=build(f,o,a,minimum_history=1)
         self.assertEqual(r["status"],"blocked_no_verified_pairs")
         self.assertEqual(r["rejection_reasons"]["forecast_issued_after_measurement"],1)
