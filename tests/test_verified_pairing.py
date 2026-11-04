@@ -18,7 +18,7 @@ def data(n=5):
             "metric":"temp_2m","unit":"C","value":"12",
             "source_issue_verified":"true","source_issue_reference":"model-archive-cycle-id"})
         observations.append({"station_id":"site123","hour_utc":stamp(hour),
-            "observed_at_utc":stamp(observed),"temperature_c":"10"})
+            "observed_at_utc":stamp(observed),"temperature_c":"10", "temperature_qc":"1"})
         availability.append({"station_id":"site123","observed_at_utc":stamp(observed),
             "available_at_utc":stamp(observed+timedelta(hours=2)),
             "availability_verified":"true","verification_reference":"archived-available-since"})
@@ -69,6 +69,13 @@ class VerifiedPairingTests(unittest.TestCase):
         o[0]["observed_at_utc"]="2024-01-01T12:40:00+00:00"
         with self.assertRaises(ValueError):
             build(f,o,a)
+
+    def test_only_gross_limits_qc_cannot_enter_verified_training(self):
+        f,o,a=data(1)
+        o[0]["temperature_qc"]="0"
+        r=build(f,o,a)
+        self.assertEqual(r["status"],"blocked_no_verified_pairs")
+        self.assertEqual(r["rejection_reasons"]["metric_not_full_noaa_qc"],1)
 
     def test_qc_rejected_measurements_do_not_train(self):
         f,o,a=data(1);o[0]["temperature_c"]=""
