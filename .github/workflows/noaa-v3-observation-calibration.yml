@@ -1,0 +1,36 @@
+name: Atmos NOAA v3 Observation Calibration Pilot
+on:
+  push:
+    branches: [research/daily-walk-forward-20261101]
+    paths:
+      - 'atmos/noaa_v3_observation_calibration.py'
+      - '.github/workflows/noaa-v3-observation-calibration.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  shard-00-exploratory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Download archived quality shard and release manifest
+        run: |
+          mkdir -p input results
+          gh release download atmos-noaa-quality-2006-2025-v3 --repo msbowman87-cmd/archer-atmos --pattern 'atmos-quality-shard-00.tar' --pattern 'atmos-quality-manifest.json' --dir input
+          sha256sum input/atmos-quality-shard-00.tar > results/download-sha256.txt
+      - name: Exploratory 24/48/72-hour walk-forward evaluation
+        run: |
+          python -m atmos.noaa_v3_observation_calibration --archive input/atmos-quality-shard-00.tar --shard 0 --assumed-lag-hours 72 --output results/shard-00-report.json
+      - name: Preserve pilot evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: atmos-noaa-v3-observation-calibration-shard-00
+          path: results/
+          retention-days: 30
