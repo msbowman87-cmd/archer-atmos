@@ -32,7 +32,7 @@ class FullWalkForwardTests(unittest.TestCase):
             self.assertEqual(report["accepted_rows_by_variable"]["temperature_c"], 45)
             self.assertEqual(report["station_counts_by_variable"]["temperature_c"], 1)
             self.assertIn("2006", report["metrics"]["temperature_c"]["24"]["by_year"])
-            self.assertGreater(report["horizons"]["24"]["by_year"]["2006"]["cases"], 0)
+            self.assertGreater(report["metrics"]["temperature_c"]["24"]["by_year"]["2006"]["cases"], 0)
 
 
 if __name__ == "__main__":
