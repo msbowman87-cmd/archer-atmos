@@ -25,6 +25,16 @@ REQUIRED_FORECAST={"station_id","model","issue_at_utc","valid_hour_utc",
                    "metric","unit","value","source_issue_reference","source_issue_verified"}
 REQUIRED_AVAILABILITY={"station_id","observed_at_utc","available_at_utc",
                        "verification_reference","availability_verified"}
+# NOAA 1/5 = passed all QC; 0/4 = only gross-limits checks. The v3
+# research archive retains gross-limits measurements, but the strict
+# chronological training adapter deliberately requires full QC.
+FULL_QC=frozenset({"1","5"})
+QC_FIELDS={"temp_2m":("temperature_qc",),
+           "dewpoint_2m":("dewpoint_qc",),
+           "relative_humidity":("temperature_qc","dewpoint_qc"),
+           "wind_speed":("wind_speed_qc",),
+           "sea_level_pressure":("sea_level_pressure_qc",),
+           "visibility":("visibility_qc",)}
 
 def validated_forecast(row):
     if not REQUIRED_FORECAST.issubset(row):raise ValueError("Forecast lacks actual issue-cycle provenance fields")
@@ -81,6 +91,8 @@ def build(forecasts,normalized,availability,*,minimum_history=30,holdout_start=N
             if not prediction_index.get(key):continue
             if raw in ("",None):
                 reasons["unusable_observation_metric"]+=len(prediction_index[key]);continue
+            if any(row.get(q) not in FULL_QC for q in QC_FIELDS[metric]):
+                reasons["metric_not_full_noaa_qc"]+=len(prediction_index[key]);continue
             eligible_hours+=1
             if available is None:
                 reasons["no_verified_observation_availability"]+=len(prediction_index[key]);continue
