@@ -10,11 +10,24 @@ import gzip
 import json
 import tarfile
 import tempfile
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from atmos.observation_walk_forward import evaluate, load_rows
 from atmos.temporal_provenance import utc
+
+
+def parse_noaa_hour_utc(value):
+    """NOAA-normalized hour_utc has UTC semantics even without an offset.
+
+    Never assume naive timestamps from unrelated input sources are UTC.
+    """
+    if not value:
+        raise ValueError("Missing NOAA UTC hour")
+    parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return utc(parsed.isoformat())
 
 
 def convert_archive(archive, destination, shard, assumed_lag_hours):
@@ -40,7 +53,7 @@ def convert_archive(archive, destination, shard, assumed_lag_hours):
                     for record in reader:
                         if not record["temperature_c"] or record["temperature_qc"] not in {"0","1","4","5"}:
                             continue
-                        observed = utc(record["hour_utc"])
+                        observed = parse_noaa_hour_utc(record["hour_utc"])
                         writer.writerow({
                             "station_id": record["station_id"],
                             "observed_at_utc": observed.isoformat(),
