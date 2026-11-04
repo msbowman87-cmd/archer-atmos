@@ -4,6 +4,7 @@ on:
     branches: [research/daily-walk-forward-20261101]
     paths:
       - 'atmos/noaa_v3_full_walk_forward.py'
+      - 'tests/test_noaa_v3_full_walk_forward.py'
       - '.github/workflows/noaa-v3-full-calibration.yml'
   workflow_dispatch:
 permissions:
@@ -24,6 +25,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Verify calibration logic
+        run: python -m unittest tests.test_noaa_v3_full_walk_forward -v
       - name: Download NOAA v3 quality shard
         run: |
           mkdir -p input results
