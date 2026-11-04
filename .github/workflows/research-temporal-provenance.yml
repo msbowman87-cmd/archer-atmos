@@ -1,0 +1,24 @@
+name: Atmos Research Temporal Provenance Tests
+on:
+  push:
+    branches:
+      - research/daily-walk-forward-20261101
+    paths:
+      - 'atmos/temporal_provenance.py'
+      - 'atmos/temporal_readiness.py'
+      - 'tests/test_temporal_provenance.py'
+      - '.github/workflows/research-temporal-provenance.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  temporal-provenance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run temporal provenance tests
+        run: python -m unittest tests.test_temporal_provenance -v
