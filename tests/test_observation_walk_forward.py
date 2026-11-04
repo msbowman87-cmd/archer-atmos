@@ -46,7 +46,7 @@ class ObservationWalkForwardTests(unittest.TestCase):
     def test_reject_missing_availability(self):
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder) / "rows.csv"
-            path.write_text("station_id,observed_at_utc,available_at_utc,temperature_c\\ns1,2023-01-01T00:00:00Z,,5\\n")
+            path.write_text("station_id,observed_at_utc,available_at_utc,temperature_c\ns1,2023-01-01T00:00:00Z,,5\n")
             with self.assertRaisesRegex(ValueError, "Invalid observation"):
                 load_rows(path)
 
