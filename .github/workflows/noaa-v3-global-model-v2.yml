@@ -54,7 +54,7 @@ jobs:
       - name: Fit global V2 with rainfall and visibility specialization; exclude four stations
         run: |
           printf -v SHARD '%02d' ${{ matrix.shard }}
-          python -m atmos.noaa_v3_global_pooled_model \
+          python -m atmos.noaa_v3_global_model_v2 \
             --archive "input/atmos-quality-shard-${SHARD}.tar" \
             --shard ${{ matrix.shard }} \
             --metadata metadata/atmos-stations.csv \
@@ -92,7 +92,7 @@ jobs:
           gh run download 41961101416 --repo msbowman87-cmd/archer-atmos --name atmos-1000-station-coordinate-map --dir metadata
       - name: Freeze global V2 and test Boise, Anchorage, Miami, Wellington
         run: |
-          python -m atmos.noaa_v3_global_pooled_model \
+          python -m atmos.noaa_v3_global_model_v2 \
             --input input \
             --metadata metadata/atmos-stations.csv \
             --output final
