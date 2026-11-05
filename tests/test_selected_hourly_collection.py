@@ -1,5 +1,5 @@
 import importlib.util,pathlib,sys,unittest,tempfile,hashlib,json
-from unittest.mock import patch
+from unittest.mock import patch,MagicMock
 scripts=pathlib.Path(__file__).resolve().parents[1]/'scripts';sys.path.insert(0,str(scripts))
 import collect_selected_hourly as c
 
@@ -34,6 +34,16 @@ class CollectionTests(unittest.TestCase):
         s=dict(self.station(),provider='ECCC')
         data=json.dumps(dict(numberMatched=2,features=[dict(properties={})])).encode()
         with self.assertRaises(ValueError):c.audit_bytes(data,s,'2016-01')
+    def test_transient_http_error_retried(self):
+        import urllib.error
+        error=urllib.error.HTTPError('https://example.org',429,'Too Many Requests',{'Retry-After':'0'},None)
+        response=MagicMock();response.__enter__.return_value=response;response.read.return_value=b'raw';response.status=200;response.url='https://example.org'
+        with patch.object(c.urllib.request,'urlopen',side_effect=[error,response]) as request,patch.object(c.time,'sleep'):
+            data,status,url,attempts=c.fetch_raw('https://example.org','IEM_ASOS')
+        self.assertEqual((data,status,attempts),(b'raw',200,2));self.assertEqual(request.call_count,2)
+    def test_empty_period_not_transient(self):
+        self.assertFalse(c.retryable_error('no ECCC observations returned'))
+        self.assertTrue(c.retryable_error('IncompleteRead(100 bytes read)'))
     def test_no_tasks_outside_source_period(self):
         s=dict(self.station(),history_start='2020-01-01',history_end='2021-12-31')
         self.assertEqual([t[1] for t in c.tasks([s],2016,2025)],['2020','2021'])

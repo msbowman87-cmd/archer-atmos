@@ -3,14 +3,17 @@ on:
   workflow_dispatch:
     inputs:
       batches:
-        description: Maximum new raw NOAA station-year batches (1-100)
-        default: '10'
+        description: Maximum new batches per provider (1-120)
+        default: '100'
         required: true
   push:
     branches:
       - research/daily-walk-forward-20261101
     paths:
       - .github/workflows/atmos-station-inventory.yml
+concurrency:
+  group: atmos-hourly-research-collection
+  cancel-in-progress: false
 permissions:
   contents: read
   actions: read
@@ -18,7 +21,7 @@ jobs:
   select:
     if: github.ref == 'refs/heads/research/daily-walk-forward-20261101'
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -35,22 +38,43 @@ jobs:
         run: |
           prior=$(gh api "repos/$GH_REPO/actions/artifacts?name=atmos-multi-provider-checkpoint&per_page=100" --jq '[.artifacts[] | select(.expired == false and .workflow_run.head_branch == "research/daily-walk-forward-20261101")] | sort_by(.created_at) | reverse | .[0].workflow_run.id // empty')
           if [ -n "$prior" ]; then
-            gh run download "$prior" --name atmos-multi-provider-checkpoint --dir research/station-selection-20261105
+            gh run download "$prior" --name atmos-multi-provider-checkpoint --dir "$RUNNER_TEMP/atmos-checkpoint"
+            cp -a "$RUNNER_TEMP/atmos-checkpoint/." research/station-selection-20261105/
+          else
+            echo "No verified collection checkpoint available; stopping instead of substituting a new station list." >&2
+            exit 1
           fi
-      - name: Retrieve and normalize inventories
+      - name: Verify frozen station selection
+        id: verify
         run: |
-          python scripts/acquire_station_inventories.py --out research/station-selection-20261105/input
-          python scripts/normalize_station_inventories.py --input research/station-selection-20261105/input --out research/station-selection-20261105
-          python scripts/select_multi_provider_stations.py --input research/station-selection-20261105/normalized.csv --out research/station-selection-20261105
           python scripts/verify_station_manifest.py --input research/station-selection-20261105
-      - name: Collect bounded raw observation batches
+      - name: Collect NOAA station-year batches
         env:
-          BATCHES: ${{ inputs.batches || '10' }}
+          BATCHES: ${{ inputs.batches || '100' }}
         run: |
-          python -c 'import os; n=int(os.environ["BATCHES"]); assert 1 <= n <= 100'
+          python -c 'import os; n=int(os.environ["BATCHES"]); assert 1 <= n <= 120'
           python scripts/collect_selected_hourly.py --manifest research/station-selection-20261105/stations.csv --out research/station-selection-20261105/observations --providers NOAA_GHCNh --max-batches "$BATCHES" --workers 2
+      - name: Collect ECCC station-month batches
+        if: ${{ !cancelled() && steps.verify.outcome == 'success' }}
+        env:
+          BATCHES: ${{ inputs.batches || '100' }}
+        run: |
+          python -c 'import os; n=int(os.environ["BATCHES"]); assert 1 <= n <= 120'
+          python scripts/collect_selected_hourly.py --manifest research/station-selection-20261105/stations.csv --out research/station-selection-20261105/observations --providers ECCC --max-batches "$BATCHES" --workers 2
+      - name: Collect IEM station-month batches
+        if: ${{ !cancelled() && steps.verify.outcome == 'success' }}
+        env:
+          BATCHES: ${{ inputs.batches || '100' }}
+        run: |
+          python -c 'import os; n=int(os.environ["BATCHES"]); assert 1 <= n <= 120'
+          python scripts/collect_selected_hourly.py --manifest research/station-selection-20261105/stations.csv --out research/station-selection-20261105/observations --providers IEM_ASOS --max-batches "$BATCHES" --workers 1
+      - name: Verify checkpoint integrity and summarize progress
+        if: ${{ !cancelled() && steps.verify.outcome == 'success' }}
+        run: |
+          python scripts/summarize_hourly_collection.py --manifest research/station-selection-20261105/stations.csv --out research/station-selection-20261105/observations --verify-hashes --report research/station-selection-20261105/collection_progress.json
+          cp docs/atmos-hourly-collection.md research/station-selection-20261105/DATA_ATTRIBUTION.md
       - uses: actions/upload-artifact@v4
-        if: always()
+        if: ${{ always() && steps.verify.outcome == 'success' }}
         with:
           name: atmos-multi-provider-checkpoint
           path: research/station-selection-20261105/

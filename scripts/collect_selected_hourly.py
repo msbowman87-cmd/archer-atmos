@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Resumable station/year (NOAA) or station/month (ECCC/IEM) raw collection.
 No interpolation, unit conversion, quality filtering, or timestamp rewriting.
-Successful files are resumed only after SHA256 and manifest identity checks.
+Successful files are resumed only after source-URL and SHA256 checks.
 """
-import argparse,calendar,collections,concurrent.futures,csv,datetime,hashlib,io,itertools,json,pathlib,re,urllib.parse,urllib.request
+import argparse,calendar,collections,concurrent.futures,csv,datetime,hashlib,http.client,io,itertools,json,pathlib,re,time,urllib.error,urllib.parse,urllib.request
 from acquire_station_inventories import NOAA,IEM
 
 def tasks(stations,start,end):
@@ -81,6 +81,24 @@ def audit_bytes(data,s,period):
     if not count or not value_counts:raise ValueError('no measured observation rows')
     return dict(records=count,unique_hours_with_any_value=len(unique_hours),first_timestamp=first,last_timestamp=last,nonmissing_by_field=dict(value_counts),source_quality_flag_counts=dict(flags),source_columns=headers,notes='Counts retain source cadence and flags. Unique hours are bins with any field, not per-variable completeness. Flags are not interpreted as pass/fail.')
 
+def retryable_error(error):
+    return any(x in str(error) for x in ('HTTP Error 429','HTTP Error 500','HTTP Error 502','HTTP Error 503','HTTP Error 504','IncompleteRead','timed out','Connection reset','Remote end closed'))
+
+def fetch_raw(url,provider):
+    # IEM requests are deliberately serialized by the workflow and paced here.
+    for attempt in range(3):
+        if provider=='IEM_ASOS':time.sleep(3)
+        try:
+            with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'Atmos-research-raw-collector/1.0'}),timeout=90) as response:
+                return response.read(),response.status,response.url,attempt+1
+        except (urllib.error.URLError,http.client.IncompleteRead,TimeoutError,ConnectionError) as error:
+            if attempt==2 or not retryable_error(error):raise
+            retry_after=getattr(error,'headers',{}).get('Retry-After','')
+            try:delay=min(120,max(0,float(retry_after)))
+            except (TypeError,ValueError):delay=15*(2**attempt)
+            print(json.dumps(dict(event='retry',provider=provider,attempt=attempt+1,delay_seconds=delay,error=str(error))),flush=True)
+            time.sleep(delay)
+
 def collect(task,out,manifest_hash):
     s,period,url,ext=task
     if not re.fullmatch(r'[A-Za-z0-9_-]+',s['station_id']):raise ValueError('unsafe station identifier')
@@ -89,12 +107,12 @@ def collect(task,out,manifest_hash):
         m=json.loads(meta.read_text())
         if m.get('url')==url and m.get('status')=='complete' and m.get('sha256')==hashlib.sha256(dest.read_bytes()).hexdigest():
             return dict(m,resumed=True)
-    m=dict(provider=s['provider'],station_id=s['station_id'],period=period,url=url,manifest_sha256=manifest_hash,retrieved_at=datetime.datetime.now(datetime.timezone.utc).isoformat(),license=s['license'])
+    m=dict(provider=s['provider'],station_id=s['station_id'],period=period,url=url,manifest_sha256=manifest_hash,retrieved_at=datetime.datetime.now(datetime.timezone.utc).isoformat(),station_metadata_license=s['license'],license=('ECCC Data Services End-use Licence 2.1.1; attribution required; https://eccc-msc.github.io/open-data/licence/readme_en/' if s['provider']=='ECCC' else s['license']),attribution=('Data Source: Environment and Climate Change Canada' if s['provider']=='ECCC' else s['provider']))
     try:
-        with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'Atmos-research-raw-collector/1.0'}),timeout=90) as r:data=r.read();m.update(http_status=r.status,final_url=r.url)
+        data,http_status,final_url,attempts=fetch_raw(url,s['provider']);m.update(http_status=http_status,final_url=final_url,attempts=attempts)
         audit=audit_bytes(data,s,period);tmp=dest.with_suffix(dest.suffix+'.part');tmp.write_bytes(data);tmp.replace(dest)
         m.update(status='complete',sha256=hashlib.sha256(data).hexdigest(),bytes=len(data),audit=audit)
-    except Exception as e:m.update(status='blocked',error=str(e))
+    except Exception as e:m.update(status='blocked',error=str(e),retryable=retryable_error(e))
     tmp=meta.with_suffix(meta.suffix+'.part');tmp.write_text(json.dumps(m,indent=2));tmp.replace(meta)
     return m
 
@@ -110,13 +128,17 @@ def main():
         s,period,url,ext=task;dest=out/s['provider']/s['station_id']/(period+'.'+ext);meta=dest.with_suffix(dest.suffix+'.json')
         if meta.exists():
             m=json.loads(meta.read_text())
-            if m.get('status')=='blocked' and m.get('url')==url and not a.retry_blocked:previously_blocked+=1;continue
+            if m.get('status')=='blocked' and m.get('url')==url and not a.retry_blocked and not m.get('retryable',retryable_error(m.get('error',''))):previously_blocked+=1;continue
         if dest.exists() and meta.exists():
             m=json.loads(meta.read_text())
             if m.get('status')=='complete' and m.get('url')==url and m.get('sha256')==hashlib.sha256(dest.read_bytes()).hexdigest():resumed+=1;continue
         todo.append(task)
         if len(todo)>=a.max_batches:break
-    with concurrent.futures.ThreadPoolExecutor(max_workers=a.workers) as pool:results=list(pool.map(lambda t:collect(t,out,mh),todo))
+    results=[]
+    with concurrent.futures.ThreadPoolExecutor(max_workers=a.workers) as pool:
+        for result in pool.map(lambda t:collect(t,out,mh),todo):
+            results.append(result)
+            print(json.dumps({k:result.get(k) for k in ('provider','station_id','period','status','bytes','error')}),flush=True)
     report=dict(manifest_sha256=mh,attempted=len(results),resumed_skipped=resumed,previously_blocked_skipped=previously_blocked,completed=sum(r['status']=='complete' for r in results),blocked=sum(r['status']=='blocked' for r in results),raw_bytes=sum(r.get('bytes',0) for r in results),records=sum(r.get('audit',{}).get('records',0) for r in results),results=results)
     # A run report is immutable; sidecars are the resumable checkpoint.
     stamp=datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%dT%H%M%S%fZ');(out/('run-'+stamp+'.json')).write_text(json.dumps(report,indent=2));print(json.dumps({k:v for k,v in report.items() if k!='results'},indent=2))

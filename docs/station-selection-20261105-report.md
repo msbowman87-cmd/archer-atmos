@@ -87,3 +87,7 @@ python scripts/collect_selected_hourly.py --manifest research/station-selection-
 The existing inventory workflow now performs multi-provider selection, verification, bounded NOAA collection and checkpoint artifact upload on the research branch only. It restores the latest unexpired research checkpoint when available. Artifacts expire after 90 days; retain an external copy for long-term preservation. ECCC and IEM collection are available via the CLI provider selector. No recurring job or production deployment was configured. A future workflow run is not counted as a completed download in this report.
 
 Deliverables include `stations.csv`, `stations.geojson`, `map.html`, normalized inputs, source snapshots, retrieval/deduplication/rejection audits, verification hashes, raw collected files with sidecars, and this report. Large source/data artifacts are distributed in the saved checkpoint package rather than public git source.
+
+### Subsequent collection clarification
+
+See [the hourly collection notes](atmos-hourly-collection.md) for the expanded provider runs, backoff/retry handling and unique-task progress reporting. The GeoMet hourly observation API has an open-data licence permitting redistribution with attribution; the legacy website inventory licence discussed above is not applied to those newly downloaded API observations. The 529,216-record count above remains the original pilot snapshot, not the latest collection total.
