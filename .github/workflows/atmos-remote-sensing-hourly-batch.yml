@@ -1,0 +1,54 @@
+name: Atmos Six-Hour Historical Satellite and Radar Backfill
+on:
+  push:
+    branches: [research/daily-walk-forward-20261101]
+    paths:
+      - 'atmos/historical_remote_sensing_batch.py'
+      - '.github/workflows/atmos-remote-sensing-hourly-batch.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    env:
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+      PYART_QUIET: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install meteorological archive readers
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install 'numpy<2' boto3 botocore netCDF4 xarray pyproj arm_pyart
+      - name: Verify no-lookahead, no fabricated data, archive file selection
+        run: |
+          python -m unittest tests.test_remote_sensing_features tests.test_historical_remote_sensing_pilot -v
+      - name: Download validated NOAA station coordinates
+        run: |
+          mkdir -p metadata results
+          gh run download 41961101416 --repo msbowman87-cmd/archer-atmos --name atmos-1000-station-coordinate-map --dir metadata
+          test -s metadata/atmos-stations.csv
+      - name: Extract six hours of genuine archived remote sensing
+        run: |
+          python -m atmos.historical_remote_sensing_batch \
+            --metadata metadata/atmos-stations.csv \
+            --date 2018-06-01 \
+            --start-hour 18 \
+            --hours 6 \
+            --output results
+      - name: Publish source provenance and complete observed feature coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: atmos-satellite-radar-2018-6h-history
+          path: |
+            results/station-sensing-history.csv
+            results/station-sensing-hourly-coverage.json
+          retention-days: 90
