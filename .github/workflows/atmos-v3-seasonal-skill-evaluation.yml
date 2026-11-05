@@ -1,0 +1,64 @@
+name: Atmos V3 Paired Sensor Skill Against Frozen V2
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  paired-evaluation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install scientific scoring tools
+        run: python -m pip install numpy
+      - name: Test independent variable-level calibration, holdouts and event scores
+        run: |
+          python -m unittest tests.test_seasonal_v3_paired_skill tests.test_seasonal_remote_sensing_backfill tests.test_noaa_v3_global_model_v2 -v
+      - name: Download four genuine seasonal remote-sensing archives
+        run: |
+          mkdir -p seasons metadata noaav3 checkpoint result
+          gh run download 42094763476 --repo msbowman87-cmd/archer-atmos --pattern 'atmos-v3-season-*' --dir seasons
+          test "$(find seasons -name coverage-and-source-provenance.json | wc -l)" -eq 4
+      - name: Download frozen V2 model; keep holdout labels out of fitting
+        run: |
+          gh run download 42044573766 --repo msbowman87-cmd/archer-atmos --name atmos-global-v2-checkpoint-four-heldouts --dir checkpoint
+          test -s checkpoint/atmos-global-v2-model.npz
+      - name: Identify NOAA quality shards for exactly six verified stations
+        run: |
+          gh run download 41961101416 --repo msbowman87-cmd/archer-atmos --name atmos-1000-station-coordinate-map --dir metadata
+          python - <<'PY' > metadata/needed-shards.txt
+          import csv
+          from atmos.seasonal_remote_sensing_backfill import STATIONS
+          with open('metadata/atmos-stations.csv') as file:
+              catalog=sorted(r['station_id'] for r in csv.DictReader(file))
+          assert len(catalog)==1000 and len(set(catalog))==1000
+          print(' '.join(f'{catalog.index(k)//25:02d}' for k in STATIONS))
+          PY
+          for ID in $(cat metadata/needed-shards.txt); do
+            gh release download atmos-noaa-quality-2006-2025-v3 \
+              --repo msbowman87-cmd/archer-atmos \
+              --pattern "atmos-quality-shard-${ID}.tar" \
+              --dir noaav3
+          done
+      - name: Fit separate satellite, radar, and joint elevation corrections and test excluded cities
+        run: |
+          python -m atmos.seasonal_v3_paired_skill \
+            --seasons seasons \
+            --archives noaav3 \
+            --v2-checkpoint checkpoint/atmos-global-v2-model.npz \
+            --output result
+      - name: Preserve research-only V3 model and matched V2 comparisons
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: atmos-v3-four-season-matched-accuracy-and-checkpoint
+          path: result/
+          retention-days: 90
