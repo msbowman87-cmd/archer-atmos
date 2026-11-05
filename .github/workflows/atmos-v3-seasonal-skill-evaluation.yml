@@ -1,5 +1,8 @@
 name: Atmos V3 Paired Sensor Skill Against Frozen V2
 on:
+  push:
+    branches: [research/daily-walk-forward-20261101]
+    paths: ['docs/atmos-v3-evaluation-trigger.txt']
   workflow_dispatch:
 permissions:
   contents: read
