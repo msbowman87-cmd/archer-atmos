@@ -16,3 +16,7 @@ Candidate providers: NOAA GHCNh/ISD; Environment and Climate Change Canada; Mexi
 
 ## Current execution status
 This is a source-expansion specification. Existing NOAA-only selection script and workflow must be extended with provider-specific inventory adapters, normalization, cross-source deduplication and Caribbean fallback. No 10,000-station selection or historical download has been verified.
+
+## Executed 2026-11-05
+
+The former specification-only status above is superseded by the [executed selection report](station-selection-20261105-report.md). The partial manifest has 6,809 catalog-verified locations, a 3,191-location shortfall, and 529,216 raw observations actually collected. This is not a completed 10,000-station selection or an all-station hourly completeness certification. Inventory acquisition, normalization, distance/crosswalk deduplication, map generation, independent manifest validation and resumable raw collection are now implemented.

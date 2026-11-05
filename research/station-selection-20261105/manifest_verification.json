@@ -1,0 +1,20 @@
+{
+  "status": "passed",
+  "locations": 6809,
+  "checks": [
+    "all records revalidated",
+    "CSV/GeoJSON identity and coordinates agree",
+    "map embedded features exactly match GeoJSON",
+    "no repeated provider IDs or canonical crosswalk IDs",
+    "no retained site pair within 500 m"
+  ],
+  "sha256": {
+    "stations.csv": "59c8b81c025dd752a2b76cadca8815805adcad04a6935274d524f24c1cb3ef06",
+    "stations.geojson": "8117e18b23e01f29bdf642f0ffbfa7227b3c266fcc88f140e3301559995abe04",
+    "map.html": "ce5d4df18391d51332fb4beb7b6535d1032778d06124baece6e729588d8da356"
+  },
+  "limitations": [
+    "Map GUI interactions not exercised; JavaScript syntax checked separately.",
+    "Source catalog verification is not a per-station or per-variable hourly completeness certification."
+  ]
+}

@@ -1,6 +1,11 @@
 name: Atmos station inventory selection
 on:
   workflow_dispatch:
+    inputs:
+      batches:
+        description: Maximum new raw NOAA station-year batches (1-100)
+        default: '10'
+        required: true
   push:
     branches:
       - research/daily-walk-forward-20261101
@@ -8,24 +13,46 @@ on:
       - .github/workflows/atmos-station-inventory.yml
 permissions:
   contents: read
+  actions: read
 jobs:
   select:
+    if: github.ref == 'refs/heads/research/daily-walk-forward-20261101'
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Download NOAA metadata
+      - name: Focused offline regression tests
         run: |
-          mkdir -p input
-          curl -fL --retry 3 'https://www.ncei.noaa.gov/oa/global-historical-climatology-network/hourly/doc/ghcnh-station-list.txt' -o input/ghcnh-station-list.txt
-          curl -fL --retry 3 'https://www.ncei.noaa.gov/oa/global-historical-climatology-network/hourly/doc/ghcnh-inventory.txt' -o input/ghcnh-inventory.txt
-      - name: Select candidate stations
+          python -m unittest discover -s tests -p test_multi_provider_station_selection.py -v
+          python -m unittest discover -s tests -p test_selected_hourly_collection.py -v
+      - name: Resume latest checkpoint on this research branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
         run: |
-          python scripts/select_north_america_stations.py --station-list input/ghcnh-station-list.txt --inventory input/ghcnh-inventory.txt --out station-map
+          prior=$(gh api "repos/$GH_REPO/actions/artifacts?name=atmos-multi-provider-checkpoint&per_page=100" --jq '[.artifacts[] | select(.expired == false and .workflow_run.head_branch == "research/daily-walk-forward-20261101")] | sort_by(.created_at) | reverse | .[0].workflow_run.id // empty')
+          if [ -n "$prior" ]; then
+            gh run download "$prior" --name atmos-multi-provider-checkpoint --dir research/station-selection-20261105
+          fi
+      - name: Retrieve and normalize inventories
+        run: |
+          python scripts/acquire_station_inventories.py --out research/station-selection-20261105/input
+          python scripts/normalize_station_inventories.py --input research/station-selection-20261105/input --out research/station-selection-20261105
+          python scripts/select_multi_provider_stations.py --input research/station-selection-20261105/normalized.csv --out research/station-selection-20261105
+          python scripts/verify_station_manifest.py --input research/station-selection-20261105
+      - name: Collect bounded raw observation batches
+        env:
+          BATCHES: ${{ inputs.batches || '10' }}
+        run: |
+          python -c 'import os; n=int(os.environ["BATCHES"]); assert 1 <= n <= 100'
+          python scripts/collect_selected_hourly.py --manifest research/station-selection-20261105/stations.csv --out research/station-selection-20261105/observations --providers NOAA_GHCNh --max-batches "$BATCHES" --workers 2
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: atmos-station-map
-          path: station-map/
+          name: atmos-multi-provider-checkpoint
+          path: research/station-selection-20261105/
+          retention-days: 90
+          compression-level: 6
