@@ -1,6 +1,6 @@
 # Atmos satellite and radar calibration: implementation requirements
 
-**Status (2026-11-05): Real GOES-16 and NEXRAD archive extraction is implemented and a two-station, one-scan pilot passed; a six-hour coverage backfill is running. Model training on these inputs is NOT implemented and accuracy has NOT been measured.** Do not describe V1 or V2 as satellite/radar informed.
+**Status (2026-11-05): Real GOES-16 and NEXRAD archive extraction is implemented and a two-station, one-scan pilot passed; the six-hour coverage backfill completed successfully. Model training on these inputs is NOT implemented and accuracy has NOT been measured.** Do not describe V1 or V2 as satellite/radar informed.
 
 ## Forecast inputs
 
@@ -56,3 +56,9 @@ Run a small real-data archive extraction/coverage pilot (e.g. NEXRAD + GOES-R fo
 These are actual extracted values, not generated observations. Radar peak reflectivity **is not precipitation amount**, and radar clutter may produce spuriously strong returns; quality checks must precede training. The runner successfully produced `station-sensing-pilot.csv`, `source-manifest.json`, and `coverage.json`. Historical actual product arrival times were **not available**, so +15 minutes after the GOES product creation and radar scan end were only explicitly labeled timing scenarios; do not certify them as verified forecaster availability. No coupled training or skill comparison was possible with a single scan.
 
 The bounded continuation is in `atmos/historical_remote_sensing_batch.py` and `.github/workflows/atmos-remote-sensing-hourly-batch.yml`; it samples six consecutive UTC issue hours at two actual NOAA stations and reports missingness, source provenance, and as-of coverage. The next step after verifying coverage is to backfill many days/seasons, join to station targets, implement per-variable satellite/radar model coefficients, and evaluate against V2 on matched examples with both spatial and temporal holdouts.
+
+## Six-hour real archive backfill completed
+
+[Successful six-hour backfill](https://github.com/msbowman87-cmd/archer-atmos/actions/runs/42071046065) covered 18:00–23:59 UTC on 2018-06-01 at Boise and Miami, using 24 original GOES/NEXRAD objects. It produced **24 actual station/sensor rows** (12 satellite, 12 radar) and **12 station/forecast-issue pairs with both sources available under the explicitly assumed 15-minute publication-delay scenario**. All inputs were source-hashed and missingness was retained; no synthetic values were inserted. See the `atmos-satellite-radar-2018-6h-history` GitHub Actions artifact for the CSV and JSON coverage report. **This result is data-extraction coverage only: 0 station-target training pairs, no satellite/radar forecast model fit, and no forecast-accuracy comparison yet.**
+
+Follow-up must extend actual multi-day archives (including wet/dry and low-visibility events), match each source record to as-of forecast hours and future station verification observations, train each weather-variable/horizon correction separately, and evaluate compared with V2 on identically matched heldout hours. Do not claim V3 accuracy until that full test is run.
