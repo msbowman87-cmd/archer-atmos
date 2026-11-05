@@ -189,7 +189,8 @@ def radar_features(path,lat,lon):
     return results,end
 
 
-def extract(metadata,out,day="2018-06-01",hour=18):
+def extract(metadata,out,day="2018-06-01",hour=18,stations=None):
+    stations = STATIONS if stations is None else stations
     date=datetime.strptime(day,"%Y-%m-%d").replace(tzinfo=timezone.utc)
     date=date.replace(hour=hour)
     out=Path(out);out.mkdir(parents=True,exist_ok=True)
@@ -197,10 +198,10 @@ def extract(metadata,out,day="2018-06-01",hour=18):
     locations={}
     with open(metadata,newline="",encoding="utf-8-sig") as f:
         for row in csv.DictReader(f):
-            if row["station_id"] in STATIONS:
+            if row["station_id"] in stations:
                 locations[row["station_id"]]=(float(row["lat"]),float(row["lon"]))
-    if set(locations)!=set(STATIONS):
-        raise ValueError(f"Stations missing metadata: {set(STATIONS)-set(locations)}")
+    if set(locations)!=set(stations):
+        raise ValueError(f"Stations missing metadata: {set(stations)-set(locations)}")
     client=archive_client()
     doy=date.timetuple().tm_yday
     manifest={
@@ -230,7 +231,7 @@ def extract(metadata,out,day="2018-06-01",hour=18):
         obs=max(filename_time(p.name,"e") for p,_ in sat.values())
         created=max(filename_time(p.name,"c") for p,_ in sat.values())
         satellite_available=created+timedelta(minutes=GOES_DELAY_MINUTES)
-        for station_id in STATIONS:
+        for station_id in stations:
             features=goes_features(sat,locations[station_id])
             if features:
                 output_rows.append({
@@ -242,7 +243,7 @@ def extract(metadata,out,day="2018-06-01",hour=18):
                     **features,
                 })
             manifest["station_extraction"].setdefault(station_id,{})["satellite"]=features
-    for station_id,(name,radar_site) in STATIONS.items():
+    for station_id,(name,radar_site) in stations.items():
         prefix=f"{date:%Y/%m/%d}/{radar_site}/"
         pick=find_scene(client,RADAR_BUCKET,prefix,date,radar=True)
         if pick is None:
@@ -271,13 +272,13 @@ def extract(metadata,out,day="2018-06-01",hour=18):
     store=RemoteSensingStore.from_csv(out/"station-sensing-pilot.csv")
     issued=date+timedelta(minutes=50)
     usable={}
-    for station_id in STATIONS:
+    for station_id in stations:
         for kind in ("satellite","radar"):
             usable[f"{station_id}|{kind}"]=bool(store.latest(
                 station_id,kind,issued,max_age_hours=3.0))
     summary={
         "records":len(output_rows),"by_source":count,
-        "stations_attempted":len(STATIONS),
+        "stations_attempted":len(stations),
         "forecast_issue_scenario_utc":iso(issued),
         "source_availability_assumed_not_verified":True,
         "usable_at_scenario_issue":usable,
