@@ -1,6 +1,6 @@
 # Atmos satellite and radar calibration: implementation requirements
 
-**Status (2026-11-05): Interface and leakage tests implemented; raw remote-sensing extraction and historical feature backfill NOT implemented; no model has been retrained on these inputs.** Do not describe V1 or V2 as satellite/radar informed.
+**Status (2026-11-05): Real GOES-16 and NEXRAD archive extraction is implemented and a two-station, one-scan pilot passed; a six-hour coverage backfill is running. Model training on these inputs is NOT implemented and accuracy has NOT been measured.** Do not describe V1 or V2 as satellite/radar informed.
 
 ## Forecast inputs
 
@@ -43,3 +43,16 @@ Sources:
 Run a small real-data archive extraction/coverage pilot (e.g. NEXRAD + GOES-R for US stations from 2018 onwards), compare against station-only predictions for the same verified hours, then expand sensor coverage progressively without sacrificing chronological integrity.
 
 **Do not launch another 40-shard training run claiming radar/satellite skill before these features have actually been sourced and matched.**
+
+## First real-file validation (June 1, 2018)
+
+[Passing 2018 source extraction workflow](https://github.com/msbowman87-cmd/archer-atmos/actions/runs/42070428370) downloaded original GOES-16 ACMC and MCMIPC imagery and Unidata NEXRAD Level II KCBX and KAMX archives. All four objects were SHA-256 hashed. At 18:05 UTC, the geographic samples were:
+
+| Station | Cloud mask 5x5 fraction | ABI band 8 water-vapor brightness temperature | NEXRAD nearby peak reflectivity |
+|---|---:|---:|---:|
+| Boise Air Terminal | 0.28 | 239.16 K | 53.0 dBZ |
+| Miami International | 1.00 | 236.34 K | 48.5 dBZ |
+
+These are actual extracted values, not generated observations. Radar peak reflectivity **is not precipitation amount**, and radar clutter may produce spuriously strong returns; quality checks must precede training. The runner successfully produced `station-sensing-pilot.csv`, `source-manifest.json`, and `coverage.json`. Historical actual product arrival times were **not available**, so +15 minutes after the GOES product creation and radar scan end were only explicitly labeled timing scenarios; do not certify them as verified forecaster availability. No coupled training or skill comparison was possible with a single scan.
+
+The bounded continuation is in `atmos/historical_remote_sensing_batch.py` and `.github/workflows/atmos-remote-sensing-hourly-batch.yml`; it samples six consecutive UTC issue hours at two actual NOAA stations and reports missingness, source provenance, and as-of coverage. The next step after verifying coverage is to backfill many days/seasons, join to station targets, implement per-variable satellite/radar model coefficients, and evaluate against V2 on matched examples with both spatial and temporal holdouts.
