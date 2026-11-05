@@ -62,3 +62,25 @@ The bounded continuation is in `atmos/historical_remote_sensing_batch.py` and `.
 [Successful six-hour backfill](https://github.com/msbowman87-cmd/archer-atmos/actions/runs/42071046065) covered 18:00–23:59 UTC on 2018-06-01 at Boise and Miami, using 24 original GOES/NEXRAD objects. It produced **24 actual station/sensor rows** (12 satellite, 12 radar) and **12 station/forecast-issue pairs with both sources available under the explicitly assumed 15-minute publication-delay scenario**. All inputs were source-hashed and missingness was retained; no synthetic values were inserted. See the `atmos-satellite-radar-2018-6h-history` GitHub Actions artifact for the CSV and JSON coverage report. **This result is data-extraction coverage only: 0 station-target training pairs, no satellite/radar forecast model fit, and no forecast-accuracy comparison yet.**
 
 Follow-up must extend actual multi-day archives (including wet/dry and low-visibility events), match each source record to as-of forecast hours and future station verification observations, train each weather-variable/horizon correction separately, and evaluate compared with V2 on identically matched heldout hours. Do not claim V3 accuracy until that full test is run.
+
+
+## Four-season Atmos V3 pilot — launched 2026-11-05
+
+The [four-season satellite/radar collection run](https://github.com/msbowman87-cmd/archer-atmos/actions/runs/42094763476) checks real archive samples in every season before proceeding to 7-day batches. All four smoke checks passed.
+
+- **Winter:** February 4–10, 2018.
+- **Spring:** May 6–12, 2018.
+- **Summer:** August 5–11, 2018.
+- **Fall:** November 4–10, 2018.
+
+To limit archival processing cost, initial sampling covers **four scans daily** at 00, 06, 12, 18 UTC. That is **28 calendar days but only 112 sampled sensor hours**, not every one of the 672 hours. An every-hour expansion remains future work.
+
+**Four training stations:** Salt Lake City, Sacramento International, Houston Bush, Seattle–Tacoma. **Two completely excluded validation stations:** Boise Air Terminal and Miami International. They were also excluded from V2 global fitting.
+
+Real station elevations are now retrieved from the NOAA ISD-history catalog, not assumed. In the spring smoke sample, all six station elevations were verified. Terrain rasters and hillslope/topographic sheltering are not yet included.
+
+Each weekly batch must pass at least 50% paired satellite and radar feature coverage. Every original data file is SHA-256 hashed. Historical satellite/radar publication delays are **scenario assumptions**, not certified original availability.
+
+After all four seasonal weekly jobs complete, the next stage uses the [separate, manually dispatchable V3 comparison workflow](https://github.com/msbowman87-cmd/archer-atmos/blob/research/daily-walk-forward-20261101/.github/workflows/atmos-v3-seasonal-skill-evaluation.yml). The code compares satellite-only, radar-only, and combined-with-elevation corrections against the fixed V2 model at matching hours in the two excluded locations, separately for eight weather variables and three forecast horizons.
+
+**No actual V3 forecast-skill outcome has been measured yet.** The V2 checkpoint used to provide baseline forecasts was trained over 2006–2025 on other stations, so this pilot is a retrospective spatially held-out research experiment, **not** the strictly chronological global online training/validation originally specified for certification.
