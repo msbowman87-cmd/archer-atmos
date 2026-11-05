@@ -31,23 +31,17 @@ jobs:
         run: |
           gh run download 42044573766 --repo msbowman87-cmd/archer-atmos --name atmos-global-v2-checkpoint-four-heldouts --dir checkpoint
           test -s checkpoint/atmos-global-v2-model.npz
-      - name: Identify NOAA quality shards for exactly six verified stations
+      - name: Download independently verified quality shards containing the six stations
         run: |
-          gh run download 41961101416 --repo msbowman87-cmd/archer-atmos --name atmos-1000-station-coordinate-map --dir metadata
-          python - <<'PY' > metadata/needed-shards.txt
-          import csv
-          from atmos.seasonal_remote_sensing_backfill import STATIONS
-          with open('metadata/atmos-stations.csv') as file:
-              catalog=sorted(r['station_id'] for r in csv.DictReader(file))
-          assert len(catalog)==1000 and len(set(catalog))==1000
-          print(' '.join(f'{catalog.index(k)//25:02d}' for k in STATIONS))
-          PY
-          for ID in $(cat metadata/needed-shards.txt); do
+          # Verified directly against archived V2 shard station-ID manifests.
+          # Not derived from alphabetic ordering (the archive isn't sorted that way).
+          for ID in 06 11 12 15 27; do
             gh release download atmos-noaa-quality-2006-2025-v3 \
               --repo msbowman87-cmd/archer-atmos \
               --pattern "atmos-quality-shard-${ID}.tar" \
               --dir noaav3
           done
+          test "$(find noaav3 -maxdepth 1 -name 'atmos-quality-shard-??.tar' | wc -l)" -eq 5
       - name: Fit separate satellite, radar, and joint elevation corrections and test excluded cities
         run: |
           python -m atmos.seasonal_v3_paired_skill \
