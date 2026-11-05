@@ -8,7 +8,8 @@ import argparse,csv,json
 from collections import defaultdict
 from datetime import date,timedelta
 from pathlib import Path
-from atmos.station_backtest import get,aggregate_local_days,observations
+from atmos.station_backtest import get,aggregate_local_days
+from atmos.utc_station_pilot import utc_observations
 
 OFFSETS=((0,0),(0,1.5),(0,-1.5),(1.5,0),(-1.5,0))
 
@@ -40,7 +41,7 @@ def regional_rows(lat,lon,tz,start,end):
     return result,failures
 
 def evaluate(rows,obs,split='2026-09-01'):
-    truth={r['date']:float(r['observed_temp_max_c']) for r in obs if r['observed_temp_max_c']}
+    truth={r['date']:float(r['observed_temp_max_c']) for r in obs if r.get('observed_temp_max_c') not in ('',None)}
     matched=[dict(r,actual=truth[r['date']]) for r in rows if r['date'] in truth]
     output={}
     for name,leads in [('1-7',range(1,8)),('8-9',range(8,10))]:
@@ -56,18 +57,37 @@ def evaluate(rows,obs,split='2026-09-01'):
             continue
         base=sum(abs(r['baseline']-r['actual']) for r in test)/len(test)
         regional=sum(abs(r['baseline']+coefficient*r['regional_anomaly']-r['actual']) for r in test)/len(test)
+        # Validation is reported separately from the experiment's raw score.
+        # Both chronological halves must improve; an attractive aggregate alone
+        # must never authorize rolling out the correction.
+        test_days=sorted({r['date'] for r in test})
+        midpoint=len(test_days)//2
+        halves=[]
+        for dates in (set(test_days[:midpoint]),set(test_days[midpoint:])):
+            part=[r for r in test if r['date'] in dates]
+            raw_half=sum(abs(r['baseline']-r['actual']) for r in part)/len(part) if part else None
+            corrected_half=(sum(abs(r['baseline']+coefficient*r['regional_anomaly']-r['actual']) for r in part)/len(part)) if part else None
+            halves.append({'unique_days':len(dates),'baseline_mae_c':raw_half,'regional_mae_c':corrected_half,
+                           'improved':bool(part) and corrected_half<raw_half})
+        improvement=100*(base-regional)/base if base else None
+        passed=improvement is not None and improvement>=2 and all(h['improved'] for h in halves)
         output[name]={'train_pairs':len(train),'test_pairs':len(test),
                       'train_unique_days':len({r['date'] for r in train}),
                       'test_unique_days':len({r['date'] for r in test}),
                       'regional_coefficient':coefficient,'baseline_mae_c':base,
                       'regional_mae_c':regional,
-                      'improvement_pct':100*(base-regional)/base if base else None}
+                      'improvement_pct':improvement,
+                      'validation_halves':halves,
+                      'promotion_gate':'pass_exploratory_only' if passed else 'reject',
+                      'promotion_rule':'at least 2% MAE improvement and improvement in both chronological test halves'}
     return {'method':'regional spatial gradient, 4 surrounding ECMWF grid points at +/-1.5 degrees',
             'split_date':split,'by_lead_days':output,
             'limitations':['Exploratory spatial correction, not an atmospheric dynamics model.',
               'Nearby grid points use the same ECMWF forecast and are not independent observations.',
-              'IEM station-day reporting convention still needs independent verification.',
+              'UTC-matched ASOS hourly sampled maxima may miss the true daily maximum.',
+              'Require at least 20 distinct observed UTC hourly bins per day.',
               'Overlapping forecasts are not independent verification days.',
+              'Passing the exploratory gate is not approval for production: independent station time alignment and more locations are required.',
               'Not a 30-day forecast test.']}
 
 def main():
@@ -80,10 +100,14 @@ def main():
     p.add_argument('--output',default='regional-validation-results')
     a=p.parse_args()
     start=date.fromisoformat(a.start);end=date.fromisoformat(a.end)
-    obs=observations(a.station,a.network,start,end)
-    rows,failures=regional_rows(a.latitude,a.longitude,a.timezone,start,end)
+    # Match the observation period exactly. IEM daily climatological summaries
+    # have a station-defined reporting window that may not be local midnight.
+    obs=utc_observations(a.station,a.network,start,end,min_hours=20)
+    rows,failures=regional_rows(a.latitude,a.longitude,'UTC',start,end)
     report=evaluate(rows,obs)
-    report.update(station=a.station,forecast_rows=len(rows),failed_initializations=failures)
+    report.update(station=a.station,forecast_rows=len(rows),observation_days=len(obs),
+                  comparison_timezone='UTC',observation_source='IEM ASOS sampled UTC hourly temperature',
+                  failed_initializations=failures)
     root=Path(a.output);root.mkdir(parents=True,exist_ok=True)
     (root/'report.json').write_text(json.dumps(report,indent=2))
     with (root/'regional_forecasts.csv').open('w',newline='') as f:
