@@ -52,3 +52,9 @@ Use 2016–2023 for initial training, 2024 for model/feature choices, and 2025 f
 The local checkpoint's 261 completed source files contain 2,186,118 records (40 NOAA annual files, 112 ECCC monthly files, 109 IEM monthly files). All 261 source hashes matched and every file parsed successfully. This is one checkpoint snapshot, not an additive count to combine with overlapping GitHub runs.
 
 The audit produced 6,186 variable-period rows: 1,929 have no observed hourly bins and 2,062 have at least 90% observed hourly bins for their full year/month. These are field-period counts, not station counts. No source flags have been discarded or interpreted as acceptable for training. The raw checkpoint remains **not quality-approved for training** until source-specific units/flags and variable coverage are reviewed. The machine-readable snapshot is in `research/station-selection-20261105/audit/coverage_summary.json`.
+
+## Verified hosted archive — 2026-11-05
+
+The [preservation run](https://github.com/msbowman87-cmd/archer-atmos/actions/runs/42114412003) completed successfully. Its hosted checkpoint contains **4,773,106 records in 299 audited source files**, with no hash or parse failures. These counts overlap the local snapshot above and must not be added to it. Source flags remain uninterpreted; the dataset is not quality-approved for training.
+
+The [research archive](https://github.com/msbowman87-cmd/archer-atmos/releases/tag/research-hourly-42114412003-1) contains five uploaded ZIP parts (101,880,656 compressed bytes total) and a SHA256/member index. Upload sizes were verified. The prerelease targets research commit `2ecc65d8432c0fc6011842d1fcb1f8a6b7661b0c`; it is not a production release. Extract all five parts into the same directory to restore this checkpoint. A separate local three-part archive was actually extracted and its 261 restored source files rechecked by SHA256 successfully.
