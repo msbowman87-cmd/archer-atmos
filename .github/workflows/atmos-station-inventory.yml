@@ -1,0 +1,31 @@
+name: Atmos station inventory selection
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - research/daily-walk-forward-20261101
+    paths:
+      - .github/workflows/atmos-station-inventory.yml
+permissions:
+  contents: read
+jobs:
+  select:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Download NOAA metadata
+        run: |
+          mkdir -p input
+          curl -fL --retry 3 'https://www.ncei.noaa.gov/oa/global-historical-climatology-network/hourly/doc/ghcnh-station-list.txt' -o input/ghcnh-station-list.txt
+          curl -fL --retry 3 'https://www.ncei.noaa.gov/oa/global-historical-climatology-network/hourly/doc/ghcnh-inventory.txt' -o input/ghcnh-inventory.txt
+      - name: Select candidate stations
+        run: |
+          python scripts/select_north_america_stations.py --station-list input/ghcnh-station-list.txt --inventory input/ghcnh-inventory.txt --out station-map
+      - uses: actions/upload-artifact@v4
+        with:
+          name: atmos-station-map
+          path: station-map/
