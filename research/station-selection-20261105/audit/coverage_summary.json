@@ -1,0 +1,17 @@
+{
+  "manifest_sha256": "59c8b81c025dd752a2b76cadca8815805adcad04a6935274d524f24c1cb3ef06",
+  "audited_batches": 261,
+  "records": 2186118,
+  "integrity_or_parse_failures": [],
+  "quality_approved": false,
+  "notes": [
+    "Missing-hour fractions use full source year/month expected hours; partial operating periods remain visible.",
+    "ECCC coverage uses local standard time; raw UTC_DATE is preserved. NOAA/IEM use UTC.",
+    "Subhourly reports count once per hour for each variable.",
+    "Source flags are reported without asserting they are acceptable for training. Units, flag mappings and archive completeness must be reviewed before model training.",
+    "Missing files outside completed checkpoints are pending, not assumed to contain observations."
+  ],
+  "variable_period_rows": 6186,
+  "variable_periods_with_zero_observed_hours": 1929,
+  "variable_periods_with_at_least_90pct_observed_hours": 2062
+}
