@@ -119,10 +119,10 @@ def model_rows(start,data,latitude,longitude,horizon,lag=LAG_HOURS):
         base[:,col]=np.clip(np.nan_to_num(z,nan=0.),-5.,5.)
     base[:,13]=np.nan_to_num(np.sin(np.radians(known[:,4])),nan=0.)
     base[:,14]=np.nan_to_num(np.cos(np.radians(known[:,4])),nan=0.)
-    return base,ids,known,hours
+    return base,ids,known,hours,latest
 
 def samples(start,data,latitude,longitude,horizon,lag=LAG_HOURS):
-    base,ids,known,hours=model_rows(start,data,latitude,longitude,horizon,lag)
+    base,ids,known,hours,latest=model_rows(start,data,latitude,longitude,horizon,lag)
     index=np.arange(len(data),dtype=np.int32)
     result=[]
     for m in range(8):
@@ -140,7 +140,7 @@ def samples(start,data,latitude,longitude,horizon,lag=LAG_HOURS):
         x[:,19]=np.clip((chosen-ids[chosen,m]-horizon)/168.,0.,2.)
         # Trend uses another earlier observation (not an unavailable target reading).
         prev_cutoff=np.maximum(ids[chosen,m]-24,0)
-        old=latest_valid(data)[prev_cutoff,m]
+        old=latest[prev_cutoff,m]
         old_safe=np.maximum(old,0)
         old_values=data[old_safe,m]
         slope=np.where((old>=0)&np.isfinite(old_values),(prior[chosen]-old_values)/SCALES[m],0.)
@@ -156,6 +156,7 @@ def samples(start,data,latitude,longitude,horizon,lag=LAG_HOURS):
     return result
 
 def fit_shard(archive,shard,metadata,output,holdout=HOLDOUT):
+    Path(output).mkdir(parents=True,exist_ok=True)
     meta={}
     with open(metadata,newline="",encoding="utf-8-sig") as f:
         for item in csv.DictReader(f):
