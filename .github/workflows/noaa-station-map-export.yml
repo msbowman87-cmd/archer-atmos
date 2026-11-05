@@ -1,0 +1,68 @@
+name: Atmos Station Coordinates for Mapping
+on:
+  push:
+    branches: [research/daily-walk-forward-20261101]
+    paths: ['.github/workflows/noaa-station-map-export.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  station-map:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Retrieve actual 1000 trained station identifiers
+        run: |
+          mkdir -p input output
+          gh run download 41957617824 --repo msbowman87-cmd/archer-atmos --name atmos-2006-2025-full-calibration-progress-report --dir input
+          test -s input/station-year-results.csv
+      - name: Retrieve NOAA's actual station location catalog
+        run: |
+          curl --fail --location --retry 4 --retry-delay 3 --max-time 120 \
+            https://www.ncei.noaa.gov/pub/data/noaa/isd-history.csv \
+            -o input/isd-history.csv
+          test -s input/isd-history.csv
+      - name: Match identifiers to verified coordinates
+        run: |
+          python - <<'PY'
+          import csv,json
+          from pathlib import Path
+          ids=set()
+          with open('input/station-year-results.csv',newline='') as file:
+              for row in csv.DictReader(file):
+                  ids.add(row['station_id'])
+          catalog={}
+          with open('input/isd-history.csv',newline='',encoding='utf-8-sig') as file:
+              for row in csv.DictReader(file):
+                  station=str(row.get('USAF','')).strip().zfill(6)+str(row.get('WBAN','')).strip().zfill(5)
+                  if station in ids:
+                      try:
+                          lat=float(row['LAT']);lon=float(row['LON'])
+                          if not -90<=lat<=90 or not -180<=lon<=180: continue
+                          catalog[station]={'station_id':station,'name':row.get('STATION NAME','').strip(),
+                                            'country':row.get('CTRY','').strip(),'state':row.get('STATE','').strip(),
+                                            'lat':lat,'lon':lon}
+                      except (ValueError,KeyError): pass
+          rows=[catalog[i] for i in sorted(catalog)]
+          missing=sorted(ids-set(catalog))
+          features=[{'type':'Feature','properties':{k:v for k,v in row.items() if k not in ('lat','lon')},
+                     'geometry':{'type':'Point','coordinates':[row['lon'],row['lat']]}} for row in rows]
+          Path('output/atmos-stations.geojson').write_text(json.dumps({'type':'FeatureCollection','features':features},separators=(',',':')))
+          with open('output/atmos-stations.csv','w',newline='') as f:
+              writer=csv.DictWriter(f,fieldnames=['station_id','name','country','state','lat','lon'])
+              writer.writeheader();writer.writerows(rows)
+          Path('output/mapping-coverage.json').write_text(json.dumps({'total_trained_station_ids':len(ids),
+              'mapped_with_noaa_coordinates':len(rows),'missing_coordinates':missing},indent=2))
+          print('STATION MAPPING',len(ids),'IDs,',len(rows),'mapped,',len(missing),'missing')
+          PY
+      - name: Upload station geocoding and coverage audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: atmos-1000-station-coordinate-map
+          path: output/
+          retention-days: 90
