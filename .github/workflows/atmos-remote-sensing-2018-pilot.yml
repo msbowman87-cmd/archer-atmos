@@ -1,0 +1,55 @@
+name: Atmos Verified 2018 GOES and NEXRAD Observation Pilot
+on:
+  push:
+    branches: [research/daily-walk-forward-20261101]
+    paths:
+      - 'atmos/historical_remote_sensing_pilot.py'
+      - 'tests/test_historical_remote_sensing_pilot.py'
+      - '.github/workflows/atmos-remote-sensing-2018-pilot.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+      PYART_QUIET: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install public AWS and meteorological archive decoders
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install 'numpy<2' boto3 botocore netCDF4 xarray pyproj arm_pyart
+      - name: Run source-selection and no-fabrication tests
+        run: |
+          python -m unittest tests.test_remote_sensing_features tests.test_historical_remote_sensing_pilot -v
+      - name: Download verified NOAA station metadata
+        run: |
+          mkdir -p metadata output
+          gh run download 41961101416 --repo msbowman87-cmd/archer-atmos --name atmos-1000-station-coordinate-map --dir metadata
+          test -s metadata/atmos-stations.csv
+      - name: Retrieve real GOES-16 and NEXRAD archives and extract station weather features
+        run: |
+          python -m atmos.historical_remote_sensing_pilot \
+            --metadata metadata/atmos-stations.csv \
+            --date 2018-06-01 \
+            --hour 18 \
+            --output output
+      - name: Upload feature rows, provenance hashes, and coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: atmos-goes-nexrad-2018-source-pilot
+          path: |
+            output/station-sensing-pilot.csv
+            output/source-manifest.json
+            output/coverage.json
+          retention-days: 90
