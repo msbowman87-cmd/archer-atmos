@@ -2,14 +2,15 @@
 
 Exploratory: NOAA publication time is unknown; explicit lag is a scenario.
 For each station and forecast horizon, correct a 28-day same-hour baseline
-using the mean of up to 30 prior *realized* forecast residuals whose
-observations would have been available at forecast issue time.
+using a bounded baseline-residual correction, gated by a rolling, causal
+out-of-sample comparison with the uncorrected baseline.
 No future observations, random splits, or historical model forecasts.
 """
 import argparse
 import csv
 import gzip
 import json
+import math
 import tarfile
 from collections import defaultdict, deque
 from datetime import timedelta
@@ -54,7 +55,7 @@ def run(archive, shard, lag_hours=72, horizons=(24, 48, 72)):
               "accepted_rows_by_variable":dict(counts),
               "station_counts_by_variable":{m:len(stations[m]) for m in measures},
               "variables":list(measures),
-              "method":"28-day same-hour baseline plus causal rolling residual correction",
+              "method":"28-day same-hour baseline plus bounded, causally validated baseline residual correction",
               "horizons":{}}
     lag = timedelta(hours=lag_hours)
     for metric in measures:
@@ -64,15 +65,16 @@ def run(archive, shard, lag_hours=72, horizons=(24, 48, 72)):
         totals = defaultdict(lambda: [0, 0., 0.])
         station_year = defaultdict(lambda: [0, 0., 0.])
         for station, readings in stations[metric].items():
+            # All forecast feedback is evaluated only after the verifying observation
+            # would have arrived. Residuals are ALWAYS measured against the
+            # uncorrected baseline to prevent recursive feedback divergence.
             pending = deque()
-            known_residuals = deque(maxlen=30)
+            known = deque(maxlen=120)  # (baseline residual, baseline error, candidate error)
             for target in sorted(readings):
                 issue = target - delta
-                # Only previous forecast errors whose verifying observations
-                # have become available can influence this issue time.
                 while pending and pending[0][0] <= issue:
-                    _, residual = pending.popleft()
-                    known_residuals.append(residual)
+                    _, residual, base_error, candidate_error = pending.popleft()
+                    known.append((residual, base_error, candidate_error))
                 candidates = []
                 for day in range(1, 29):
                     past = target - timedelta(days=day)
@@ -80,18 +82,57 @@ def run(archive, shard, lag_hours=72, horizons=(24, 48, 72)):
                         candidates.append(readings[past])
                 if len(candidates) < 7:
                     continue
-                base = sum(candidates)/len(candidates)
-                correction = sum(known_residuals)/len(known_residuals) if len(known_residuals) >= 7 else 0.
-                predicted = base + correction
-                if metric == "relative_humidity_pct": predicted = max(0, min(100, predicted))
-                if metric == "precip_1h_mm" or metric == "wind_speed_mps" or metric == "visibility_m": predicted = max(0, predicted)
                 if metric == "wind_direction_deg":
-                    # Circular direction errors must use the shortest angular arc.
-                    base %= 360
-                    predicted %= 360
+                    sx = sum(math.sin(math.radians(v)) for v in candidates)
+                    cx = sum(math.cos(math.radians(v)) for v in candidates)
+                    base = math.degrees(math.atan2(sx, cx)) % 360
+                else:
+                    base = sum(candidates)/len(candidates)
+
+                # Robust baseline residual: bounded, shrunken and evaluated
+                # out-of-sample on matured prior forecast cases.
+                residuals = [x[0] for x in known]
+                if len(residuals) >= 14:
+                    ordered = sorted(residuals[-30:])
+                    median = ordered[len(ordered)//2]
+                    if metric == "wind_direction_deg":
+                        correction = max(-25., min(25., median * 0.25))
+                    else:
+                        # Never allow the adjustment to exceed a fraction of
+                        # the observed baseline's recent absolute error.
+                        typical = sorted(abs(x) for x in residuals[-30:])
+                        cap = typical[len(typical)//2] * 0.5
+                        correction = max(-cap, min(cap, median * 0.25))
+                else:
+                    correction = 0.
+
+                # Gate corrections by previously *realized* baseline and
+                # candidate losses, not current/future observations.
+                prior = list(known)[-60:]
+                enabled = (len(prior) >= 30 and
+                           sum(x[2] for x in prior) < sum(x[1] for x in prior))
+                # Candidate remains exploratory; when evidence is insufficient,
+                # use the baseline without claiming improvement.
+                candidate = base + correction
+                if metric == "relative_humidity_pct":
+                    candidate = max(0., min(100., candidate))
+                if metric in ("precip_1h_mm", "wind_speed_mps", "visibility_m"):
+                    candidate = max(0., candidate)
+                if metric == "wind_direction_deg":
+                    candidate %= 360
+                predicted = candidate if enabled else base
                 actual = readings[target]
-                # Residual becomes usable only once actual observation is available.
-                pending.append((target + lag, actual - predicted))
+                if metric == "wind_direction_deg":
+                    baseline_residual = (actual-base+180)%360-180
+                    baseline_error = abs(baseline_residual)
+                    candidate_error = abs((actual-candidate+180)%360-180)
+                    calibrated_error = abs((actual-predicted+180)%360-180)
+                else:
+                    baseline_residual = actual-base
+                    baseline_error = abs(baseline_residual)
+                    candidate_error = abs(actual-candidate)
+                    calibrated_error = abs(actual-predicted)
+                pending.append((target + lag, baseline_residual, baseline_error, candidate_error))
                 year = str(target.year)
                 if metric == "wind_direction_deg":
                     baseline_error = abs((actual-base+180)%360-180)
