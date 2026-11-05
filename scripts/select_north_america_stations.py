@@ -11,6 +11,8 @@ def stations(path):
             if sid[:2] not in {"US","CA","MX"}: continue
             try: lat=float(line[12:20]);lon=float(line[21:30]);elev=float(line[31:37])
             except ValueError: continue
+            if not (math.isfinite(lat) and math.isfinite(lon) and math.isfinite(elev)): continue
+            if elev == -999.9 or not (-500 <= elev <= 6500): continue
             if not (-170<=lon<=-52 and 14<=lat<=84): continue
             yield {"id":sid,"country":sid[:2],"latitude":lat,"longitude":lon,"elevation_m":elev,"name":line[41:71].strip()}
 def inventory(path):
