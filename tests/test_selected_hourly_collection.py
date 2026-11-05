@@ -44,6 +44,11 @@ class CollectionTests(unittest.TestCase):
     def test_empty_period_not_transient(self):
         self.assertFalse(c.retryable_error('no ECCC observations returned'))
         self.assertTrue(c.retryable_error('IncompleteRead(100 bytes read)'))
+    def test_collection_interleaves_countries(self):
+        stations=[dict(self.station(),station_id='US1',country='US'),dict(self.station(),station_id='US2',country='US'),dict(self.station(),station_id='MX1',country='MX'),dict(self.station(),station_id='CA1',country='CA')]
+        stream=list(c.balanced_tasks(stations,2016,2017))
+        self.assertEqual([r[0]['country'] for r in stream[:6]],['US','CA','MX','US','CA','MX'])
+        self.assertEqual(len(stream),8)
     def test_no_tasks_outside_source_period(self):
         s=dict(self.station(),history_start='2020-01-01',history_end='2021-12-31')
         self.assertEqual([t[1] for t in c.tasks([s],2016,2025)],['2020','2021'])

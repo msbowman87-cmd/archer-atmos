@@ -26,6 +26,18 @@ def tasks(stations,start,end):
                         url=IEM+'cgi-bin/request/asos.py?'+urllib.parse.urlencode(params)+'&report_type=1&report_type=2'
                     yield s,f'{year}-{month:02d}',url,'geojson' if provider=='ECCC' else 'csv'
 
+def balanced_tasks(stations,start,end):
+    groups=collections.defaultdict(list)
+    for station in stations:groups[station['country']].append(station)
+    keys=[k for k in ('US','CA','MX') if k in groups]+sorted(set(groups)-{'US','CA','MX'})
+    streams=[iter(tasks(groups[k],start,end)) for k in keys]
+    while streams:
+        remaining=[]
+        for stream in streams:
+            try:yield next(stream);remaining.append(stream)
+            except StopIteration:pass
+        streams=remaining
+
 def audit_bytes(data,s,period):
     text=data.decode('utf-8-sig');year=period[:4]
     if '<html' in text[:2000].lower() or '<!doctype' in text[:2000].lower():raise ValueError('HTML instead of observations')
@@ -87,7 +99,7 @@ def retryable_error(error):
 def fetch_raw(url,provider):
     # IEM requests are deliberately serialized by the workflow and paced here.
     for attempt in range(3):
-        if provider=='IEM_ASOS':time.sleep(3)
+        if provider=='IEM_ASOS':time.sleep(10)
         try:
             with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'Atmos-research-raw-collector/1.0'}),timeout=90) as response:
                 return response.read(),response.status,response.url,attempt+1
@@ -124,7 +136,7 @@ def main():
     if a.station_limit:stations=stations[:a.station_limit]
     out=pathlib.Path(a.out);out.mkdir(parents=True,exist_ok=True)
     todo=[];resumed=0;previously_blocked=0
-    for task in tasks(stations,a.start_year,a.end_year):
+    for task in balanced_tasks(stations,a.start_year,a.end_year):
         s,period,url,ext=task;dest=out/s['provider']/s['station_id']/(period+'.'+ext);meta=dest.with_suffix(dest.suffix+'.json')
         if meta.exists():
             m=json.loads(meta.read_text())

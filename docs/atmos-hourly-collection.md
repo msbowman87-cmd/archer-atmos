@@ -24,3 +24,25 @@ python scripts/collect_selected_hourly.py --manifest research/station-selection-
 python scripts/collect_selected_hourly.py --manifest research/station-selection-20261105/stations.csv --out research/station-selection-20261105/observations --providers IEM_ASOS --max-batches 100 --workers 1
 python scripts/summarize_hourly_collection.py --manifest research/station-selection-20261105/stations.csv --out research/station-selection-20261105/observations --verify-hashes --report research/station-selection-20261105/collection_progress.json
 ```
+
+## Coverage audit, continuation and long-term preservation
+
+Country streams now alternate source-file tasks across the U.S., Canada, Mexico and Caribbean origins; the collector does not wait for every U.S. station before starting Mexican stations. The frozen station selection remains unchanged. IEM requests use a single worker, ten-second pacing and bounded backoff retries.
+
+`audit_hourly_coverage.py` checks hashes and reports nonmissing **distinct hourly bins for each source field**, expected hours, missing-hour fractions and source flag frequencies. Multiple subhourly measurements do not inflate hourly completeness. Quality flags remain uninterpreted until source-specific mappings are validated; observed coverage is not quality-approved training coverage.
+
+`package_hourly_archive.py` splits the checkpoint into CRC-checked ZIP parts, each capped at 512 MiB of uncompressed content. Its index records a SHA256 and member list for each part. Raw input inventory caches are excluded; source URLs and inventory hashes remain in the research checkpoint. Extract all parts into one directory to restore it.
+
+The preservation workflow publishes a separate **research-data prerelease**, explicitly targeting the research commit, with `latest=false`. The collection workflow also preserves each completed window this way. These release assets do not have the temporary workflow artifacts' 90-day expiry. Publication and upload-size verification must succeed before preservation is reported as complete. Access or hosting-policy changes remain possible; this is not a promise of immutable storage or a substitute for an independent backup. No main-branch update or production deployment occurs.
+
+The earlier statements that only 90-day storage was configured describe the previous workflow revision; the new preservation steps supersede that limitation once their runs succeed.
+
+## Remaining station-source work
+
+The USCRN/IEM cross-check reviewed 233 catalog records: 149 WBAN-matched stations are already selected through NOAA, and 216 matching catalog pairs have reported elevations differing by more than 20 units. This is a source/unit verification issue; no elevation has been converted or guessed. No new location was admitted from that review. The 3,191-location shortage, especially Canadian/Mexican regional archive verification, remains open. Additional source qualifications must pass the existing provenance, elevation, archive and duplicate checks before changing the collection list.
+
+## Regional-model preparation (not yet trained)
+
+The next model must use each station's surrounding and upstream observations, wind direction/speed, coordinates/elevation, and separately versioned radar/satellite features. Source weather variables keep their original measurements in the raw archive; a later normalized layer must document units and flag handling. Missing variables require explicit masks, not invented measurements.
+
+Use 2016–2023 for initial training, 2024 for model/feature choices, and 2025 for chronological evaluation. Reserve geographic tiles across all dates for a separate spatial-generalization evaluation. Fit scaling and calibration only on information available before each forecast. Any daily adaptation during evaluation must occur after that day's forecasts and be reported as prequential evaluation, separately from frozen-model scores. Score temperature, wind, humidity, pressure, precipitation and probability calibration individually against persistence and the existing model. No model training, radar/satellite completeness, or forecast improvement is claimed by this preparation document. Training remains gated on source-unit/QC interpretation and adequate verified coverage.

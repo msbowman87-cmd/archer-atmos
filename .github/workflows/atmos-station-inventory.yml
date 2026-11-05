@@ -15,7 +15,7 @@ concurrency:
   group: atmos-hourly-research-collection
   cancel-in-progress: false
 permissions:
-  contents: read
+  contents: write
   actions: read
 jobs:
   select:
@@ -73,6 +73,13 @@ jobs:
         run: |
           python scripts/summarize_hourly_collection.py --manifest research/station-selection-20261105/stations.csv --out research/station-selection-20261105/observations --verify-hashes --report research/station-selection-20261105/collection_progress.json
           cp docs/atmos-hourly-collection.md research/station-selection-20261105/DATA_ATTRIBUTION.md
+      - name: Audit and preserve research data beyond artifact expiry
+        if: ${{ !cancelled() && steps.verify.outcome == 'success' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          bash scripts/preserve_hourly_checkpoint.sh research/station-selection-20261105 "$RUNNER_TEMP/atmos-archives" "$GITHUB_SHA" "research-hourly-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
       - uses: actions/upload-artifact@v4
         if: ${{ always() && steps.verify.outcome == 'success' }}
         with:
