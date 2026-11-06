@@ -29,3 +29,6 @@ for part in index['parts']:
  assert assets[part['name']]['size']==part['bytes'],part['name']
 print(json.dumps({'release_url':published['url'],'parts':len(index['parts']),'asset_sizes_verified':True}))
 PY
+
+# Only prune original files after published asset sizes and original hashes agree.
+python scripts/hourly_checkpoint.py "$checkpoint" "$archive_dir" "$archive_label"

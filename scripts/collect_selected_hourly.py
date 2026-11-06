@@ -5,6 +5,7 @@ Successful files are resumed only after source-URL and SHA256 checks.
 """
 import argparse,calendar,collections,concurrent.futures,csv,datetime,hashlib,http.client,io,itertools,json,pathlib,re,time,urllib.error,urllib.parse,urllib.request
 from acquire_station_inventories import NOAA,IEM
+from hourly_checkpoint import complete
 
 def tasks(stations,start,end):
     for s in stations:
@@ -115,9 +116,9 @@ def collect(task,out,manifest_hash):
     s,period,url,ext=task
     if not re.fullmatch(r'[A-Za-z0-9_-]+',s['station_id']):raise ValueError('unsafe station identifier')
     dest=out/s['provider']/s['station_id']/(period+'.'+ext);meta=dest.with_suffix(dest.suffix+'.json');dest.parent.mkdir(parents=True,exist_ok=True)
-    if dest.exists() and meta.exists():
+    if meta.exists():
         m=json.loads(meta.read_text())
-        if m.get('url')==url and m.get('status')=='complete' and m.get('sha256')==hashlib.sha256(dest.read_bytes()).hexdigest():
+        if complete(dest,m,url):
             return dict(m,resumed=True)
     m=dict(provider=s['provider'],station_id=s['station_id'],period=period,url=url,manifest_sha256=manifest_hash,retrieved_at=datetime.datetime.now(datetime.timezone.utc).isoformat(),station_metadata_license=s['license'],license=('ECCC Data Services End-use Licence 2.1.1; attribution required; https://eccc-msc.github.io/open-data/licence/readme_en/' if s['provider']=='ECCC' else s['license']),attribution=('Data Source: Environment and Climate Change Canada' if s['provider']=='ECCC' else s['provider']))
     try:
@@ -141,9 +142,9 @@ def main():
         if meta.exists():
             m=json.loads(meta.read_text())
             if m.get('status')=='blocked' and m.get('url')==url and not a.retry_blocked and not m.get('retryable',retryable_error(m.get('error',''))):previously_blocked+=1;continue
-        if dest.exists() and meta.exists():
+        if meta.exists():
             m=json.loads(meta.read_text())
-            if m.get('status')=='complete' and m.get('url')==url and m.get('sha256')==hashlib.sha256(dest.read_bytes()).hexdigest():resumed+=1;continue
+            if complete(dest,m,url):resumed+=1;continue
         todo.append(task)
         if len(todo)>=a.max_batches:break
     results=[]

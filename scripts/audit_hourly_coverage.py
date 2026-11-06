@@ -2,6 +2,7 @@
 """Audit source measurements by station/field without changing source data or flags."""
 import argparse,calendar,collections,csv,datetime,hashlib,json,pathlib
 from collect_selected_hourly import tasks
+from hourly_checkpoint import archived_complete
 MISSING={'','M','-9999','-9999.0','-9999.9','-999.9'}
 NOAA_META={'STATION','Station_name','DATE','Year','Month','Day','Hour','Minute','LATITUDE','LONGITUDE','ELEVATION'}
 IEM_META={'station','valid','lon','lat','elevation','metar','peak_wind_time'}
@@ -45,24 +46,41 @@ def sha256(path):
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--manifest',required=True);p.add_argument('--observations',required=True);p.add_argument('--out',required=True);a=p.parse_args();manifest=pathlib.Path(a.manifest);raw=pathlib.Path(a.observations);out=pathlib.Path(a.out);out.mkdir(parents=True,exist_ok=True)
-    stations=list(csv.DictReader(manifest.open()));results=[];failures=[]
-    for s,period,url,ext in tasks(stations,2016,2025):
-        path=raw/s['provider']/s['station_id']/(period+'.'+ext);sidecar=path.with_suffix(path.suffix+'.json')
-        if not sidecar.exists():continue
-        m=json.loads(sidecar.read_text())
-        if m.get('status')!='complete' or m.get('url')!=url:continue
-        try:
-            if not path.exists() or sha256(path)!=m['sha256']:raise ValueError('source file missing or SHA256 mismatch')
-            r=audit_file(path,s['provider'],period)
-            results.append(dict(provider=s['provider'],station_id=s['station_id'],country=s['country'],period=period,sha256=m['sha256'],**r))
-            print(json.dumps(dict(event='batch_audited',provider=s['provider'],station_id=s['station_id'],period=period,records=r['records'])),flush=True)
-        except Exception as e:failures.append(dict(provider=s['provider'],station_id=s['station_id'],period=period,error=str(e)))
-    with (out/'variable_coverage.csv').open('w',newline='') as f:
+    stations=list(csv.DictReader(manifest.open()));failures=[];count=0;record_count=0;reused=0;parsed=0
+    # One-time migration from the original cumulative report.
+    legacy=out/'coverage_audit.json'
+    if legacy.exists():
+        previous=json.loads(legacy.read_text())
+        for r in previous.get('batches',[]):
+            if r.get('sha256'):
+                cache=raw/r['provider']/r['station_id']/(r['period']+'.coverage.json')
+                if not cache.exists():cache.write_text(json.dumps(dict(r,audit_version=1)))
+    with (out/'variable_coverage.csv').open('w',newline='') as stream,(out/'coverage_batches.jsonl').open('w') as detailed:
         fields=['provider','station_id','country','period','variable','expected_hours','nonmissing_records','observed_hours','missing_hour_fraction','source_quality_flags','quality_interpretation']
-        w=csv.DictWriter(f,fieldnames=fields);w.writeheader()
-        for r in results:
-            for v,stats in r['variables'].items():w.writerow({**{k:r[k] for k in ('provider','station_id','country','period','expected_hours')},'variable':v,**stats,'source_quality_flags':json.dumps(stats['source_quality_flags'],sort_keys=True),'quality_interpretation':'uninterpreted; not quality-approved coverage'})
-    report=dict(manifest_sha256=sha256(manifest),audited_batches=len(results),records=sum(r['records'] for r in results),integrity_or_parse_failures=failures,quality_approved=False,notes=['Missing-hour fractions use full source year/month expected hours; partial operating periods remain visible.','ECCC coverage uses local standard time; raw UTC_DATE is preserved. NOAA/IEM use UTC.','Subhourly reports count once per hour for each variable.','Source flags are reported without asserting they are acceptable for training. Units, flag mappings and archive completeness must be reviewed before model training.','Missing files outside completed checkpoints are pending, not assumed to contain observations.'],batches=results)
-    (out/'coverage_audit.json').write_text(json.dumps(report,indent=2))
-    print(json.dumps({k:v for k,v in report.items() if k!='batches'},indent=2))
+        writer=csv.DictWriter(stream,fieldnames=fields);writer.writeheader()
+        for station,period,url,ext in tasks(stations,2016,2025):
+            path=raw/station['provider']/station['station_id']/(period+'.'+ext);sidecar=path.with_suffix(path.suffix+'.json')
+            cache=path.parent/(period+'.coverage.json')
+            if not sidecar.exists():continue
+            meta=json.loads(sidecar.read_text())
+            if meta.get('status')!='complete' or meta.get('url')!=url:continue
+            try:
+                if path.exists():
+                    if sha256(path)!=meta['sha256']:raise ValueError('source SHA256 mismatch')
+                elif not archived_complete(meta):raise ValueError('source missing without verified archive')
+                cached=json.loads(cache.read_text()) if cache.exists() else {}
+                if cached.get('audit_version')==1 and cached.get('sha256')==meta['sha256']:
+                    result=cached;reused+=1
+                else:
+                    if not path.exists():raise ValueError('archived source needs an audit cache or restoration')
+                    result=dict(provider=station['provider'],station_id=station['station_id'],country=station['country'],period=period,sha256=meta['sha256'],audit_version=1,**audit_file(path,station['provider'],period))
+                    cache.write_text(json.dumps(result));parsed+=1
+                count+=1;record_count+=result['records'];detailed.write(json.dumps(result)+'\n')
+                for variable,stats in result['variables'].items():
+                    writer.writerow({**{k:result[k] for k in ('provider','station_id','country','period','expected_hours')},'variable':variable,**stats,'source_quality_flags':json.dumps(stats['source_quality_flags'],sort_keys=True),'quality_interpretation':'uninterpreted; not quality-approved coverage'})
+            except Exception as error:failures.append(dict(provider=station['provider'],station_id=station['station_id'],period=period,error=str(error)))
+    report=dict(manifest_sha256=sha256(manifest),audited_batches=count,records=record_count,incremental_cache_reused=reused,new_files_parsed=parsed,integrity_or_parse_failures=failures,quality_approved=False,batches_file='coverage_batches.jsonl',notes=['Coverage is distinct source hours per variable; source flags are not interpreted as training approval.','Full expected source year/month hours are used. ECCC uses local standard time; NOAA/IEM use UTC.','Present raw files are hash checked; archived files require verified archive references and matching versioned audit caches.'])
+    (out/'coverage_audit.json').write_text(json.dumps(report,indent=2));print(json.dumps(report,indent=2))
+    if failures:raise SystemExit('Integrity/audit failures prevent archival pruning')
+
 if __name__=='__main__':main()

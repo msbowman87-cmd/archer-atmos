@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       batches:
-        description: Maximum new batches per provider (1-120)
+        description: Source files per provider in each checkpoint window
         default: '100'
         required: true
   push:
@@ -16,70 +16,46 @@ concurrency:
   cancel-in-progress: false
 permissions:
   contents: write
-  actions: read
+  actions: write
 jobs:
   select:
     if: github.ref == 'refs/heads/research/daily-walk-forward-20261101'
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 330
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Focused offline regression tests
+      - name: Collection regression tests
         run: |
+          python -m py_compile scripts/hourly_checkpoint.py scripts/restore_hourly_checkpoint.py scripts/run_hourly_collection.py scripts/queue_hourly_successor.py scripts/audit_hourly_coverage.py
           python -m unittest discover -s tests -p test_multi_provider_station_selection.py -v
           python -m unittest discover -s tests -p test_selected_hourly_collection.py -v
-      - name: Resume latest checkpoint on this research branch
+          python -m unittest discover -s tests -p test_hourly_collection_summary.py -v
+          python -m unittest discover -s tests -p test_hourly_coverage_audit.py -v
+          python -m unittest discover -s tests -p test_hourly_archive_package.py -v
+          python -m unittest discover -s tests -p test_continuous_hourly.py -v
+      - name: Restore newest research checkpoint
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-        run: |
-          prior=$(gh api "repos/$GH_REPO/actions/artifacts?name=atmos-multi-provider-checkpoint&per_page=100" --jq '[.artifacts[] | select(.expired == false and .workflow_run.head_branch == "research/daily-walk-forward-20261101")] | sort_by(.created_at) | reverse | .[0].workflow_run.id // empty')
-          if [ -n "$prior" ]; then
-            gh run download "$prior" --name atmos-multi-provider-checkpoint --dir "$RUNNER_TEMP/atmos-checkpoint"
-            cp -a "$RUNNER_TEMP/atmos-checkpoint/." research/station-selection-20261105/
-          else
-            echo "No verified collection checkpoint available; stopping instead of substituting a new station list." >&2
-            exit 1
-          fi
+        run: python scripts/restore_hourly_checkpoint.py research/station-selection-20261105
       - name: Verify frozen station selection
         id: verify
-        run: |
-          python scripts/verify_station_manifest.py --input research/station-selection-20261105
-      - name: Collect NOAA station-year batches
-        env:
-          BATCHES: ${{ inputs.batches || '100' }}
-        run: |
-          python -c 'import os; n=int(os.environ["BATCHES"]); assert 1 <= n <= 120'
-          python scripts/collect_selected_hourly.py --manifest research/station-selection-20261105/stations.csv --out research/station-selection-20261105/observations --providers NOAA_GHCNh --max-batches "$BATCHES" --workers 2
-      - name: Collect ECCC station-month batches
-        if: ${{ !cancelled() && steps.verify.outcome == 'success' }}
-        env:
-          BATCHES: ${{ inputs.batches || '100' }}
-        run: |
-          python -c 'import os; n=int(os.environ["BATCHES"]); assert 1 <= n <= 120'
-          python scripts/collect_selected_hourly.py --manifest research/station-selection-20261105/stations.csv --out research/station-selection-20261105/observations --providers ECCC --max-batches "$BATCHES" --workers 2
-      - name: Collect IEM station-month batches
-        if: ${{ !cancelled() && steps.verify.outcome == 'success' }}
-        env:
-          BATCHES: ${{ inputs.batches || '100' }}
-        run: |
-          python -c 'import os; n=int(os.environ["BATCHES"]); assert 1 <= n <= 120'
-          python scripts/collect_selected_hourly.py --manifest research/station-selection-20261105/stations.csv --out research/station-selection-20261105/observations --providers IEM_ASOS --max-batches "$BATCHES" --workers 1
-      - name: Verify checkpoint integrity and summarize progress
-        if: ${{ !cancelled() && steps.verify.outcome == 'success' }}
-        run: |
-          python scripts/summarize_hourly_collection.py --manifest research/station-selection-20261105/stations.csv --out research/station-selection-20261105/observations --verify-hashes --report research/station-selection-20261105/collection_progress.json
-          cp docs/atmos-hourly-collection.md research/station-selection-20261105/DATA_ATTRIBUTION.md
-      - name: Audit and preserve research data beyond artifact expiry
-        if: ${{ !cancelled() && steps.verify.outcome == 'success' }}
+        run: python scripts/verify_station_manifest.py --input research/station-selection-20261105
+      - name: Queue the next research runner
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
+        run: python scripts/queue_hourly_successor.py
+      - name: Collect and archive successive windows
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          BATCHES: ${{ inputs.batches || '100' }}
         run: |
-          bash scripts/preserve_hourly_checkpoint.sh research/station-selection-20261105 "$RUNNER_TEMP/atmos-archives" "$GITHUB_SHA" "research-hourly-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          python scripts/run_hourly_collection.py --checkpoint research/station-selection-20261105 --seconds 16200 --batches "$BATCHES"
       - uses: actions/upload-artifact@v4
         if: ${{ always() && steps.verify.outcome == 'success' }}
         with:
@@ -87,3 +63,14 @@ jobs:
           path: research/station-selection-20261105/
           retention-days: 90
           compression-level: 6
+          overwrite: true
+      - name: Keep only the two newest temporary checkpoints
+        if: ${{ success() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh api "repos/$GH_REPO/actions/artifacts?name=atmos-multi-provider-checkpoint&per_page=100" --jq '[.artifacts[] | select(.workflow_run.head_branch == "research/daily-walk-forward-20261101")] | sort_by(.created_at) | reverse | .[2:][].id' > "$RUNNER_TEMP/old-atmos-artifacts"
+          while IFS= read -r artifact; do
+            [ -z "$artifact" ] || gh api -X DELETE "repos/$GH_REPO/actions/artifacts/$artifact"
+          done < "$RUNNER_TEMP/old-atmos-artifacts"
