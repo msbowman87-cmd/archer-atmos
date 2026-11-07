@@ -1,0 +1,38 @@
+name: Atmos preserve hourly research checkpoint
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - research/daily-walk-forward-20261101
+    paths:
+      - .github/workflows/atmos-research-archive.yml
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: atmos-research-archive
+  cancel-in-progress: false
+jobs:
+  preserve:
+    if: github.ref == 'refs/heads/research/daily-walk-forward-20261101'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Restore latest research checkpoint
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          prior=$(gh api "repos/$GH_REPO/actions/artifacts?name=atmos-multi-provider-checkpoint&per_page=100" --jq '[.artifacts[] | select(.expired == false and .workflow_run.head_branch == "research/daily-walk-forward-20261101")] | sort_by(.created_at) | reverse | .[0].workflow_run.id // empty')
+          test -n "$prior"
+          gh run download "$prior" --name atmos-multi-provider-checkpoint --dir "$RUNNER_TEMP/atmos-preserve"
+      - name: Audit and preserve a research data prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          bash scripts/preserve_hourly_checkpoint.sh "$RUNNER_TEMP/atmos-preserve" "$RUNNER_TEMP/atmos-archives" "$GITHUB_SHA" "research-hourly-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"

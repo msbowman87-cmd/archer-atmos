@@ -1,0 +1,52 @@
+name: Atmos NOAA v2 Observation Quality Pilot
+on:
+  push:
+    branches: [research/daily-walk-forward-20261101]
+    paths: ['.github/workflows/atmos-quality-pilot.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  pilot:
+    name: Validate v2 shard 0 and audit actual NOAA flags
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run NOAA QC tests
+        run: python -m unittest tests.test_observation_quality -v
+      - name: Download verified v2 archive shard 00
+        run: |
+          mkdir -p source files
+          gh release download atmos-noaa-observations-2006-2025-v2 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'atmos-nearest-hour-shard-00.tar.gz' --dir source
+          tar -xzf source/atmos-nearest-hour-shard-00.tar.gz -C files
+          test -s files/atmos-nearest-hour-shard-0/collection-status.json
+      - name: Audit and normalize 25 stations
+        run: |
+          python -m atmos.observation_quality --input-dir files/atmos-nearest-hour-shard-0 \
+            --output-dir qc --shard 0
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('qc/quality-report-00.json').read_text())['summary']
+          assert r['requested_years']==500
+          assert r['row_count']==3566535
+          assert r['normalized_rows']>0
+          assert r['audited_years']==476
+          assert r['off_hour_rows']>0
+          assert r['metrics_valid']['temperature_c']>0
+          assert r['metrics_valid']['relative_humidity_pct']>0
+          print('Verified v2 QC counts',r['row_count'],r['normalized_rows'])
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: atmos-quality-pilot-shard-0
+          path: qc/
+          retention-days: 30

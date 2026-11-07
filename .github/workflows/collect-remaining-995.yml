@@ -1,0 +1,38 @@
+name: Atmos Remaining 995 Stations — 20-Year Observation Collection
+on:
+  push:
+    branches: [research/daily-walk-forward-20261101]
+    paths: ['.github/workflows/collect-remaining-995.yml']
+permissions:
+  contents: read
+jobs:
+  collect:
+    name: Stations shard ${{ matrix.shard }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Collect next station shard
+        env:
+          SHARD: ${{ matrix.shard }}
+        run: |
+          START=$((5 + SHARD * 25))
+          COUNT=25
+          if [ "$SHARD" -eq 39 ]; then COUNT=20; fi
+          python -m atmos.global_observation_archive --station-start "$START" --station-count "$COUNT" --year-start 2006 --year-end 2025
+      - name: Save source observations and manifest even if some downloads fail
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: atmos-observations-shard-${{ matrix.shard }}
+          path: global-archive/
+          retention-days: 30
+          if-no-files-found: warn

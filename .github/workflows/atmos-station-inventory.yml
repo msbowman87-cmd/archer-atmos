@@ -1,0 +1,76 @@
+name: Atmos station inventory selection
+on:
+  workflow_dispatch:
+    inputs:
+      batches:
+        description: Source files per provider in each checkpoint window
+        default: '100'
+        required: true
+  push:
+    branches:
+      - research/daily-walk-forward-20261101
+    paths:
+      - .github/workflows/atmos-station-inventory.yml
+concurrency:
+  group: atmos-hourly-research-collection
+  cancel-in-progress: false
+permissions:
+  contents: write
+  actions: write
+jobs:
+  select:
+    if: github.ref == 'refs/heads/research/daily-walk-forward-20261101'
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Collection regression tests
+        run: |
+          python -m py_compile scripts/hourly_checkpoint.py scripts/restore_hourly_checkpoint.py scripts/run_hourly_collection.py scripts/queue_hourly_successor.py scripts/audit_hourly_coverage.py
+          python -m unittest discover -s tests -p test_multi_provider_station_selection.py -v
+          python -m unittest discover -s tests -p test_selected_hourly_collection.py -v
+          python -m unittest discover -s tests -p test_hourly_collection_summary.py -v
+          python -m unittest discover -s tests -p test_hourly_coverage_audit.py -v
+          python -m unittest discover -s tests -p test_hourly_archive_package.py -v
+          python -m unittest discover -s tests -p test_continuous_hourly.py -v
+      - name: Restore newest research checkpoint
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: python scripts/restore_hourly_checkpoint.py research/station-selection-20261105
+      - name: Verify frozen station selection
+        id: verify
+        run: python scripts/verify_station_manifest.py --input research/station-selection-20261105
+      - name: Queue the next research runner
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: python scripts/queue_hourly_successor.py
+      - name: Collect and archive successive windows
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          BATCHES: ${{ inputs.batches || '100' }}
+        run: |
+          python scripts/run_hourly_collection.py --checkpoint research/station-selection-20261105 --seconds 16200 --batches "$BATCHES"
+      - uses: actions/upload-artifact@v4
+        if: ${{ always() && steps.verify.outcome == 'success' }}
+        with:
+          name: atmos-multi-provider-checkpoint
+          path: research/station-selection-20261105/
+          retention-days: 90
+          compression-level: 6
+          overwrite: true
+      - name: Keep only the two newest temporary checkpoints
+        if: ${{ success() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh api "repos/$GH_REPO/actions/artifacts?name=atmos-multi-provider-checkpoint&per_page=100" --jq '[.artifacts[] | select(.workflow_run.head_branch == "research/daily-walk-forward-20261101")] | sort_by(.created_at) | reverse | .[2:][].id' > "$RUNNER_TEMP/old-atmos-artifacts"
+          while IFS= read -r artifact; do
+            [ -z "$artifact" ] || gh api -X DELETE "repos/$GH_REPO/actions/artifacts/$artifact"
+          done < "$RUNNER_TEMP/old-atmos-artifacts"

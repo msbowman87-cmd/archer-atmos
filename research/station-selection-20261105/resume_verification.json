@@ -1,0 +1,10 @@
+{
+  "manifest_sha256": "0ef269edb69f994f33c72b9cd5b5e1815b75bbbf8192b344596b0758d2f10a8e",
+  "attempted": 0,
+  "resumed_skipped": 10,
+  "previously_blocked_skipped": 0,
+  "completed": 0,
+  "blocked": 0,
+  "raw_bytes": 0,
+  "records": 0
+}

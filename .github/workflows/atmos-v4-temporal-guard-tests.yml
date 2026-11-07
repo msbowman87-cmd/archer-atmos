@@ -1,0 +1,20 @@
+name: Atmos V4 Chronological Guard Tests
+on:
+  push:
+    branches: [research/daily-walk-forward-20261101]
+    paths:
+      - 'atmos/v4_temporal_guards.py'
+      - 'tests/test_v4_temporal_guards.py'
+      - '.github/workflows/atmos-v4-temporal-guard-tests.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  temporal-guards:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m unittest discover -s tests -p 'test_v4_temporal_guards.py' -v

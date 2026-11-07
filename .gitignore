@@ -12,3 +12,5 @@ data/raw/
 # Local Netlify CLI metadata and installed dependencies
 .netlify/
 node_modules/
+research/station-selection-*/input/
+research/station-selection-*/observations/

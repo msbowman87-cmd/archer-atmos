@@ -1,0 +1,1874 @@
+{
+  "provider": "USCRN via IEM catalog cross-check",
+  "inventory_records": 233,
+  "already_selected": 149,
+  "elevation_disagreements": 216,
+  "new_verified_locations_added": 0,
+  "blocker": "Additional independent physical locations and compatible elevation units must be verified from primary NOAA metadata. No elevation converted or inferred.",
+  "records": [
+    {
+      "iem_station_id": "03047",
+      "noaa_station_id": "USW00003047",
+      "status": "already_selected",
+      "iem_reported_elevation": 2724.0,
+      "noaa_elevation_m": "830.3",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "03048",
+      "noaa_station_id": "USW00003048",
+      "status": "already_selected",
+      "iem_reported_elevation": 4847.0,
+      "noaa_elevation_m": "1477.4",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "03054",
+      "noaa_station_id": "USW00003054",
+      "status": "already_selected",
+      "iem_reported_elevation": 3742.0,
+      "noaa_elevation_m": "1140.6",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "03055",
+      "noaa_station_id": "USW00003055",
+      "status": "already_selected",
+      "iem_reported_elevation": 3266.0,
+      "noaa_elevation_m": "995.5",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "03060",
+      "noaa_station_id": "USW00003060",
+      "status": "already_selected",
+      "iem_reported_elevation": 8402.0,
+      "noaa_elevation_m": "2560.9",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "03061",
+      "noaa_station_id": "USW00003061",
+      "status": "already_selected",
+      "iem_reported_elevation": 8034.0,
+      "noaa_elevation_m": "2448.8",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "03062",
+      "noaa_station_id": "USW00003062",
+      "status": "already_selected",
+      "iem_reported_elevation": 8716.0,
+      "noaa_elevation_m": "2656.6",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "03063",
+      "noaa_station_id": "USW00003063",
+      "status": "already_selected",
+      "iem_reported_elevation": 4386.0,
+      "noaa_elevation_m": "1336.9",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "03067",
+      "noaa_station_id": "USW00003067",
+      "status": "already_selected",
+      "iem_reported_elevation": 2870.0,
+      "noaa_elevation_m": "874.8",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "03072",
+      "noaa_station_id": "USW00003072",
+      "status": "already_selected",
+      "iem_reported_elevation": 1997.0,
+      "noaa_elevation_m": "608.7",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "03074",
+      "noaa_station_id": "USW00003074",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 4327.0,
+      "noaa_elevation_m": "1318.9",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "03075",
+      "noaa_station_id": "USW00003075",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 6806.0,
+      "noaa_elevation_m": "2074.5",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "03076",
+      "noaa_station_id": "USW00003076",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 5806.0,
+      "noaa_elevation_m": "1769.7",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "03077",
+      "noaa_station_id": "USW00003077",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 5613.0,
+      "noaa_elevation_m": "1710.8",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "03078",
+      "noaa_station_id": "USW00003078",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 3967.0,
+      "noaa_elevation_m": "1209.1",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "03079",
+      "noaa_station_id": "USW00003079",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 7823.0,
+      "noaa_elevation_m": "2384.5",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "03080",
+      "noaa_station_id": "USW00003080",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 5842.0,
+      "noaa_elevation_m": "1780.6",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "03081",
+      "noaa_station_id": "USW00003081",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 5895.0,
+      "noaa_elevation_m": "1796.8",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "03082",
+      "noaa_station_id": "USW00003082",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 5366.0,
+      "noaa_elevation_m": "1635.6",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "03083",
+      "noaa_station_id": "USW00003083",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 4212.0,
+      "noaa_elevation_m": "1283.8",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "03084",
+      "noaa_station_id": "USW00003084",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 7678.0,
+      "noaa_elevation_m": "2340.3",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "03085",
+      "noaa_station_id": "USW00003085",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 5133.0,
+      "noaa_elevation_m": "1564.5",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "03086",
+      "noaa_station_id": "USW00003086",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 4557.0,
+      "noaa_elevation_m": "1389.0",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "03087",
+      "noaa_station_id": "USW00003087",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 7258.0,
+      "noaa_elevation_m": "2212.2",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "03088",
+      "noaa_station_id": "USW00003088",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 8535.0,
+      "noaa_elevation_m": "2601.5",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "03089",
+      "noaa_station_id": "USW00003089",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 4170.0,
+      "noaa_elevation_m": "1271.0",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "03090",
+      "noaa_station_id": "USW00003090",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 8151.0,
+      "noaa_elevation_m": "2484.4",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "03091",
+      "noaa_station_id": "USW00003091",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 5870.0,
+      "noaa_elevation_m": "1789.2",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "03092",
+      "noaa_station_id": "USW00003092",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 7232.0,
+      "noaa_elevation_m": "2204.3",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "03093",
+      "noaa_station_id": "USW00003093",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 4764.0,
+      "noaa_elevation_m": "1452.1",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "03094",
+      "noaa_station_id": "USW00003094",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 4885.0,
+      "noaa_elevation_m": "1488.9",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "03095",
+      "noaa_station_id": "USW00003095",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 5866.0,
+      "noaa_elevation_m": "1788.0",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "03096",
+      "noaa_station_id": "USW00003096",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 7550.0,
+      "noaa_elevation_m": "2301.2",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "03097",
+      "noaa_station_id": "USW00003097",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 6489.0,
+      "noaa_elevation_m": "1977.8",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "03098",
+      "noaa_station_id": "USW00003098",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 8605.0,
+      "noaa_elevation_m": "2622.8",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "03099",
+      "noaa_station_id": "USW00003099",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 6518.0,
+      "noaa_elevation_m": "1986.7",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "03728",
+      "noaa_station_id": "USW00003728",
+      "status": "already_selected",
+      "iem_reported_elevation": 9.0,
+      "noaa_elevation_m": "2.7",
+      "elevation_disagreement": false
+    },
+    {
+      "iem_station_id": "03733",
+      "noaa_station_id": "USW00003733",
+      "status": "already_selected",
+      "iem_reported_elevation": 3390.0,
+      "noaa_elevation_m": "1033.3",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "03739",
+      "noaa_station_id": "USW00003739",
+      "status": "already_selected",
+      "iem_reported_elevation": 29.0,
+      "noaa_elevation_m": "8.8",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "03758",
+      "noaa_station_id": "USW00003758",
+      "status": "already_selected",
+      "iem_reported_elevation": 562.0,
+      "noaa_elevation_m": "171.3",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "03759",
+      "noaa_station_id": "USW00003759",
+      "status": "already_selected",
+      "iem_reported_elevation": 1177.0,
+      "noaa_elevation_m": "358.7",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "03761",
+      "noaa_station_id": "USW00003761",
+      "status": "already_selected",
+      "iem_reported_elevation": 400.0,
+      "noaa_elevation_m": "121.9",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "04125",
+      "noaa_station_id": "USW00004125",
+      "status": "already_selected",
+      "iem_reported_elevation": 2245.0,
+      "noaa_elevation_m": "684.3",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "04126",
+      "noaa_station_id": "USW00004126",
+      "status": "already_selected",
+      "iem_reported_elevation": 5920.0,
+      "noaa_elevation_m": "1804.4",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "04127",
+      "noaa_station_id": "USW00004127",
+      "status": "already_selected",
+      "iem_reported_elevation": 3950.0,
+      "noaa_elevation_m": "1204.0",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "04128",
+      "noaa_station_id": "USW00004128",
+      "status": "already_selected",
+      "iem_reported_elevation": 4583.0,
+      "noaa_elevation_m": "1396.9",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "04130",
+      "noaa_station_id": "USW00004130",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 4555.0,
+      "noaa_elevation_m": "1388.4",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "04131",
+      "noaa_station_id": "USW00004131",
+      "status": "already_selected",
+      "iem_reported_elevation": 6466.0,
+      "noaa_elevation_m": "1970.8",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "04136",
+      "noaa_station_id": "USW00004136",
+      "status": "already_selected",
+      "iem_reported_elevation": 2267.0,
+      "noaa_elevation_m": "691.0",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "04137",
+      "noaa_station_id": "USW00004137",
+      "status": "already_selected",
+      "iem_reported_elevation": 5971.0,
+      "noaa_elevation_m": "1820.0",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "04138",
+      "noaa_station_id": "USW00004138",
+      "status": "already_selected",
+      "iem_reported_elevation": 4951.0,
+      "noaa_elevation_m": "1509.1",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "04139",
+      "noaa_station_id": "USW00004139",
+      "status": "already_selected",
+      "iem_reported_elevation": 6500.0,
+      "noaa_elevation_m": "1981.2",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "04140",
+      "noaa_station_id": "USW00004140",
+      "status": "already_selected",
+      "iem_reported_elevation": 5070.0,
+      "noaa_elevation_m": "1545.3",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "04141",
+      "noaa_station_id": "USW00004141",
+      "status": "already_selected",
+      "iem_reported_elevation": 12.0,
+      "noaa_elevation_m": "3.7",
+      "elevation_disagreement": false
+    },
+    {
+      "iem_station_id": "04143",
+      "noaa_station_id": "USW00004143",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 7808.0,
+      "noaa_elevation_m": "2379.9",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "04222",
+      "noaa_station_id": "USW00004222",
+      "status": "already_selected",
+      "iem_reported_elevation": 1418.0,
+      "noaa_elevation_m": "432.2",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "04223",
+      "noaa_station_id": "USW00004223",
+      "status": "already_selected",
+      "iem_reported_elevation": 407.0,
+      "noaa_elevation_m": "124.1",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "04236",
+      "noaa_station_id": "USW00004236",
+      "status": "already_selected",
+      "iem_reported_elevation": 312.0,
+      "noaa_elevation_m": "95.1",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "04237",
+      "noaa_station_id": "USW00004237",
+      "status": "already_selected",
+      "iem_reported_elevation": 286.0,
+      "noaa_elevation_m": "87.2",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "04990",
+      "noaa_station_id": "USW00004990",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 1594.0,
+      "noaa_elevation_m": "485.9",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "04994",
+      "noaa_station_id": "USW00004994",
+      "status": "already_selected",
+      "iem_reported_elevation": 1150.0,
+      "noaa_elevation_m": "350.5",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "12987",
+      "noaa_station_id": "USW00012987",
+      "status": "already_selected",
+      "iem_reported_elevation": 64.0,
+      "noaa_elevation_m": "19.5",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "13301",
+      "noaa_station_id": "USW00013301",
+      "status": "already_selected",
+      "iem_reported_elevation": 833.0,
+      "noaa_elevation_m": "253.9",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "21514",
+      "noaa_station_id": "USW00021514",
+      "status": "already_selected",
+      "iem_reported_elevation": 11179.0,
+      "noaa_elevation_m": "3407.4",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "21515",
+      "noaa_station_id": "USW00021515",
+      "status": "already_selected",
+      "iem_reported_elevation": 622.0,
+      "noaa_elevation_m": "189.6",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "22016",
+      "noaa_station_id": "USW00022016",
+      "status": "already_selected",
+      "iem_reported_elevation": 3494.0,
+      "noaa_elevation_m": "1065.0",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "23801",
+      "noaa_station_id": "USW00023801",
+      "status": "already_selected",
+      "iem_reported_elevation": 472.0,
+      "noaa_elevation_m": "143.9",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "23802",
+      "noaa_station_id": "USW00023802",
+      "status": "already_selected",
+      "iem_reported_elevation": 350.0,
+      "noaa_elevation_m": "106.7",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "23803",
+      "noaa_station_id": "USW00023803",
+      "status": "already_selected",
+      "iem_reported_elevation": 484.0,
+      "noaa_elevation_m": "147.5",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "23904",
+      "noaa_station_id": "USW00023904",
+      "status": "already_selected",
+      "iem_reported_elevation": 455.0,
+      "noaa_elevation_m": "138.7",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "23906",
+      "noaa_station_id": "USW00023906",
+      "status": "already_selected",
+      "iem_reported_elevation": 7.6883087,
+      "noaa_elevation_m": "4.6",
+      "elevation_disagreement": false
+    },
+    {
+      "iem_station_id": "23907",
+      "noaa_station_id": "USW00023907",
+      "status": "already_selected",
+      "iem_reported_elevation": 1361.0,
+      "noaa_elevation_m": "414.8",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "23908",
+      "noaa_station_id": "USW00023908",
+      "status": "already_selected",
+      "iem_reported_elevation": 952.0,
+      "noaa_elevation_m": "290.2",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "23909",
+      "noaa_station_id": "USW00023909",
+      "status": "already_selected",
+      "iem_reported_elevation": 1198.0,
+      "noaa_elevation_m": "365.2",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "25379",
+      "noaa_station_id": "USW00025379",
+      "status": "already_selected",
+      "iem_reported_elevation": 78.0,
+      "noaa_elevation_m": "23.8",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "25380",
+      "noaa_station_id": "USW00025380",
+      "status": "already_selected",
+      "iem_reported_elevation": 20.0,
+      "noaa_elevation_m": "6.1",
+      "elevation_disagreement": false
+    },
+    {
+      "iem_station_id": "25381",
+      "noaa_station_id": "USW00025381",
+      "status": "already_selected",
+      "iem_reported_elevation": 105.0,
+      "noaa_elevation_m": "32.0",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "25382",
+      "noaa_station_id": "USW00025382",
+      "status": "already_selected",
+      "iem_reported_elevation": 26.0,
+      "noaa_elevation_m": "7.9",
+      "elevation_disagreement": false
+    },
+    {
+      "iem_station_id": "25522",
+      "noaa_station_id": "USW00025522",
+      "status": "already_selected",
+      "iem_reported_elevation": 661.0,
+      "noaa_elevation_m": "201.5",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "25630",
+      "noaa_station_id": "USW00025630",
+      "status": "already_selected",
+      "iem_reported_elevation": 240.0,
+      "noaa_elevation_m": "73.2",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "25711",
+      "noaa_station_id": "USW00025711",
+      "status": "already_selected",
+      "iem_reported_elevation": 20.0,
+      "noaa_elevation_m": "6.1",
+      "elevation_disagreement": false
+    },
+    {
+      "iem_station_id": "26494",
+      "noaa_station_id": "USW00026494",
+      "status": "already_selected",
+      "iem_reported_elevation": 1140.0,
+      "noaa_elevation_m": "347.5",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "26562",
+      "noaa_station_id": "USW00026562",
+      "status": "already_selected",
+      "iem_reported_elevation": 321.0,
+      "noaa_elevation_m": "97.8",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "26563",
+      "noaa_station_id": "USW00026563",
+      "status": "already_selected",
+      "iem_reported_elevation": 282.0,
+      "noaa_elevation_m": "86.0",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "26564",
+      "noaa_station_id": "USW00026564",
+      "status": "already_selected",
+      "iem_reported_elevation": 1909.0,
+      "noaa_elevation_m": "581.9",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "26565",
+      "noaa_station_id": "USW00026565",
+      "status": "already_selected",
+      "iem_reported_elevation": 30.0,
+      "noaa_elevation_m": "9.1",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "26655",
+      "noaa_station_id": "USW00026655",
+      "status": "already_selected",
+      "iem_reported_elevation": 942.0,
+      "noaa_elevation_m": "287.1",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "27516",
+      "noaa_station_id": "USW00027516",
+      "status": "already_selected",
+      "iem_reported_elevation": 15.0,
+      "noaa_elevation_m": "4.6",
+      "elevation_disagreement": false
+    },
+    {
+      "iem_station_id": "37201",
+      "noaa_station_id": "USW00037201",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 30.0,
+      "noaa_elevation_m": null,
+      "elevation_disagreement": false
+    },
+    {
+      "iem_station_id": "53002",
+      "noaa_station_id": "USW00053002",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 3501.0,
+      "noaa_elevation_m": "1067.1",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53003",
+      "noaa_station_id": "USW00053003",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 6443.0,
+      "noaa_elevation_m": "1963.8",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53004",
+      "noaa_station_id": "USW00053004",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 6428.0,
+      "noaa_elevation_m": "1959.3",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53005",
+      "noaa_station_id": "USW00053005",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 7933.0,
+      "noaa_elevation_m": "2418.0",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53006",
+      "noaa_station_id": "USW00053006",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 3300.0,
+      "noaa_elevation_m": "1005.8",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53007",
+      "noaa_station_id": "USW00053007",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 7872.0,
+      "noaa_elevation_m": "2399.4",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53008",
+      "noaa_station_id": "USW00053008",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 4316.0,
+      "noaa_elevation_m": "1315.5",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53009",
+      "noaa_station_id": "USW00053009",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 7164.0,
+      "noaa_elevation_m": "2183.6",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53010",
+      "noaa_station_id": "USW00053010",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 5025.0,
+      "noaa_elevation_m": "1531.6",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53011",
+      "noaa_station_id": "USW00053011",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 7071.0,
+      "noaa_elevation_m": "2155.2",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53012",
+      "noaa_station_id": "USW00053012",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 4390.0,
+      "noaa_elevation_m": "1338.1",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53013",
+      "noaa_station_id": "USW00053013",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 5096.0,
+      "noaa_elevation_m": "1553.3",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53014",
+      "noaa_station_id": "USW00053014",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 6364.0,
+      "noaa_elevation_m": "1939.7",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53015",
+      "noaa_station_id": "USW00053015",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 3552.0,
+      "noaa_elevation_m": "1082.6",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53016",
+      "noaa_station_id": "USW00053016",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 5034.0,
+      "noaa_elevation_m": "1534.4",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53017",
+      "noaa_station_id": "USW00053017",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 7024.0,
+      "noaa_elevation_m": "2140.9",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53019",
+      "noaa_station_id": "USW00053019",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 5173.0,
+      "noaa_elevation_m": "1576.7",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53022",
+      "noaa_station_id": "USW00053022",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 4313.0,
+      "noaa_elevation_m": "1314.6",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53023",
+      "noaa_station_id": "USW00053023",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 6275.0,
+      "noaa_elevation_m": "1912.6",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53024",
+      "noaa_station_id": "USW00053024",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 6847.0,
+      "noaa_elevation_m": "2087.0",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53025",
+      "noaa_station_id": "USW00053025",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 4652.0,
+      "noaa_elevation_m": "1417.9",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53026",
+      "noaa_station_id": "USW00053026",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 5456.0,
+      "noaa_elevation_m": "1663.0",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53131",
+      "noaa_station_id": "USW00053131",
+      "status": "already_selected",
+      "iem_reported_elevation": 2733.0,
+      "noaa_elevation_m": "833.0",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53132",
+      "noaa_station_id": "USW00053132",
+      "status": "already_selected",
+      "iem_reported_elevation": 4811.0,
+      "noaa_elevation_m": "1466.4",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53136",
+      "noaa_station_id": "USW00053136",
+      "status": "already_selected",
+      "iem_reported_elevation": 3284.0,
+      "noaa_elevation_m": "1001.0",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53138",
+      "noaa_station_id": "USW00053138",
+      "status": "already_selected",
+      "iem_reported_elevation": 6617.0,
+      "noaa_elevation_m": "2016.9",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53139",
+      "noaa_station_id": "USW00053139",
+      "status": "already_selected",
+      "iem_reported_elevation": 84.0,
+      "noaa_elevation_m": "25.6",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53149",
+      "noaa_station_id": "USW00053149",
+      "status": "already_selected",
+      "iem_reported_elevation": 6204.0,
+      "noaa_elevation_m": "1891.0",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53150",
+      "noaa_station_id": "USW00053150",
+      "status": "already_selected",
+      "iem_reported_elevation": 6620.0,
+      "noaa_elevation_m": "2017.8",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53151",
+      "noaa_station_id": "USW00053151",
+      "status": "already_selected",
+      "iem_reported_elevation": 1140.0,
+      "noaa_elevation_m": "347.5",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53152",
+      "noaa_station_id": "USW00053152",
+      "status": "already_selected",
+      "iem_reported_elevation": 18.0,
+      "noaa_elevation_m": "5.5",
+      "elevation_disagreement": false
+    },
+    {
+      "iem_station_id": "53154",
+      "noaa_station_id": "USW00053154",
+      "status": "already_selected",
+      "iem_reported_elevation": 620.0,
+      "noaa_elevation_m": "189.0",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53155",
+      "noaa_station_id": "USW00053155",
+      "status": "already_selected",
+      "iem_reported_elevation": 5990.0,
+      "noaa_elevation_m": "1825.8",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53156",
+      "noaa_station_id": "USW00053156",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 1404.0,
+      "noaa_elevation_m": "427.9",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53159",
+      "noaa_station_id": "USW00053159",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 4807.0,
+      "noaa_elevation_m": "1465.2",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53160",
+      "noaa_station_id": "USW00053160",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 3434.0,
+      "noaa_elevation_m": "1046.7",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53162",
+      "noaa_station_id": "USW00053162",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 1425.0,
+      "noaa_elevation_m": "434.3",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53163",
+      "noaa_station_id": "USW00053163",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 10486.0,
+      "noaa_elevation_m": "3196.1",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53164",
+      "noaa_station_id": "USW00053164",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 3254.0,
+      "noaa_elevation_m": "991.8",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53165",
+      "noaa_station_id": "USW00053165",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 4761.0,
+      "noaa_elevation_m": "1451.2",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53166",
+      "noaa_station_id": "USW00053166",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 3417.0,
+      "noaa_elevation_m": "1041.5",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53167",
+      "noaa_station_id": "USW00053167",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 5748.0,
+      "noaa_elevation_m": "1752.0",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53168",
+      "noaa_station_id": "USW00053168",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 1661.0,
+      "noaa_elevation_m": "506.3",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53169",
+      "noaa_station_id": "USW00053169",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 7274.0,
+      "noaa_elevation_m": "2217.1",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53170",
+      "noaa_station_id": "USW00053170",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 6625.0,
+      "noaa_elevation_m": "2019.3",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53171",
+      "noaa_station_id": "USW00053171",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 5255.0,
+      "noaa_elevation_m": "1601.7",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53172",
+      "noaa_station_id": "USW00053172",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 416.0,
+      "noaa_elevation_m": "126.8",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53173",
+      "noaa_station_id": "USW00053173",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 6449.0,
+      "noaa_elevation_m": "1965.7",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53174",
+      "noaa_station_id": "USW00053174",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 5835.0,
+      "noaa_elevation_m": "1778.5",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53176",
+      "noaa_station_id": "USW00053176",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 780.0,
+      "noaa_elevation_m": "237.7",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53180",
+      "noaa_station_id": "USW00053180",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 3425.0,
+      "noaa_elevation_m": "1043.9",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53181",
+      "noaa_station_id": "USW00053181",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 3176.0,
+      "noaa_elevation_m": "968.0",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53182",
+      "noaa_station_id": "USW00053182",
+      "status": "already_selected",
+      "iem_reported_elevation": 3282.0,
+      "noaa_elevation_m": "1000.4",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53183",
+      "noaa_station_id": "USW00053183",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 5147.0,
+      "noaa_elevation_m": "1568.8",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53184",
+      "noaa_station_id": "USW00053184",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 2938.0,
+      "noaa_elevation_m": "895.5",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53185",
+      "noaa_station_id": "USW00053185",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 10132.0,
+      "noaa_elevation_m": "3088.2",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53877",
+      "noaa_station_id": "USW00053877",
+      "status": "already_selected",
+      "iem_reported_elevation": 2151.0,
+      "noaa_elevation_m": "655.6",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53878",
+      "noaa_station_id": "USW00053878",
+      "status": "already_selected",
+      "iem_reported_elevation": 2103.0,
+      "noaa_elevation_m": "641.0",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53926",
+      "noaa_station_id": "USW00053926",
+      "status": "already_selected",
+      "iem_reported_elevation": 890.0,
+      "noaa_elevation_m": "271.3",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53927",
+      "noaa_station_id": "USW00053927",
+      "status": "already_selected",
+      "iem_reported_elevation": 888.0,
+      "noaa_elevation_m": "270.7",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53960",
+      "noaa_station_id": "USW00053960",
+      "status": "already_selected",
+      "iem_reported_elevation": 35.0,
+      "noaa_elevation_m": "10.7",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53961",
+      "noaa_station_id": "USW00053961",
+      "status": "already_selected",
+      "iem_reported_elevation": 88.0,
+      "noaa_elevation_m": "26.8",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53968",
+      "noaa_station_id": "USW00053968",
+      "status": "already_selected",
+      "iem_reported_elevation": 383.0,
+      "noaa_elevation_m": "116.7",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "53974",
+      "noaa_station_id": "USW00053974",
+      "status": "already_selected",
+      "iem_reported_elevation": 1137.0,
+      "noaa_elevation_m": "346.6",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "54794",
+      "noaa_station_id": "USW00054794",
+      "status": "already_selected",
+      "iem_reported_elevation": 119.0,
+      "noaa_elevation_m": "36.3",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "54795",
+      "noaa_station_id": "USW00054795",
+      "status": "already_selected",
+      "iem_reported_elevation": 63.0,
+      "noaa_elevation_m": "19.2",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "54796",
+      "noaa_station_id": "USW00054796",
+      "status": "already_selected",
+      "iem_reported_elevation": 115.0,
+      "noaa_elevation_m": "35.1",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "54797",
+      "noaa_station_id": "USW00054797",
+      "status": "already_selected",
+      "iem_reported_elevation": 106.0,
+      "noaa_elevation_m": "32.3",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "54808",
+      "noaa_station_id": "USW00054808",
+      "status": "already_selected",
+      "iem_reported_elevation": 700.0,
+      "noaa_elevation_m": "213.4",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "54810",
+      "noaa_station_id": "USW00054810",
+      "status": "already_selected",
+      "iem_reported_elevation": 875.0,
+      "noaa_elevation_m": "266.7",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "54811",
+      "noaa_station_id": "USW00054811",
+      "status": "already_selected",
+      "iem_reported_elevation": 861.0,
+      "noaa_elevation_m": "262.4",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "54851",
+      "noaa_station_id": "USW00054851",
+      "status": "already_selected",
+      "iem_reported_elevation": 1120.0,
+      "noaa_elevation_m": "341.4",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "54854",
+      "noaa_station_id": "USW00054854",
+      "status": "already_selected",
+      "iem_reported_elevation": 1461.0,
+      "noaa_elevation_m": "445.3",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "54856",
+      "noaa_station_id": "USW00054856",
+      "status": "already_selected",
+      "iem_reported_elevation": 1102.0,
+      "noaa_elevation_m": "335.9",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "54902",
+      "noaa_station_id": "USW00054902",
+      "status": "already_selected",
+      "iem_reported_elevation": 275.36966,
+      "noaa_elevation_m": "280.7",
+      "elevation_disagreement": false
+    },
+    {
+      "iem_station_id": "54903",
+      "noaa_station_id": "USW00054903",
+      "status": "already_selected",
+      "iem_reported_elevation": 933.0,
+      "noaa_elevation_m": "284.4",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "54932",
+      "noaa_station_id": "USW00054932",
+      "status": "already_selected",
+      "iem_reported_elevation": 1130.0,
+      "noaa_elevation_m": "344.4",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "54933",
+      "noaa_station_id": "USW00054933",
+      "status": "already_selected",
+      "iem_reported_elevation": 1957.0,
+      "noaa_elevation_m": "596.5",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "54937",
+      "noaa_station_id": "USW00054937",
+      "status": "already_selected",
+      "iem_reported_elevation": 1920.0,
+      "noaa_elevation_m": "585.2",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "56401",
+      "noaa_station_id": "USW00056401",
+      "status": "already_selected",
+      "iem_reported_elevation": 2669.0,
+      "noaa_elevation_m": "813.5",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "63826",
+      "noaa_station_id": "USW00063826",
+      "status": "already_selected",
+      "iem_reported_elevation": 317.0,
+      "noaa_elevation_m": "96.6",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "63828",
+      "noaa_station_id": "USW00063828",
+      "status": "already_selected",
+      "iem_reported_elevation": 176.0,
+      "noaa_elevation_m": "53.6",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "63829",
+      "noaa_station_id": "USW00063829",
+      "status": "already_selected",
+      "iem_reported_elevation": 156.0,
+      "noaa_elevation_m": "47.5",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "63831",
+      "noaa_station_id": "USW00063831",
+      "status": "already_selected",
+      "iem_reported_elevation": 374.0,
+      "noaa_elevation_m": "114.0",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "63838",
+      "noaa_station_id": "USW00063838",
+      "status": "already_selected",
+      "iem_reported_elevation": 891.0,
+      "noaa_elevation_m": "271.6",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "63849",
+      "noaa_station_id": "USW00063849",
+      "status": "already_selected",
+      "iem_reported_elevation": 790.0,
+      "noaa_elevation_m": "240.8",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "63850",
+      "noaa_station_id": "USW00063850",
+      "status": "already_selected",
+      "iem_reported_elevation": 741.0,
+      "noaa_elevation_m": "225.9",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "63855",
+      "noaa_station_id": "USW00063855",
+      "status": "already_selected",
+      "iem_reported_elevation": 1913.0,
+      "noaa_elevation_m": "583.1",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "63856",
+      "noaa_station_id": "USW00063856",
+      "status": "already_selected",
+      "iem_reported_elevation": 25.0,
+      "noaa_elevation_m": "7.6",
+      "elevation_disagreement": false
+    },
+    {
+      "iem_station_id": "63857",
+      "noaa_station_id": "USW00063857",
+      "status": "already_selected",
+      "iem_reported_elevation": 1152.0,
+      "noaa_elevation_m": "351.1",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "63858",
+      "noaa_station_id": "USW00063858",
+      "status": "already_selected",
+      "iem_reported_elevation": 193.0,
+      "noaa_elevation_m": "58.8",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "63862",
+      "noaa_station_id": "USW00063862",
+      "status": "already_selected",
+      "iem_reported_elevation": 1020.0,
+      "noaa_elevation_m": "310.9",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "63866",
+      "noaa_station_id": "USW00063866",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 620.0,
+      "noaa_elevation_m": "189.0",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "63867",
+      "noaa_station_id": "USW00063867",
+      "status": "already_selected",
+      "iem_reported_elevation": 800.0,
+      "noaa_elevation_m": "243.8",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "63868",
+      "noaa_station_id": "USW00063868",
+      "status": "already_selected",
+      "iem_reported_elevation": 575.0,
+      "noaa_elevation_m": "175.3",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "63869",
+      "noaa_station_id": "USW00063869",
+      "status": "already_selected",
+      "iem_reported_elevation": 95.0,
+      "noaa_elevation_m": "29.0",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "63891",
+      "noaa_station_id": "USW00063891",
+      "status": "already_selected",
+      "iem_reported_elevation": 584.0,
+      "noaa_elevation_m": "178.0",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "63892",
+      "noaa_station_id": "USW00063892",
+      "status": "already_selected",
+      "iem_reported_elevation": 107.0,
+      "noaa_elevation_m": "32.6",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "63893",
+      "noaa_station_id": "USW00063893",
+      "status": "already_selected",
+      "iem_reported_elevation": 280.0,
+      "noaa_elevation_m": "85.3",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "63894",
+      "noaa_station_id": "USW00063894",
+      "status": "already_selected",
+      "iem_reported_elevation": 530.0,
+      "noaa_elevation_m": "161.5",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "63895",
+      "noaa_station_id": "USW00063895",
+      "status": "already_selected",
+      "iem_reported_elevation": 720.0,
+      "noaa_elevation_m": "219.5",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "63896",
+      "noaa_station_id": "USW00063896",
+      "status": "already_selected",
+      "iem_reported_elevation": 636.0,
+      "noaa_elevation_m": "193.9",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "63897",
+      "noaa_station_id": "USW00063897",
+      "status": "already_selected",
+      "iem_reported_elevation": 157.0,
+      "noaa_elevation_m": "47.9",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "63898",
+      "noaa_station_id": "USW00063898",
+      "status": "already_selected",
+      "iem_reported_elevation": 760.0,
+      "noaa_elevation_m": "231.6",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "63899",
+      "noaa_station_id": "USW00063899",
+      "status": "already_selected",
+      "iem_reported_elevation": 170.0,
+      "noaa_elevation_m": "51.8",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "64756",
+      "noaa_station_id": "USW00064756",
+      "status": "already_selected",
+      "iem_reported_elevation": 413.0,
+      "noaa_elevation_m": "125.9",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "64757",
+      "noaa_station_id": "USW00064757",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 807.0,
+      "noaa_elevation_m": null,
+      "elevation_disagreement": false
+    },
+    {
+      "iem_station_id": "64758",
+      "noaa_station_id": "USW00064758",
+      "status": "already_selected",
+      "iem_reported_elevation": 1228.0,
+      "noaa_elevation_m": "374.3",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "73801",
+      "noaa_station_id": "USW00073801",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 150.0,
+      "noaa_elevation_m": "45.7",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "73802",
+      "noaa_station_id": "USW00073802",
+      "status": "already_selected",
+      "iem_reported_elevation": 614.0,
+      "noaa_elevation_m": "187.1",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "73803",
+      "noaa_station_id": "USW00073803",
+      "status": "already_selected",
+      "iem_reported_elevation": 525.0,
+      "noaa_elevation_m": "160.0",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "92821",
+      "noaa_station_id": "USW00092821",
+      "status": "already_selected",
+      "iem_reported_elevation": 3.0,
+      "noaa_elevation_m": "0.9",
+      "elevation_disagreement": false
+    },
+    {
+      "iem_station_id": "92826",
+      "noaa_station_id": "USW00092826",
+      "status": "already_selected",
+      "iem_reported_elevation": 4.0,
+      "noaa_elevation_m": "1.2",
+      "elevation_disagreement": false
+    },
+    {
+      "iem_station_id": "92827",
+      "noaa_station_id": "USW00092827",
+      "status": "already_selected",
+      "iem_reported_elevation": 150.0,
+      "noaa_elevation_m": "45.7",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "93243",
+      "noaa_station_id": "USW00093243",
+      "status": "already_selected",
+      "iem_reported_elevation": 78.0,
+      "noaa_elevation_m": "23.8",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "93245",
+      "noaa_station_id": "USW00093245",
+      "status": "already_selected",
+      "iem_reported_elevation": 63.0,
+      "noaa_elevation_m": "19.2",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "94059",
+      "noaa_station_id": "USW00094059",
+      "status": "already_selected",
+      "iem_reported_elevation": 2643.0,
+      "noaa_elevation_m": "805.6",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "94060",
+      "noaa_station_id": "USW00094060",
+      "status": "already_selected",
+      "iem_reported_elevation": 2085.0,
+      "noaa_elevation_m": "635.5",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "94074",
+      "noaa_station_id": "USW00094074",
+      "status": "already_selected",
+      "iem_reported_elevation": 5390.0,
+      "noaa_elevation_m": "1642.9",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "94075",
+      "noaa_station_id": "USW00094075",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 9828.0,
+      "noaa_elevation_m": "2995.6",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "94077",
+      "noaa_station_id": "USW00094077",
+      "status": "already_selected",
+      "iem_reported_elevation": 4406.0,
+      "noaa_elevation_m": "1342.9",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "94078",
+      "noaa_station_id": "USW00094078",
+      "status": "already_selected",
+      "iem_reported_elevation": 5773.0,
+      "noaa_elevation_m": "1759.6",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "94079",
+      "noaa_station_id": "USW00094079",
+      "status": "already_selected",
+      "iem_reported_elevation": 3740.0,
+      "noaa_elevation_m": "1140.0",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "94080",
+      "noaa_station_id": "USW00094080",
+      "status": "already_selected",
+      "iem_reported_elevation": 2771.0,
+      "noaa_elevation_m": "844.6",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "94081",
+      "noaa_station_id": "USW00094081",
+      "status": "already_selected",
+      "iem_reported_elevation": 2883.0,
+      "noaa_elevation_m": "878.7",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "94082",
+      "noaa_station_id": "USW00094082",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 6062.0,
+      "noaa_elevation_m": "1847.7",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "94084",
+      "noaa_station_id": "USW00094084",
+      "status": "already_selected",
+      "iem_reported_elevation": 1842.0,
+      "noaa_elevation_m": "561.4",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "94085",
+      "noaa_station_id": "USW00094085",
+      "status": "already_selected",
+      "iem_reported_elevation": 647.0,
+      "noaa_elevation_m": "647.4",
+      "elevation_disagreement": false
+    },
+    {
+      "iem_station_id": "94088",
+      "noaa_station_id": "USW00094088",
+      "status": "already_selected",
+      "iem_reported_elevation": 5792.0,
+      "noaa_elevation_m": "1765.4",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "94092",
+      "noaa_station_id": "USW00094092",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 4542.0,
+      "noaa_elevation_m": "1384.4",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "94094",
+      "noaa_station_id": "USW00094094",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 5761.0,
+      "noaa_elevation_m": "1756.0",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "94096",
+      "noaa_station_id": "USW00094096",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 4674.0,
+      "noaa_elevation_m": "1424.6",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "94097",
+      "noaa_station_id": "USW00094097",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 4578.0,
+      "noaa_elevation_m": "1395.4",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "94098",
+      "noaa_station_id": "USW00094098",
+      "status": "not_in_selected_manifest",
+      "iem_reported_elevation": 6536.0,
+      "noaa_elevation_m": "1992.2",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "94644",
+      "noaa_station_id": "USW00094644",
+      "status": "already_selected",
+      "iem_reported_elevation": 127.0,
+      "noaa_elevation_m": "38.7",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "94645",
+      "noaa_station_id": "USW00094645",
+      "status": "already_selected",
+      "iem_reported_elevation": 737.0,
+      "noaa_elevation_m": "224.6",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "94995",
+      "noaa_station_id": "USW00094995",
+      "status": "already_selected",
+      "iem_reported_elevation": 1189.0,
+      "noaa_elevation_m": "362.4",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "94996",
+      "noaa_station_id": "USW00094996",
+      "status": "already_selected",
+      "iem_reported_elevation": 1372.0,
+      "noaa_elevation_m": "418.2",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "96404",
+      "noaa_station_id": "USW00096404",
+      "status": "already_selected",
+      "iem_reported_elevation": 2000.0,
+      "noaa_elevation_m": "609.6",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "96405",
+      "noaa_station_id": "USW00096405",
+      "status": "already_selected",
+      "iem_reported_elevation": 83.0,
+      "noaa_elevation_m": "25.3",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "96406",
+      "noaa_station_id": "USW00096406",
+      "status": "already_selected",
+      "iem_reported_elevation": 77.27349,
+      "noaa_elevation_m": "78.9",
+      "elevation_disagreement": false
+    },
+    {
+      "iem_station_id": "96407",
+      "noaa_station_id": "USW00096407",
+      "status": "already_selected",
+      "iem_reported_elevation": 22.0,
+      "noaa_elevation_m": "6.7",
+      "elevation_disagreement": false
+    },
+    {
+      "iem_station_id": "96408",
+      "noaa_station_id": "USW00096408",
+      "status": "already_selected",
+      "iem_reported_elevation": 2225.0,
+      "noaa_elevation_m": "678.2",
+      "elevation_disagreement": true
+    },
+    {
+      "iem_station_id": "96409",
+      "noaa_station_id": "USW00096409",
+      "status": "already_selected",
+      "iem_reported_elevation": 800.0,
+      "noaa_elevation_m": "750.1",
+      "elevation_disagreement": true
+    }
+  ]
+}

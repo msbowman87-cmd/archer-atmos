@@ -1,0 +1,36 @@
+name: Atmos Historical Calibration Final Report
+on:
+  push:
+    branches: [research/daily-walk-forward-20261101]
+    paths:
+      - 'atmos/noaa_v3_aggregate_report.py'
+      - '.github/workflows/noaa-v3-calibration-report.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  final-report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Download all 40 verified shard artifacts from successful calibration run
+        run: |
+          mkdir -p input output
+          gh run download 41934856062 --repo msbowman87-cmd/archer-atmos --dir input
+      - name: Aggregate verified results and generate final calibration progress report
+        run: |
+          python -m atmos.noaa_v3_aggregate_report --input input --output output
+      - name: Publish complete report and station-year detail
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: atmos-2006-2025-full-calibration-progress-report
+          path: output/
+          retention-days: 90

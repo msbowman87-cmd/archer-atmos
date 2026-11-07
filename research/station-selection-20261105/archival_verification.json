@@ -1,0 +1,43 @@
+{
+  "release_url": "https://github.com/msbowman87-cmd/archer-atmos/releases/tag/research-hourly-42114412003-1",
+  "tag": "research-hourly-42114412003-1",
+  "target_commit": "2ecc65d8432c0fc6011842d1fcb1f8a6b7661b0c",
+  "prerelease": true,
+  "audited_batches": 299,
+  "records": 4773106,
+  "integrity_or_parse_failures": 0,
+  "quality_approved_for_training": false,
+  "archive_parts": [
+    {
+      "name": "research-hourly-42114412003-1-part0001.zip",
+      "bytes": 15248129,
+      "state": "uploaded"
+    },
+    {
+      "name": "research-hourly-42114412003-1-part0002.zip",
+      "bytes": 14296243,
+      "state": "uploaded"
+    },
+    {
+      "name": "research-hourly-42114412003-1-part0003.zip",
+      "bytes": 26349762,
+      "state": "uploaded"
+    },
+    {
+      "name": "research-hourly-42114412003-1-part0004.zip",
+      "bytes": 22582087,
+      "state": "uploaded"
+    },
+    {
+      "name": "research-hourly-42114412003-1-part0005.zip",
+      "bytes": 23404435,
+      "state": "uploaded"
+    }
+  ],
+  "notes": [
+    "Counts are one verified GitHub checkpoint, not a sum with the overlapping local audit.",
+    "Source flags preserved; variable-level observed coverage does not certify usable quality.",
+    "Five ZIP parts and a SHA256/member index were uploaded; workflow verified upload sizes.",
+    "Research prerelease targets the research commit; production unchanged."
+  ]
+}

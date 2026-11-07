@@ -1,0 +1,148 @@
+name: Atmos V3 Four-Season Historical Satellite Radar Study
+on:
+  push:
+    branches: [research/daily-walk-forward-20261101]
+    paths: ['.github/workflows/atmos-v3-seasonal-pilot.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: atmos-v3-seasonal-study
+  cancel-in-progress: false
+jobs:
+  safety-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run no-lookahead, archive, geography and holdout unit tests
+        run: |
+          python -m unittest tests.test_remote_sensing_features tests.test_historical_remote_sensing_pilot tests.test_seasonal_remote_sensing_backfill -v
+
+  seasonal-smoke:
+    needs: safety-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        season: [winter, spring, summer, fall]
+    env:
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+      PYART_QUIET: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install meteorological data readers
+        run: |
+          python -m pip install 'numpy<2' boto3 botocore netCDF4 xarray pyproj arm_pyart
+      - name: Download NOAA site coordinates and actual station elevations
+        run: |
+          mkdir -p metadata output
+          gh run download 41961101416 --repo msbowman87-cmd/archer-atmos --name atmos-1000-station-coordinate-map --dir metadata
+          curl -fSL --retry 3 --max-time 120 https://www.ncei.noaa.gov/pub/data/noaa/isd-history.csv -o metadata/isd-history.csv
+          test -s metadata/atmos-stations.csv
+          test -s metadata/isd-history.csv
+      - name: Sample one real archive scan in each season before full week
+        run: |
+          python -m atmos.seasonal_remote_sensing_backfill \
+            --metadata metadata/atmos-stations.csv \
+            --elevation-catalog metadata/isd-history.csv \
+            --season ${{ matrix.season }} \
+            --days 1 --hours 18 --minimum-coverage 0.5 \
+            --output output
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: atmos-v3-smoke-${{ matrix.season }}
+          path: |
+            output/station-geography.json
+            output/station-sensing-history.csv
+            output/coverage-and-source-provenance.json
+          retention-days: 90
+
+  four-season-weeks:
+    needs: seasonal-smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        season: [winter, spring, summer, fall]
+    env:
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+      PYART_QUIET: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install meteorological archive readers
+        run: |
+          python -m pip install 'numpy<2' boto3 botocore netCDF4 xarray pyproj arm_pyart
+      - name: Download verified station metadata
+        run: |
+          mkdir -p metadata output
+          gh run download 41961101416 --repo msbowman87-cmd/archer-atmos --name atmos-1000-station-coordinate-map --dir metadata
+          curl -fSL --retry 3 --max-time 120 https://www.ncei.noaa.gov/pub/data/noaa/isd-history.csv -o metadata/isd-history.csv
+      - name: Collect one real seven-day period, sampled four times daily
+        run: |
+          python -m atmos.seasonal_remote_sensing_backfill \
+            --metadata metadata/atmos-stations.csv \
+            --elevation-catalog metadata/isd-history.csv \
+            --season ${{ matrix.season }} \
+            --days 7 --hours 0,6,12,18 --minimum-coverage 0.5 \
+            --output output
+      - name: Archive source hashes and extracted meteorological measurements
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: atmos-v3-season-${{ matrix.season }}
+          path: |
+            output/station-geography.json
+            output/station-sensing-history.csv
+            output/coverage-and-source-provenance.json
+          retention-days: 90
+
+  summarize-coverage:
+    needs: four-season-weeks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: atmos-v3-season-*
+          path: seasons
+      - name: Audit four full seasonal source datasets
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          summary={}
+          for season in ('winter','spring','summer','fall'):
+              path=pathlib.Path('seasons')/f'atmos-v3-season-{season}'/'coverage-and-source-provenance.json'
+              report=json.loads(path.read_text())
+              assert report['days']==7 and report['forecast_issue_hours_sampled']==28, report
+              assert len(report['training_stations'])==4 and len(report['excluded_validation_stations'])==2
+              assert report['both_sensor_coverage']>=.5
+              summary[season]={k:report[k] for k in ('both_sensor_coverage','satellite_rows','radar_rows',
+                      'original_archive_files','verified_elevation_count','station_issue_scenarios')}
+          pathlib.Path('seasonal-summary.json').write_text(json.dumps(summary,indent=2))
+          print(json.dumps(summary,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: atmos-v3-four-seasons-coverage-summary
+          path: seasonal-summary.json
+          retention-days: 90
