@@ -1,9 +1,22 @@
 """Restore the newest research checkpoint from a temporary artifact or verified release."""
-import hashlib,json,pathlib,shutil,subprocess,tempfile,zipfile
+import hashlib,json,pathlib,shutil,subprocess,tempfile,time,zipfile
 from hourly_checkpoint import mark_and_prune,digest
 
 def gh(*args):
     return json.loads(subprocess.check_output(['gh',*args],text=True))
+
+def download_with_retry(command,folder,attempts=4):
+    """Retain no partial download between attempts; use bounded network retries."""
+    for attempt in range(1,attempts+1):
+        if folder.exists():shutil.rmtree(folder)
+        folder.mkdir(parents=True)
+        try:
+            subprocess.run([*command,'--dir',str(folder)],check=True)
+            return
+        except subprocess.CalledProcessError as exc:
+            print(json.dumps(dict(checkpoint_download='retry',attempt=attempt,max_attempts=attempts,error=str(exc))),flush=True)
+            if attempt==attempts:raise
+            time.sleep(min(45,6*attempt))
 
 def main():
     import os,sys
@@ -15,14 +28,22 @@ def main():
     artifact=max(artifacts,key=lambda a:a['created_at']) if artifacts else None
     release=max(releases,key=lambda r:r['published_at']) if releases else None
     if artifact and (not release or artifact['created_at']>=release['published_at']):
-        with tempfile.TemporaryDirectory() as d:
-            subprocess.run(['gh','run','download',str(artifact['workflow_run']['id']),'--name','atmos-multi-provider-checkpoint','--dir',d],check=True)
-            shutil.copytree(d,root,dirs_exist_ok=True)
-        print(json.dumps(dict(restored='artifact',run_id=artifact['workflow_run']['id'])));return
+        try:
+            with tempfile.TemporaryDirectory() as d:
+                folder=pathlib.Path(d)/'artifact'
+                download_with_retry(['gh','run','download',str(artifact['workflow_run']['id']),'--name','atmos-multi-provider-checkpoint'],folder)
+                if not (folder/'stations.csv').is_file():
+                    raise ValueError('downloaded artifact has no station manifest')
+                shutil.copytree(folder,root,dirs_exist_ok=True)
+            print(json.dumps(dict(restored='artifact',run_id=artifact['workflow_run']['id'])));return
+        except (subprocess.CalledProcessError,OSError,ValueError) as error:
+            # A verified release is preferable to losing collection continuity.
+            # Reprocessing newer windows is safe because source hashes are tracked.
+            print(json.dumps(dict(artifact_restore='failed',reason=str(error),fallback='latest_verified_research_release')),flush=True)
     if not release:raise SystemExit('No verified research checkpoint is available')
     with tempfile.TemporaryDirectory() as d:
-        folder=pathlib.Path(d);tag=release['tag_name']
-        subprocess.run(['gh','release','download',tag,'--dir',d],check=True)
+        folder=pathlib.Path(d)/'release';tag=release['tag_name']
+        download_with_retry(['gh','release','download',tag],folder)
         index_path=folder/(tag+'-index.json');index=json.loads(index_path.read_text())
         for part in index['parts']:
             path=folder/part['name']
