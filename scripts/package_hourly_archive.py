@@ -16,18 +16,26 @@ def package(root,out,label,max_bytes=512*1024*1024):
         if not p.is_file() or p.is_symlink() or rel.parts[0] in {'input','code','archives'} or '__pycache__' in rel.parts or p.suffix=='.part':continue
         # Source inventories remain retrievable by URL/hash; only the research
         # checkpoint and original observation source bytes are packaged here.
-        if p.stat().st_size>max_bytes:raise ValueError('single file exceeds part limit: '+str(rel))
+        # Large generated audit JSONL files can compress well below the release
+        # asset limit. Archive those alone and check the compressed size below.
         files.append(p)
     parts=[];batch=[];size=0
-    def write_part(batch):
+    def write_part(batch,oversized_source=False):
         name=f'{label}-part{len(parts)+1:04d}.zip';dest=out/name
         with zipfile.ZipFile(dest,'w',zipfile.ZIP_DEFLATED,compresslevel=6) as z:
             for p in batch:z.write(p,str(p.relative_to(root)))
         with zipfile.ZipFile(dest) as z:
             if z.testzip() is not None:raise ValueError('ZIP CRC failure')
+        if oversized_source and dest.stat().st_size>max_bytes:
+            dest.unlink()
+            raise ValueError('single file exceeds compressed part limit: '+str(batch[0].relative_to(root)))
         parts.append(dict(name=name,bytes=dest.stat().st_size,sha256=digest(dest),files=[str(p.relative_to(root)) for p in batch]))
     for p in files:
         n=p.stat().st_size
+        if n>max_bytes:
+            if batch:write_part(batch);batch=[];size=0
+            write_part([p],oversized_source=True)
+            continue
         if batch and size+n>max_bytes:write_part(batch);batch=[];size=0
         batch.append(p);size+=n
     if batch:write_part(batch)
