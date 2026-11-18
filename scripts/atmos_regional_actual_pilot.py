@@ -35,7 +35,10 @@ def hash_bytes(data):
 def qualified_noaa(root, stations, min_hours=3000):
     qualifying = {}
     for s in stations:
-        if s.get('provider') != 'NOAA_GHCNh':
+        # First benchmark uses US NOAA sources with published legacy QC mappings.
+        # Canadian source 341 uses blank source quality codes and remains
+        # provisional rather than being silently treated as QC approved.
+        if s.get('provider') != 'NOAA_GHCNh' or s.get('country') != 'US':
             continue
         folder = root / 'observations' / 'NOAA_GHCNh' / s['station_id']
         coverage = {}
