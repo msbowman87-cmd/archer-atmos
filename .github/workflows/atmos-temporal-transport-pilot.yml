@@ -1,0 +1,52 @@
+name: Atmos temporal weather movement and pressure spatial benchmark
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - research/daily-walk-forward-20261101
+    paths:
+      - scripts/atmos_temporal_transport_pilot.py
+      - tests/test_atmos_temporal_transport_pilot.py
+      - .github/workflows/atmos-temporal-transport-pilot.yml
+permissions:
+  contents: read
+  actions: read
+jobs:
+  benchmark:
+    if: github.ref == 'refs/heads/research/daily-walk-forward-20261101'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test chronology, pressure types, and advection
+        run: |
+          python -m py_compile scripts/atmos_temporal_transport_pilot.py
+          python -m unittest discover -s tests -p test_atmos_temporal_transport_pilot.py -v
+          python -m unittest discover -s tests -p test_atmos_quality_policy.py -v
+          python -m unittest discover -s tests -p test_atmos_multi_region_wind_pilot.py -v
+      - name: Restore verified research checkpoint
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: python scripts/restore_hourly_checkpoint.py research/station-selection-20261105
+      - name: Independently verify station identity and train-only neighbor graph
+        run: |
+          python scripts/verify_station_manifest.py --input research/station-selection-20261105
+          python scripts/station_training_readiness.py --manifest research/station-selection-20261105/stations.csv --coverage-batches research/station-selection-20261105/audit/coverage_batches.jsonl --out transport-benchmark-results
+          python scripts/atmos_regional_neighbors.py --manifest research/station-selection-20261105/stations.csv --readiness transport-benchmark-results/station_training_readiness.csv --out transport-benchmark-results --neighbors 20 --radius-km 300
+      - name: Fit and score historical movement across independent areas
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          python scripts/atmos_temporal_transport_pilot.py --checkpoint research/station-selection-20261105 --neighbor-graph transport-benchmark-results/regional_neighbor_candidates.jsonl --out transport-benchmark-results --training-regions 5 --holdout-regions 3
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: atmos-temporal-transport-pressure-spatial-benchmark
+          path: transport-benchmark-results/
+          if-no-files-found: warn
+          retention-days: 90
