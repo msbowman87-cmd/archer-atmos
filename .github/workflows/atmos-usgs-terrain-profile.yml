@@ -1,0 +1,44 @@
+name: Atmos USGS 3DEP terrain provenance pilot
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - research/daily-walk-forward-20261101
+    paths:
+      - scripts/atmos_usgs_terrain_profile.py
+      - tests/test_atmos_usgs_terrain_profile.py
+      - .github/workflows/atmos-usgs-terrain-profile.yml
+permissions:
+  contents: read
+  actions: read
+jobs:
+  terrain:
+    if: github.ref == 'refs/heads/research/daily-walk-forward-20261101'
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test verified topographic sampling and no-imputation rules
+        run: |
+          python -m py_compile scripts/atmos_usgs_terrain_profile.py
+          python -m unittest discover -s tests -p test_atmos_usgs_terrain_profile.py -v
+      - name: Restore station manifest and validate fixed coordinates
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          python scripts/restore_hourly_checkpoint.py research/station-selection-20261105
+          python scripts/verify_station_manifest.py --input research/station-selection-20261105
+      - name: Query original USGS 3DEP terrain heights for bounded research sites
+        run: |
+          python scripts/atmos_usgs_terrain_profile.py --manifest research/station-selection-20261105/stations.csv --out terrain-profile-output
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: atmos-usgs-3dep-terrain-point-provenance
+          path: terrain-profile-output/
+          retention-days: 90
+          if-no-files-found: warn
