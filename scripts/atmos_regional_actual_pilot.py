@@ -147,6 +147,8 @@ def load_temperature(data):
                                      row.get('temperature_Quality_Code'),
                                      row.get('temperature_Source_Code'))
         counts[status] += 1
+        if raw is not None and str(raw).strip() not in ('', '-9999', '-9999.0'):
+            counts['source_quality:' + str(row.get('temperature_Source_Code')) + ':' + str(row.get('temperature_Quality_Code'))] += 1
         if value is None:
             continue
         stamp = datetime.datetime.fromisoformat(row['DATE'].replace('Z', '+00:00'))
@@ -249,6 +251,15 @@ def pilot(root, graph, out):
                 hours, qc = load_temperature(data)
                 temps[sid].update(hours)
                 qc_summary[sid+':'+str(year)] = dict(hours=len(hours), source_row_qc_reasons=qc)
+    # Publish transparent screening diagnostics even if the pilot is blocked.
+    pathlib.Path(out).mkdir(parents=True, exist_ok=True)
+    diagnostics = dict(target_station=target, neighbors=all_ids[1:],
+                       accepted_hours_by_station={sid:len(temps[sid]) for sid in all_ids},
+                       row_level_screen=qc_summary, source_files=loader.sources)
+    (pathlib.Path(out)/'quality_screen_diagnostics.json').write_text(json.dumps(diagnostics, indent=2)+'\\n')
+    print(json.dumps(dict(target_station=target, accepted_hours_by_station=diagnostics['accepted_hours_by_station'],
+                          screening_reasons={sid: {k:v for k,v in qc_summary.items() if k.startswith(sid+':')}
+                                             for sid in all_ids}), indent=2), flush=True)
     if len(temps[target]) < 1000:
         raise ValueError('Too few quality-screened target temperature hours')
     target_alt = float(eligible[target][0]['elevation_m'])
