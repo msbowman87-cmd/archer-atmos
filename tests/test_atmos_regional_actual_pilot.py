@@ -23,7 +23,8 @@ class RegionalPilotTests(unittest.TestCase):
         hours, summary = load_temperature(data)
         self.assertEqual(len(hours), 1)
         self.assertEqual(next(iter(hours.values())), 7)
-        self.assertEqual(summary['noaa_source_quality_not_approved'], 2)
+        self.assertEqual(summary['noaa_source_quality_not_approved'], 1)
+        self.assertEqual(summary['outside_plausibility_bounds'], 1)
 
     def test_no_future_observations_used(self):
         t0 = datetime.datetime(2022, 1, 1, tzinfo=UTC)
