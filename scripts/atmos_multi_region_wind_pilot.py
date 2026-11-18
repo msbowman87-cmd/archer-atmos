@@ -255,10 +255,11 @@ def run(checkpoint, graph_path, out, train_regions=3, holdout_regions=2):
         station_year_qc=qc, status='source_aware_provisional',
         notes='Row-level documented source/QC screening; not independent instrument certification.')
     (output/'source_screening.json').write_text(json.dumps(source_report,indent=2)+'\n')
-    print(json.dumps(dict(event='source_screened',
-                          source_files=len(provenance), stations=len(source_ids),
-                          wind_hours=sum(len(v.get('wind_speed_mps',{})) for v in surface.values())),
-          flush=True)
+    summary = dict(event='source_screened', source_files=len(provenance),
+                   stations=len(source_ids),
+                   wind_hours=sum(len(v.get('wind_speed_mps', {}))
+                                  for v in surface.values()))
+    print(json.dumps(summary), flush=True)
     train_rows=[]
     eval_rows=collections.defaultdict(list)
     region_summary=[]
