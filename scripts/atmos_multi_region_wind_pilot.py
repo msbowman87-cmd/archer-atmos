@@ -130,7 +130,7 @@ def wind_weight(bearing_from_target_deg, direction_from_deg, speed_mps):
         circular_offset_degrees(bearing_from_target_deg, direction_from_deg)))
     return max(0.0, alignment) ** 2 * min(1.0, speed_mps / 8.0)
 
-def build_examples(target_id, source_ids, station_meta, surface, years=YEARS):
+def build_examples(target_id, source_ids, station_meta, surface, years=YEARS, *, lag_hours=ASSUMED_LAG_HOURS):
     own_data = surface[target_id]['temperature_c']
     own_keys = sorted(own_data)
     target_wind_speed = surface[target_id].get('wind_speed_mps', {})
@@ -152,7 +152,7 @@ def build_examples(target_id, source_ids, station_meta, surface, years=YEARS):
         if verification.year not in years:
             continue
         issued = verification - dt.timedelta(hours=HORIZON_HOURS)
-        asof = issued - dt.timedelta(hours=ASSUMED_LAG_HOURS)
+        asof = issued - dt.timedelta(hours=lag_hours)
         own = latest(own_data, own_keys, asof)
         if own is None:
             continue
@@ -257,7 +257,10 @@ def paired_daily_bootstrap(rows, models, replicates=350, seed=20261118):
                          round(samples[min(replicates-1,int(0.975*replicates))],5)],
                 note='Days resampled within the fixed selected stations; not a geographic generalization interval.')
 
-def run(checkpoint, graph_path, out, train_regions=3, holdout_regions=2):
+def run(checkpoint, graph_path, out, train_regions=3, holdout_regions=2, *,
+        lag_hours=ASSUMED_LAG_HOURS):
+    if lag_hours < 0:
+        raise ValueError('Observation availability lag cannot be negative')
     root = pathlib.Path(checkpoint)
     output = pathlib.Path(out)
     output.mkdir(parents=True,exist_ok=True)
@@ -302,7 +305,7 @@ def run(checkpoint, graph_path, out, train_regions=3, holdout_regions=2):
         node=cluster['node']
         sid=node['target_station_id']
         rows=list(build_examples(sid,
-            [n['station_id'] for n in cluster['neighbors']],station_meta,surface))
+            [n['station_id'] for n in cluster['neighbors']],station_meta,surface, lag_hours=lag_hours))
         split=node['role']
         for row in rows:
             if split == 'training_target' and row['year'] in (2022,2023):
@@ -346,14 +349,14 @@ def run(checkpoint, graph_path, out, train_regions=3, holdout_regions=2):
                 wind_active_holdout_results=wind_subset_scores,
                 paired_daily_uncertainty=paired_intervals, model_weights=models,
                 forecast_horizon_hours=HORIZON_HOURS,
-                assumed_observation_lag_hours=ASSUMED_LAG_HOURS,
+                assumed_observation_lag_hours=lag_hours,
                 lag_verified=False, source_quality_approved=False,
                 fully_trained_atmos=False, production_deployed=False,
                 model='shared ridge 2022-2023; station-only / distance / wind-informed',
                 limitations=[
                     'Only temperature and a few station clusters; independent tiles are small exploratory samples.',
                     'Wind direction is measured FROM bearing; no wind signal is fabricated for missing observations.',
-                    'A 72h data publication lag and simplified constant elevation correction are assumed.',
+                    f'A {lag_hours}h data publication lag and simplified constant elevation correction are assumed.',
                     'No global geographic certification or radar/satellite as-of data.',
                     '2024/2025 files preselected for availability, not future weather outcomes.',
                     'No inference about improvement without repeated disjoint regional holdouts and uncertainty intervals.',
@@ -369,8 +372,11 @@ def main():
     parser.add_argument('--out',required=True)
     parser.add_argument('--train-regions',type=int,default=3)
     parser.add_argument('--holdout-regions',type=int,default=2)
+    parser.add_argument('--lag-hours', type=int, default=24,
+                        help='Assumed observation availability delay for the research sensitivity run')
     args=parser.parse_args()
-    run(args.checkpoint,args.neighbor_graph,args.out,args.train_regions,args.holdout_regions)
+    run(args.checkpoint, args.neighbor_graph, args.out, args.train_regions,
+        args.holdout_regions, lag_hours=args.lag_hours)
 
 if __name__=='__main__':
     main()
