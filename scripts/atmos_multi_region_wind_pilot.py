@@ -14,6 +14,7 @@ import io
 import json
 import math
 import pathlib
+import random
 import statistics
 import tempfile
 
@@ -222,6 +223,40 @@ def score(rows, models):
                     100*(base-statistics.mean(errors['upwind']))/base,3)
                 if base else None)
 
+
+def paired_daily_bootstrap(rows, models, replicates=350, seed=20261118):
+    """Paired daily-block bootstrap, positive C means upwind improves local.
+
+    Descriptive conditional on tested targets and a fixed trained model;
+    cannot substitute for additional independent geographic regions.
+    """
+    if not rows:
+        return dict(cases=0)
+    blocks=collections.defaultdict(lambda: [0.0,0])
+    for row in rows:
+        local=sum(a*b for a,b in zip(row['local'],models['local']))
+        wind=sum(a*b for a,b in zip(row['upwind'],models['upwind']))
+        improvement=abs(row['actual']-local)-abs(row['actual']-wind)
+        key=(row['target'],row['valid_at'].date().isoformat())
+        blocks[key][0]+=improvement
+        blocks[key][1]+=1
+    values=list(blocks.values())
+    n=len(values)
+    rng=random.Random(seed)
+    samples=[]
+    for _ in range(replicates):
+        sampled=[values[rng.randrange(n)] for _ in range(n)]
+        total=sum(x[0] for x in sampled)
+        cases=sum(x[1] for x in sampled)
+        samples.append(total/cases)
+    samples.sort()
+    measured=sum(v[0] for v in values)/sum(v[1] for v in values)
+    return dict(cases=len(rows), daily_blocks=n,
+                delta_mae_c_positive_is_better=round(measured,5),
+                ci_95_c=[round(samples[int(0.025*replicates)],5),
+                         round(samples[min(replicates-1,int(0.975*replicates))],5)],
+                note='Days resampled within the fixed selected stations; not a geographic generalization interval.')
+
 def run(checkpoint, graph_path, out, train_regions=3, holdout_regions=2):
     root = pathlib.Path(checkpoint)
     output = pathlib.Path(out)
@@ -288,10 +323,28 @@ def run(checkpoint, graph_path, out, train_regions=3, holdout_regions=2):
     if (results['spatial_holdout_target']['2024']['cases'] < 100
             or results['spatial_holdout_target']['2025']['cases'] < 100):
         raise ValueError('Insufficient independent spatial holdout forecast cases')
+    # Surface each excluded geographic area, not only a pooled holdout average.
+    holdout_station_scores={}
+    for cluster in selected:
+        node=cluster['node']
+        if node['role'] != 'spatial_holdout_target':
+            continue
+        sid=node['target_station_id']
+        holdout_station_scores[sid]={
+            str(year):score([r for r in eval_rows[('spatial_holdout_target',year)]
+                             if r['target']==sid],models) for year in (2024,2025)}
+    wind_subset_scores={str(year):score([
+        r for r in eval_rows[('spatial_holdout_target',year)] if r['used_wind']],models)
+        for year in (2024,2025)}
+    paired_intervals={str(year):paired_daily_bootstrap(
+        eval_rows[('spatial_holdout_target',year)],models,seed=20261118+year)
+        for year in (2024,2025)}
     report=dict(status='experimental_multiregion_temperature_results',
                 train_regions=train_regions, spatial_holdout_regions=holdout_regions,
                 trained_target_hours=len(train_rows), station_selections=region_summary,
-                results=results, model_weights=models,
+                results=results, holdout_station_results=holdout_station_scores,
+                wind_active_holdout_results=wind_subset_scores,
+                paired_daily_uncertainty=paired_intervals, model_weights=models,
                 forecast_horizon_hours=HORIZON_HOURS,
                 assumed_observation_lag_hours=ASSUMED_LAG_HOURS,
                 lag_verified=False, source_quality_approved=False,
