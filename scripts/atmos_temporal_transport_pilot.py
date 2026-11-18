@@ -282,11 +282,13 @@ def run(checkpoint,graph_path,out,training_regions=5,holdout_regions=3):
     (output/'source_provenance_and_qc.json').write_text(json.dumps(
         dict(source_files=provenance,per_source_qc=per_source_qc,
              quality_approved=False),indent=2)+'\n')
-    print(json.dumps(dict(source_files=len(provenance),stations=len(ids),
-                          pressure_hours=sum(len(v.get('sea_level_pressure_hpa',{}))
-                                          +len(v.get('station_pressure_hpa',{}))
-                                          for v in data.values()),
-                          wind_hours=sum(len(v.get('wind_speed_mps',{})) for v in data.values())) ,flush=True)
+    screening_stats = dict(source_files=len(provenance), stations=len(ids),
+                           pressure_hours=sum(len(v.get('sea_level_pressure_hpa', {}))
+                                              + len(v.get('station_pressure_hpa', {}))
+                                              for v in data.values()),
+                           wind_hours=sum(len(v.get('wind_speed_mps', {}))
+                                          for v in data.values()))
+    print(json.dumps(screening_stats), flush=True)
     training=[]
     holdouts=collections.defaultdict(list)
     train_year_2024=[]
