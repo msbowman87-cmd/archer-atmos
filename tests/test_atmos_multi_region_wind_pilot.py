@@ -41,7 +41,7 @@ class MultiRegionTests(unittest.TestCase):
         item=next(x for x in rows if x['valid_at']==time(150))
         self.assertEqual(item['baseline'],10.0)
         self.assertTrue(item['used_wind'])
-        self.assertGreater(item['upwind'][9],0)
+        self.assertEqual(item['upwind'][-1],1.0)
         self.assertEqual(item['actual'],10.0)
 
     def test_screened_noaa_wind_and_temperature_are_separate(self):
