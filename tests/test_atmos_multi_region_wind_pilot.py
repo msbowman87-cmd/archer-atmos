@@ -61,10 +61,10 @@ class MultiRegionTests(unittest.TestCase):
                       geographic=[1.,i/30,0,0,0,0,0,0,0.2],
                       upwind=[1.,i/30,0,0,0,0,0,0,0.2,0,0,0],
                       actual=float(i),baseline=0.,used_wind=False)
-                 for i in range(100)]
+                 for i in range(1100)]
         models=fit_all(samples)
         result=score(samples,models)
-        self.assertEqual(result['cases'],100)
+        self.assertEqual(result['cases'],1100)
         self.assertEqual(result['upwind_active_cases'],0)
         self.assertIn('upwind_mae_c',result)
 
