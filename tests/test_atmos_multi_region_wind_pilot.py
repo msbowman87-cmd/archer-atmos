@@ -37,7 +37,8 @@ class MultiRegionTests(unittest.TestCase):
         # At verification 150, issued at 126 and latest allowed hour is 54.
         surface['A']['temperature_c'][time(100)]=99.0
         surface['A']['wind_direction_deg'][time(100)]=90.0
-        rows=list(build_examples('A',['B'],stations,surface))
+        self.assertEqual(list(build_examples('A', ['B'] * 10, stations, surface)), [])
+        rows=list(build_examples('A',['B'],stations,surface,min_neighbors=1))
         item=next(x for x in rows if x['valid_at']==time(150))
         self.assertEqual(item['baseline'],10.0)
         self.assertTrue(item['used_wind'])
@@ -81,11 +82,9 @@ class MultiRegionTests(unittest.TestCase):
                              {year:8000 for year in [2022,2023,2024,2025]})
                 records.append(dict(target_provider='NOAA_GHCNh',target_station_id=ident,role=role,
                     latitude=lat,longitude=lon,spatial_tile=[int(lat//3),int(lon//3)],
-                    candidate_neighbors=[dict(provider='NOAA_GHCNh',station_id='F',
-                                             distance_km=15),
-                                         dict(provider='NOAA_GHCNh',station_id='G',
-                                              distance_km=50)]))
-            for id in ('F','G'):
+                    candidate_neighbors=[dict(provider='NOAA_GHCNh', station_id=f'N{n}',
+                                              distance_km=15+n) for n in range(10)]))
+            for id in (f'N{n}' for n in range(10)):
                 elig[id]=({'latitude':'40','longitude':'-120','elevation_m':'100'},
                           {year:8000 for year in [2022,2023,2024,2025]})
             path.write_text('\n'.join(map(json.dumps,records))+'\n')

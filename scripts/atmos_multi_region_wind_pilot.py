@@ -24,6 +24,7 @@ from atmos_regional_actual_pilot import (
 )
 from atmos_regional_neighbors import distance_bearing
 
+MIN_NEIGHBORS = 10
 UTC = dt.timezone.utc
 YEARS = (2022, 2023, 2024, 2025)
 HORIZON_HOURS = 24
@@ -71,8 +72,10 @@ def candidate_clusters(graph_path, eligible):
             neighbors = [entry for entry in node['candidate_neighbors']
                          if entry['provider'] == 'NOAA_GHCNh'
                          and entry['station_id'] in eligible
-                         and entry['distance_km'] <= 250][:3]
-            if len(neighbors) < 2:
+                         and entry['distance_km'] <= 250
+                         and entry['station_id'] != sid]
+            neighbors = list({entry['station_id']: entry for entry in neighbors}.values())
+            if len(neighbors) < MIN_NEIGHBORS:
                 continue
             score = (len(neighbors),
                      sum(sum(eligible[x][1].values()) for x in
@@ -130,7 +133,8 @@ def wind_weight(bearing_from_target_deg, direction_from_deg, speed_mps):
         circular_offset_degrees(bearing_from_target_deg, direction_from_deg)))
     return max(0.0, alignment) ** 2 * min(1.0, speed_mps / 8.0)
 
-def build_examples(target_id, source_ids, station_meta, surface, years=YEARS, *, lag_hours=ASSUMED_LAG_HOURS):
+def build_examples(target_id, source_ids, station_meta, surface, years=YEARS, *, lag_hours=ASSUMED_LAG_HOURS,
+                   min_neighbors=MIN_NEIGHBORS):
     own_data = surface[target_id]['temperature_c']
     own_keys = sorted(own_data)
     target_wind_speed = surface[target_id].get('wind_speed_mps', {})
@@ -138,7 +142,9 @@ def build_examples(target_id, source_ids, station_meta, surface, years=YEARS, *,
     wind_speed_keys = sorted(target_wind_speed)
     wind_dir_keys = sorted(target_wind_dir)
     neighbors = []
-    for sid in source_ids:
+    for sid in dict.fromkeys(source_ids):
+        if sid == target_id:
+            continue
         data = surface[sid].get('temperature_c', {})
         if not data:
             continue
@@ -174,7 +180,7 @@ def build_examples(target_id, source_ids, station_meta, surface, years=YEARS, *,
                 directional = wind_weight(bearing, wind_dir, wind_speed)
                 if directional > 0:
                     upwind.append((adjusted, geo_weight*directional))
-        if not geographic:
+        if len(geographic) < min_neighbors:
             continue
         geo_average = sum(v*w for v,w in geographic) / sum(w for _,w in geographic)
         have_upwind = valid_wind and bool(upwind)
@@ -194,7 +200,7 @@ def build_examples(target_id, source_ids, station_meta, surface, years=YEARS, *,
         yield dict(target=target_id, valid_at=verification, year=verification.year,
                    actual=own_data[verification], baseline=own,
                    local=base, geographic=base+[geo_feature], upwind=full,
-                   used_wind=bool(have_upwind))
+                   used_wind=bool(have_upwind), neighbor_count=len(geographic))
 
 def fit_all(training_rows):
     if len(training_rows) < 1000:
@@ -344,6 +350,7 @@ def run(checkpoint, graph_path, out, train_regions=3, holdout_regions=2, *,
         for year in (2024,2025)}
     report=dict(status='experimental_multiregion_temperature_results',
                 train_regions=train_regions, spatial_holdout_regions=holdout_regions,
+                minimum_neighbors_per_hour=MIN_NEIGHBORS,
                 trained_target_hours=len(train_rows), station_selections=region_summary,
                 results=results, holdout_station_results=holdout_station_scores,
                 wind_active_holdout_results=wind_subset_scores,
