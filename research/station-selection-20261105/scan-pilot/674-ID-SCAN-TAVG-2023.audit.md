@@ -1,0 +1,3 @@
+# Orchard Range hourly temperature, 2023
+
+Original USDA NRCS AWDB response. The request included original values, quality flags and suspect data. The response returned 8760 rows and 8760 distinct populated hours out of 8,760 calendar hours. Returned timestamps span 2023-01-01 00:00 through 2023-12-31 23:00 in provider time. Hourly TAVG begins May 11, 2021 according to provider metadata. Uncompressed source SHA-256: 19aa9db324c634471b7c83f2436050649b756c35143097ff0d1860d58cdc749f. [Request](https://wcc.sc.egov.usda.gov/awdbRestApi/services/v1/data?stationTriplets=674:ID:SCAN&elements=TAVG&duration=HOURLY&beginDate=2023-01-01&endDate=2023-12-31%2023%3A00&returnFlags=true&returnOriginalValues=true&returnSuspectData=true)
