@@ -1,0 +1,34 @@
+name: Atmos NOAA Shard Manifest Diagnostics
+on:
+  push:
+    branches: [research/daily-walk-forward-20261101]
+    paths: ['.github/workflows/atmos-v3-noaa-manifest-check.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          gh release download atmos-noaa-quality-2006-2025-v3 \
+            --repo msbowman87-cmd/archer-atmos \
+            --pattern atmos-quality-manifest.json
+          python - <<'PY'
+          import json
+          d=json.load(open('atmos-quality-manifest.json'))
+          print('Manifest root keys:', list(d))
+          for k,v in d.items():
+              if isinstance(v,list):
+                  print('List field:',k,'len:',len(v),'example:',str(v[0])[:1400] if v else '')
+              else:
+                  print('Field:',k,'value:',str(v)[:300])
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: atmos-v3-quality-manifest
+          path: atmos-quality-manifest.json

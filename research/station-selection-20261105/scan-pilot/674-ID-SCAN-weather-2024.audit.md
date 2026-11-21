@@ -1,0 +1,8 @@
+# Orchard Range hourly weather, 2024
+
+Original USDA NRCS AWDB responses for station 674:ID:SCAN. Counts are distinct populated hours before quality screening out of 8,784. Original values and flags are preserved.
+
+- RHUM returned 8784 hours. SHA-256 `2a767165faec2f17baaf6757faac83cab8defcb4f28d3c6beddd6567cf343af0`. [USDA request](https://wcc.sc.egov.usda.gov/awdbRestApi/services/v1/data?stationTriplets=674%3AID%3ASCAN&elements=RHUM&duration=HOURLY&beginDate=2024-01-01&endDate=2024-12-31%2023%3A00&returnFlags=true&returnOriginalValues=true&returnSuspectData=true)
+- PRCP returned 8784 hours. SHA-256 `6ec802d79b8579c77b4d2e3c86219d31a3da074d74ade1514360e23757e9fa34`. [USDA request](https://wcc.sc.egov.usda.gov/awdbRestApi/services/v1/data?stationTriplets=674%3AID%3ASCAN&elements=PRCP&duration=HOURLY&beginDate=2024-01-01&endDate=2024-12-31%2023%3A00&returnFlags=true&returnOriginalValues=true&returnSuspectData=true)
+- WSPDV returned 8784 hours. SHA-256 `480a0935d5a6aead35a17e4272618dca34770991c7f0dac8c8aea6e3161076c7`. [USDA request](https://wcc.sc.egov.usda.gov/awdbRestApi/services/v1/data?stationTriplets=674%3AID%3ASCAN&elements=WSPDV&duration=HOURLY&beginDate=2024-01-01&endDate=2024-12-31%2023%3A00&returnFlags=true&returnOriginalValues=true&returnSuspectData=true)
+- DPTP returned 8784 hours. SHA-256 `2b61939dc82df793aa645c569a7c6ebfc265d839dbb8de597fd92032bc097d8b`. [USDA request](https://wcc.sc.egov.usda.gov/awdbRestApi/services/v1/data?stationTriplets=674%3AID%3ASCAN&elements=DPTP&duration=HOURLY&beginDate=2024-01-01&endDate=2024-12-31%2023%3A00&returnFlags=true&returnOriginalValues=true&returnSuspectData=true)

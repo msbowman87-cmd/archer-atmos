@@ -1,0 +1,104 @@
+name: Atmos Global V2 and Four-Station Independent Validation
+on:
+  push:
+    branches: [research/daily-walk-forward-20261101]
+    paths:
+      - 'atmos/noaa_v3_global_model_v2.py'
+      - 'tests/test_noaa_v3_global_model_v2.py'
+      - '.github/workflows/noaa-v3-global-model-v2.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  model-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install numpy
+      - name: Verify NOAA as-of timing, station isolation and checkpoint solver
+        run: python -m unittest tests.test_noaa_v3_global_pooled_model tests.test_noaa_v3_global_model_v2 -v
+
+  train-global-shards:
+    needs: model-tests
+    strategy:
+      fail-fast: false
+      max-parallel: 10
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39]
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    env:
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install numpy
+      - name: Download validated NOAA station locations
+        run: |
+          mkdir -p input metadata results
+          gh run download 41961101416 --repo msbowman87-cmd/archer-atmos --name atmos-1000-station-coordinate-map --dir metadata
+          test -s metadata/atmos-stations.csv
+      - name: Download actual NOAA historical observation shard
+        run: |
+          printf -v SHARD '%02d' ${{ matrix.shard }}
+          gh release download atmos-noaa-quality-2006-2025-v3 --repo msbowman87-cmd/archer-atmos --pattern "atmos-quality-shard-${SHARD}.tar" --dir input
+          sha256sum "input/atmos-quality-shard-${SHARD}.tar" > "results/shard-${SHARD}-sha256.txt"
+      - name: Fit global V2 with rainfall and visibility specialization; exclude four stations
+        run: |
+          printf -v SHARD '%02d' ${{ matrix.shard }}
+          python -m atmos.noaa_v3_global_model_v2 \
+            --archive "input/atmos-quality-shard-${SHARD}.tar" \
+            --shard ${{ matrix.shard }} \
+            --metadata metadata/atmos-stations.csv \
+            --output results
+      - name: Save sufficient statistics and held-out observations
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: atmos-global-v2-shard-${{ matrix.shard }}
+          path: results/
+          retention-days: 90
+
+  build-global-model-and-retest:
+    needs: train-global-shards
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install numpy
+      - name: Download and join all 40 station learning summaries
+        uses: actions/download-artifact@v4
+        with:
+          pattern: atmos-global-v2-shard-*
+          path: input
+          merge-multiple: true
+      - name: Download station catalog
+        run: |
+          mkdir -p metadata final
+          gh run download 41961101416 --repo msbowman87-cmd/archer-atmos --name atmos-1000-station-coordinate-map --dir metadata
+      - name: Freeze global V2 and test Boise, Anchorage, Miami, Wellington
+        run: |
+          python -m atmos.noaa_v3_global_model_v2 \
+            --input input \
+            --metadata metadata/atmos-stations.csv \
+            --output final
+      - name: Publish durable model checkpoint, training statistics and blind validation
+        uses: actions/upload-artifact@v4
+        with:
+          name: atmos-global-v2-checkpoint-four-heldouts
+          path: final/
+          retention-days: 90

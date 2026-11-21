@@ -1,0 +1,8 @@
+# Jordan Valley CWMA hourly weather, 2021
+
+Original USDA NRCS AWDB responses for 2148:ID:SCAN. Counts are distinct populated hours before quality screening out of 8,760 hours. Original values and quality flags are preserved.
+
+- RHUM returned 8581 populated hours. Original SHA-256 `08672b50868ad996f704adced0c4df0c86806b8b8240b7a5f9930592be651ad3`. [Provider request](https://wcc.sc.egov.usda.gov/awdbRestApi/services/v1/data?stationTriplets=2148%3AID%3ASCAN&elements=RHUM&duration=HOURLY&beginDate=2021-01-01&endDate=2021-12-31%2023%3A00&returnFlags=true&returnOriginalValues=true&returnSuspectData=true)
+- PRCP returned 8550 populated hours. Original SHA-256 `e245810bad2f7e5aa60a3e50996832f3ed222c1c1c7b01aa2cf8ad46b518f289`. [Provider request](https://wcc.sc.egov.usda.gov/awdbRestApi/services/v1/data?stationTriplets=2148%3AID%3ASCAN&elements=PRCP&duration=HOURLY&beginDate=2021-01-01&endDate=2021-12-31%2023%3A00&returnFlags=true&returnOriginalValues=true&returnSuspectData=true)
+- WSPDV returned 8581 populated hours. Original SHA-256 `1767a2cfcbae753e60785c5145dc2c233c06df940b87a6b2a0476bb3202bee1d`. [Provider request](https://wcc.sc.egov.usda.gov/awdbRestApi/services/v1/data?stationTriplets=2148%3AID%3ASCAN&elements=WSPDV&duration=HOURLY&beginDate=2021-01-01&endDate=2021-12-31%2023%3A00&returnFlags=true&returnOriginalValues=true&returnSuspectData=true)
+- DPTP returned 8581 populated hours. Original SHA-256 `3ed41d960474f61be18e299aba97ee42bfce56f59b866548c52e27c9075773ce`. [Provider request](https://wcc.sc.egov.usda.gov/awdbRestApi/services/v1/data?stationTriplets=2148%3AID%3ASCAN&elements=DPTP&duration=HOURLY&beginDate=2021-01-01&endDate=2021-12-31%2023%3A00&returnFlags=true&returnOriginalValues=true&returnSuspectData=true)

@@ -1,0 +1,137 @@
+name: Atmos Rebuild - Nearest Actual Hour (1000 stations, 20 years)
+on:
+  push:
+    branches: [research/daily-walk-forward-20261101]
+    paths: ['.github/workflows/replacement-streaming-995.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: atmos-v2-global-observations
+  cancel-in-progress: false
+jobs:
+  collect:
+    name: Actual-hour shard ${{ matrix.shard }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Collect only actual NOAA readings and retain precise timestamps
+        env:
+          SHARD: ${{ matrix.shard }}
+        run: |
+          START=$((SHARD * 25))
+          python -m atmos.global_observation_archive --station-start "$START" --station-count 25 \
+            --year-start 2006 --year-end 2025 --hourly-selection nearest
+      - name: Retain per-shard readings and missing-year report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: atmos-nearest-hour-shard-${{ matrix.shard }}
+          path: global-archive/
+          retention-days: 30
+          if-no-files-found: error
+  preserve:
+    name: Verify and permanently archive rebuilt 20-year records
+    needs: collect
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      TAG: atmos-noaa-observations-2006-2025-v2
+    steps:
+      - uses: actions/checkout@v4
+      - name: Retrieve completed collection batch artifacts
+        run: |
+          set -euo pipefail
+          mkdir -p archive release-assets
+          gh run download "$GITHUB_RUN_ID" --repo "$REPO" \
+            --pattern 'atmos-nearest-hour-shard-*' --dir archive
+          test "$(find archive -mindepth 1 -maxdepth 1 -type d | wc -l)" -eq 40
+      - name: Validate recorded measurements and construct checksummed bundles
+        run: |
+          python - <<'PY'
+          import gzip,hashlib,json,tarfile
+          from pathlib import Path
+          base=Path("archive");assets=Path("release-assets")
+          summary={"schema_version":2,"source_run":None,"selection":"Nearest REAL observation within 30 minutes of UTC hour; actual observation timestamp preserved; NO interpolation",
+                   "first_station_index":0,"station_count":1000,"years":[2006,2025],
+                   "shards":[],"totals":{"requested":0,"saved":0,"reused":0,"rows":0,
+                                        "missing":0,"no_hourly_observations":0,"failed":0}}
+          for i in range(40):
+              folder=base/f"atmos-nearest-hour-shard-{i}"
+              status=json.loads((folder/"collection-status.json").read_text())
+              results=status["results"]
+              assert len(results)==500,(i,len(results))
+              assert status.get("hourly_selection")=="nearest",i
+              item={"index":i,"requested":500,"saved":0,"reused":0,"rows":0,
+                    "missing":0,"no_hourly_observations":0,"failed":0}
+              for r in results:
+                  result=r["status"]
+                  if result in ("saved","reused"):
+                      p=folder/Path(r["file"]).name
+                      assert p.is_file(),str(p)
+                      with gzip.open(p,"rb") as f:
+                          header=f.readline().decode("utf-8")
+                          assert "hour_utc" in header and "time_utc" in header
+                          while f.read(1048576):pass
+                      item[result]+=1
+                      item["rows"]+=r.get("rows",0)
+                  else:
+                      assert result in ("missing","no_hourly_observations","failed"),(i,result)
+                      item[result]+=1
+              assert sum(item[k] for k in ("saved","reused","missing","no_hourly_observations","failed"))==500,i
+              for k in summary["totals"]:summary["totals"][k]+=item[k]
+              archive=assets/f"atmos-nearest-hour-shard-{i:02d}.tar.gz"
+              with tarfile.open(archive,"w:gz",compresslevel=1) as t:t.add(folder,arcname=folder.name)
+              with archive.open("rb") as f: digest=hashlib.file_digest(f,"sha256").hexdigest()
+              summary["shards"].append({**item,"filename":archive.name,
+                                       "bytes":archive.stat().st_size,"sha256":digest})
+              print(f"Packaged batch {i}: {item['saved']} yearly files, {item['rows']} observations",flush=True)
+          assert summary["totals"]["requested"]==20000
+          assert summary["totals"]["rows"]>=15548692,summary["totals"]
+          (assets/"atmos-nearest-hour-manifest.json").write_text(json.dumps(summary,indent=2))
+          print("ALL SHARDS",json.dumps(summary["totals"]),flush=True)
+          PY
+      - name: Open or resume research-only release
+        run: |
+          if ! gh release view "$TAG" --repo "$REPO" >/dev/null 2>&1; then
+            gh release create "$TAG" --repo "$REPO" --target "$GITHUB_SHA" \
+              --title "Atmos 2006–2025 NOAA observations - actual hourly matches (v2)" \
+              --notes "This research-only 1,000-station archive contains actual NOAA observations. Each hourly selection preserves the exact source measurement timestamp and includes the nearest-hour bucket and minute offset; no synthetic data. Coverage gaps, failures and SHA-256 checksums are listed in atmos-nearest-hour-manifest.json. Original v1 remains available as an unmodified baseline." \
+              --prerelease
+          fi
+      - name: Publish 40 checksummed archive shards and inventory
+        run: |
+          set -euo pipefail
+          for file in release-assets/*.tar.gz release-assets/atmos-nearest-hour-manifest.json; do
+            gh release upload "$TAG" "$file" --repo "$REPO" --clobber
+            echo "Uploaded $(basename "$file")"
+          done
+      - name: Verify actual release assets
+        run: |
+          gh api "repos/$REPO/releases/tags/$TAG" > release.json
+          python - <<'PY'
+          import json
+          release=json.load(open("release.json"))
+          manifest=json.load(open("release-assets/atmos-nearest-hour-manifest.json"))
+          assets={a["name"]:a for a in release["assets"]}
+          assert len(assets)>=41,len(assets)
+          assert "atmos-nearest-hour-manifest.json" in assets
+          for entry in manifest["shards"]:
+              a=assets[entry["filename"]]
+              assert a["size"]==entry["bytes"],entry["filename"]
+              assert a["state"]=="uploaded",entry["filename"]
+          print("Verified 40 archive shards plus inventory at",release["html_url"])
+          PY

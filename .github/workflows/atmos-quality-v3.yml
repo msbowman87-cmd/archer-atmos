@@ -1,0 +1,127 @@
+name: Atmos Historical NOAA v3 Quality and Training-Ready Archive
+on:
+  push:
+    branches: [research/daily-walk-forward-20261101]
+    paths: ['.github/workflows/atmos-quality-v3.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: atmos-noaa-qc-v3
+  cancel-in-progress: false
+jobs:
+  test:
+    name: Test NOAA QC, humidity and forecast pairing
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m unittest discover -s tests -v
+      - name: Verify preserved v2 source release
+        run: gh release view atmos-noaa-observations-2006-2025-v2 --repo "$GITHUB_REPOSITORY"
+  quality:
+    name: Quality shard ${{ matrix.shard }}
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39]
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Retrieve actual NOAA source
+        env:
+          SHARD: ${{ matrix.shard }}
+        run: |
+          set -euo pipefail
+          printf -v PAD "%02d" "$SHARD"
+          mkdir -p source extracted
+          gh release download atmos-noaa-observations-2006-2025-v2 \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern "atmos-nearest-hour-shard-$PAD.tar.gz" --dir source
+          tar -xzf "source/atmos-nearest-hour-shard-$PAD.tar.gz" -C extracted
+          test -s "extracted/atmos-nearest-hour-shard-$SHARD/collection-status.json"
+      - name: Audit all source reports and normalize valid actual measurements
+        env:
+          SHARD: ${{ matrix.shard }}
+        run: |
+          python -m atmos.observation_quality \
+            --input-dir "extracted/atmos-nearest-hour-shard-$SHARD" \
+            --output-dir normalized --shard "$SHARD"
+      - name: Save normalized data and coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: atmos-quality-shard-${{ matrix.shard }}
+          path: normalized/
+          if-no-files-found: error
+          retention-days: 30
+  preserve:
+    name: Package and permanently publish normalized v3 archive
+    needs: [test, quality]
+    runs-on: ubuntu-latest
+    timeout-minutes: 95
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      TAG: atmos-noaa-quality-2006-2025-v3
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download all 40 processed QA artifacts
+        run: |
+          set -euo pipefail
+          mkdir -p qc v3-assets
+          gh run download "$GITHUB_RUN_ID" --repo "$REPO" \
+            --pattern 'atmos-quality-shard-*' --dir qc
+          test "$(find qc -mindepth 1 -maxdepth 1 -type d | wc -l)" -eq 40
+      - name: Verify years and gzip integrity then aggregate global quality report
+        run: |
+          python -m atmos.aggregate_quality \
+            --input-dir qc --output-dir v3-assets --source-run-id "$GITHUB_RUN_ID"
+      - name: Create research-only derived data release
+        run: |
+          set -euo pipefail
+          if ! gh release view "$TAG" --repo "$REPO" >/dev/null 2>&1; then
+            gh release create "$TAG" --repo "$REPO" --target "$GITHUB_SHA" \
+              --title "Atmos 2006–2025 station-hour QC and humidity (v3)" \
+              --notes "Derived, QC-filtered actual NOAA measurements from preserved v2 source. 40 normalized CSV.gz shards with original timestamps, conservative quality filters, humidity estimates, station-year gaps, checksummed manifest. No generated observations. Forecast issue and observation publication times still require provenance before training." \
+              --prerelease
+          fi
+      - name: Publish all normalized shards and global audit report
+        run: |
+          set -euo pipefail
+          for file in v3-assets/*.tar v3-assets/atmos-quality-manifest.json v3-assets/atmos-global-quality-report.json; do
+            gh release upload "$TAG" "$file" --repo "$REPO" --clobber
+            echo "Uploaded $(basename "$file")"
+          done
+      - name: Verify all 42 release assets
+        run: |
+          gh api "repos/$REPO/releases/tags/$TAG" > release.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          release=json.loads(Path("release.json").read_text())
+          manifest=json.loads(Path("v3-assets/atmos-quality-manifest.json").read_text())
+          assets={x["name"]:x for x in release["assets"]}
+          assert len(assets)>=42,len(assets)
+          for item in manifest["files"]:
+              asset=assets[item["filename"]]
+              assert asset["state"]=="uploaded"
+              assert asset["size"]==item["bytes"]
+          assert "atmos-global-quality-report.json" in assets
+          assert "atmos-quality-manifest.json" in assets
+          print("VERIFIED 40 QC SHARDS + GLOBAL AUDIT",release["html_url"])
+          PY

@@ -1,0 +1,34 @@
+name: Atmos Hourly Training Accuracy Audit
+on:
+  push:
+    branches: [research/daily-walk-forward-20261101]
+    paths: ['.github/workflows/noaa-v3-hourly-training-audit.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Retrieve all 40 actual hourly training outputs
+        run: |
+          mkdir -p input output
+          gh run download 41958650575 --repo msbowman87-cmd/archer-atmos --dir input
+          test "$(find input -type f -name 'shard-*-report.json' | wc -l)" -eq 40
+      - name: Aggregate weighted baseline versus online-model accuracy
+        run: |
+          python -m atmos.noaa_v3_aggregate_report --input input --output output
+      - name: Publish independent results audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: atmos-hourly-training-accuracy-audit
+          path: output/
+          retention-days: 90

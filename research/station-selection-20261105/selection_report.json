@@ -1,0 +1,36 @@
+{
+  "status": "blocked_shortfall",
+  "selected": 6809,
+  "targets": {
+    "US": 6000,
+    "CA": 2500,
+    "MX": 1500
+  },
+  "primary_counts": {
+    "US": 5183,
+    "CA": 1163,
+    "MX": 182
+  },
+  "primary_shortfall": {
+    "US": 817,
+    "CA": 1337,
+    "MX": 1318
+  },
+  "caribbean_fallback": 281,
+  "remaining_shortfall": 3191,
+  "provider_counts": {
+    "NOAA_GHCNh": 5799,
+    "IEM_ASOS": 440,
+    "ECCC": 570
+  },
+  "coverage_basis_counts": {
+    "monthly_record_counts": 5799,
+    "METAR_archive_period_only": 440,
+    "hourly_archive_period_only": 570
+  },
+  "at_least_60_months_500plus": 5018,
+  "rejected_rows": 609,
+  "duplicate_exclusions": 3654,
+  "unique_eligible_candidates": 6809,
+  "warning": "500m proximity exclusion is conservative, not proof of common operator. Review duplicate audit for distinct nearby sites. Period-only metadata does not prove observations exist within every intervening year. Counts are records, not unique hours or per-variable coverage. No modeled values or inferred elevations."
+}

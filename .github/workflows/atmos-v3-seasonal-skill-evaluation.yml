@@ -1,0 +1,61 @@
+name: Atmos V3 Paired Sensor Skill Against Frozen V2
+on:
+  push:
+    branches: [research/daily-walk-forward-20261101]
+    paths: ['docs/atmos-v3-evaluation-trigger.txt']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  paired-evaluation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install scientific scoring tools
+        run: python -m pip install numpy
+      - name: Test independent variable-level calibration, holdouts and event scores
+        run: |
+          python -m unittest tests.test_seasonal_v3_paired_skill tests.test_seasonal_remote_sensing_backfill tests.test_noaa_v3_global_model_v2 -v
+      - name: Download four genuine seasonal remote-sensing archives
+        run: |
+          mkdir -p seasons metadata noaav3 checkpoint result
+          gh run download 42094763476 --repo msbowman87-cmd/archer-atmos --pattern 'atmos-v3-season-*' --dir seasons
+          test "$(find seasons -name coverage-and-source-provenance.json | wc -l)" -eq 4
+      - name: Download frozen V2 model; keep holdout labels out of fitting
+        run: |
+          gh run download 42044573766 --repo msbowman87-cmd/archer-atmos --name atmos-global-v2-checkpoint-four-heldouts --dir checkpoint
+          test -s checkpoint/atmos-global-v2-model.npz
+      - name: Download independently verified quality shards containing the six stations
+        run: |
+          # Verified directly against archived V2 shard station-ID manifests.
+          # Not derived from alphabetic ordering (the archive isn't sorted that way).
+          for ID in 06 11 12 15 27; do
+            gh release download atmos-noaa-quality-2006-2025-v3 \
+              --repo msbowman87-cmd/archer-atmos \
+              --pattern "atmos-quality-shard-${ID}.tar" \
+              --dir noaav3
+          done
+          test "$(find noaav3 -maxdepth 1 -name 'atmos-quality-shard-??.tar' | wc -l)" -eq 5
+      - name: Fit separate satellite, radar, and joint elevation corrections and test excluded cities
+        run: |
+          python -m atmos.seasonal_v3_paired_skill \
+            --seasons seasons \
+            --archives noaav3 \
+            --v2-checkpoint checkpoint/atmos-global-v2-model.npz \
+            --output result
+      - name: Preserve research-only V3 model and matched V2 comparisons
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: atmos-v3-four-season-matched-accuracy-and-checkpoint
+          path: result/
+          retention-days: 90

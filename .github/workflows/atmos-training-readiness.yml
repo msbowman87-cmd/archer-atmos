@@ -1,0 +1,45 @@
+name: Atmos regional training readiness audit
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - research/daily-walk-forward-20261101
+    paths:
+      - scripts/station_training_readiness.py
+      - tests/test_station_training_readiness.py
+      - .github/workflows/atmos-training-readiness.yml
+permissions:
+  contents: read
+  actions: read
+jobs:
+  readiness:
+    if: github.ref == 'refs/heads/research/daily-walk-forward-20261101'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify readiness tests
+        run: |
+          python -m py_compile scripts/station_training_readiness.py
+          python -m unittest discover -s tests -p test_station_training_readiness.py -v
+      - name: Restore verified research checkpoint
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: python scripts/restore_hourly_checkpoint.py research/station-selection-20261105
+      - name: Validate station manifest
+        run: python scripts/verify_station_manifest.py --input research/station-selection-20261105
+      - name: Produce station-level coverage candidates
+        run: |
+          python scripts/station_training_readiness.py \
+            --manifest research/station-selection-20261105/stations.csv \
+            --coverage-batches research/station-selection-20261105/audit/coverage_batches.jsonl \
+            --out training-readiness-output
+      - uses: actions/upload-artifact@v4
+        with:
+          name: atmos-training-readiness
+          path: training-readiness-output/
+          retention-days: 90

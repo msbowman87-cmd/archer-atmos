@@ -1,0 +1,32 @@
+name: Atmos 100-Station One-Year Research Training
+on:
+  push:
+    branches: [research/daily-walk-forward-20261101]
+    paths:
+      - 'atmos/yearly_research_pilot.py'
+      - '.github/workflows/yearly-research-training.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  historical-replay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Confirm chronological training behavior
+        run: python -m unittest discover -s tests -p 'test_walk_forward.py' -v
+      - name: Fetch 2024 station observations and prior GFS predictions and recalibrate daily
+        run: python -m atmos.yearly_research_pilot
+      - name: Print collection status
+        if: failure()
+        run: cat pilot-results/collection-status.json || cat pilot-results/manifest.json || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: atmos-100-station-yearly-research-results
+          path: pilot-results/
+          retention-days: 30
