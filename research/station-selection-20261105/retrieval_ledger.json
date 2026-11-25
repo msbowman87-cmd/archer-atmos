@@ -1,0 +1,1196 @@
+[
+  {
+    "url": "https://www.ncei.noaa.gov/oa/global-historical-climatology-network/hourly/doc/ghcnh-station-list.csv",
+    "retrieved_at": "2026-11-05T20:55:20.299902+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://www.ncei.noaa.gov/oa/global-historical-climatology-network/hourly/doc/ghcnh-station-list.csv",
+    "bytes": 2203945,
+    "sha256": "812ea50bd5efd1b9cc09d5800c55825b3d43b3c5aa75ab17b2848f43b1bfaaef"
+  },
+  {
+    "url": "https://www.ncei.noaa.gov/oa/global-historical-climatology-network/hourly/doc/ghcnh-inventory.txt",
+    "retrieved_at": "2026-11-05T20:55:20.301084+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://www.ncei.noaa.gov/oa/global-historical-climatology-network/hourly/doc/ghcnh-inventory.txt",
+    "bytes": 93429630,
+    "sha256": "11197a4835d0fafc991bd2aa9a14d4c3410f7a647f9c3cec06e4d46ca99a7b3b"
+  },
+  {
+    "url": "https://collaboration.cmc.ec.gc.ca/cmc/climate/Get_More_Data_Plus_de_donnees/Station%20Inventory%20EN.csv",
+    "retrieved_at": "2026-11-05T20:55:20.301832+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://collaboration.cmc.ec.gc.ca/cmc/climate/Get_More_Data_Plus_de_donnees/Station%20Inventory%20EN.csv",
+    "bytes": 1309532,
+    "sha256": "371e6b44ad10bd42d55324d59566058faa2e3a5ab631b81cb929fcb7d1d1c24f"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/networks.geojson",
+    "retrieved_at": "2026-11-05T20:55:20.302847+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/networks.geojson",
+    "bytes": 148655,
+    "sha256": "95c5d044abe74dd3fc668b30116d6b9acb2f1deea781d5eeb2dc56d7cf92147c"
+  },
+  {
+    "url": "https://smn.conagua.gob.mx/tools/GUI/sivea_v3/php/getTodasEstaciones.php",
+    "retrieved_at": "2026-11-05T20:55:20.303885+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://smn.conagua.gob.mx/tools/GUI/sivea_v3/php/getTodasEstaciones.php",
+    "bytes": 59938,
+    "sha256": "ae709dfc84e098d3b5a9c5565712c2d04ce830d1df3cd8df4266e6b5f27271e9"
+  },
+  {
+    "url": "https://smn.conagua.gob.mx/tools/GUI/sivea_v3/js/sivea.js",
+    "retrieved_at": "2026-11-05T20:55:20.306250+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://smn.conagua.gob.mx/tools/GUI/sivea_v3/js/sivea.js",
+    "bytes": 200810,
+    "sha256": "cf87c6ec33a6c114f355deceeeb5c83933f031163010a754afda5f1cc1571364"
+  },
+  {
+    "url": "https://sih.conagua.gob.mx/climas.html",
+    "retrieved_at": "2026-11-05T21:00:42.357244+00:00",
+    "status": "inaccessible",
+    "error": "HTTP Error 302: The HTTP server returned a redirect error that would lead to an infinite loop.\nThe last 30x error message was:\nFound"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/disclaimer.php",
+    "retrieved_at": "2026-11-05T20:55:25.309162+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/disclaimer.php",
+    "bytes": 31469,
+    "sha256": "5a8b5c647681c7b39ec42bf27f2f2baa585bd1186f4bdf0264860a6dc165629a"
+  },
+  {
+    "url": "https://climate.weather.gc.ca/prods_servs/attachment1_e.html",
+    "retrieved_at": "2026-11-05T20:55:27.410641+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://climate.weather.gc.ca/prods_servs/attachment1_e.html",
+    "bytes": 17246,
+    "sha256": "d5ec0cf1937864cacd664381c94590d47a0901b8c3c36b0fb6365ab797c69496"
+  },
+  {
+    "url": "https://docs.synopticdata.com/services/time-series",
+    "retrieved_at": "2026-11-05T21:00:42.359484+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://docs.synopticdata.com/services/time-series",
+    "bytes": 54152,
+    "sha256": "6dee3e2a17e1e63bde282d0aee30c0b942c4c113e3da2f868b23faf133621eb3"
+  },
+  {
+    "url": "https://madis.ncep.noaa.gov/madis_restrictions.shtml",
+    "retrieved_at": "2026-11-05T20:55:29.383926+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://madis.ncep.noaa.gov/madis_restrictions.shtml",
+    "bytes": 34116,
+    "sha256": "7d4135fffec3caf00763c400ceaf43ae81eefab2f13710414685a76a27d24e3f"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=AG__ASOS",
+    "retrieved_at": "2026-11-05T20:55:38.398396+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=AG__ASOS",
+    "bytes": 1768,
+    "sha256": "c79c7f8e16246be6e10dca760f2ee7019f5b1fa53a89a86b2aa030be4070c57b"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=AI__ASOS",
+    "retrieved_at": "2026-11-05T20:55:38.399241+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=AI__ASOS",
+    "bytes": 676,
+    "sha256": "4162040937ed0e16d0a38e3049631cf45dfffc31d3503bb3cc46198f16367d0f"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=AK_ASOS",
+    "retrieved_at": "2026-11-05T20:55:38.399060+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=AK_ASOS",
+    "bytes": 126523,
+    "sha256": "cc3c454102490b4fb903f26bb343c9a20bf10960b0c12096e311086dda082a33"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=AL_ASOS",
+    "retrieved_at": "2026-11-05T20:55:38.400114+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=AL_ASOS",
+    "bytes": 33289,
+    "sha256": "1cefe02a91e190c4e30ffad27d0681d9a8202e3aa10f8328064c2f5c53357852"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=AR_ASOS",
+    "retrieved_at": "2026-11-05T20:55:38.400855+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=AR_ASOS",
+    "bytes": 27120,
+    "sha256": "3ea82ca99779a00b8b8b3065e8d0ad65d12d6e1e7b254e5fbef706c36877f6cd"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=AS_ASOS",
+    "retrieved_at": "2026-11-05T20:55:38.405614+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=AS_ASOS",
+    "bytes": 698,
+    "sha256": "c867b1749c194d46f3acfe7311165593bd96c7b95eaf154ab021dfceaccd6149"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=AW__ASOS",
+    "retrieved_at": "2026-11-05T20:55:41.181225+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=AW__ASOS",
+    "bytes": 1220,
+    "sha256": "1070d0909e8376fdf01509a266f41811f68499e378fd40de39312e9c971dbdda"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=AZ_ASOS",
+    "retrieved_at": "2026-11-05T20:55:41.227775+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=AZ_ASOS",
+    "bytes": 31640,
+    "sha256": "7eb4c81ce9b058efaa77678e7345708b26454c3420978d06e889b2210a416d48"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=BB__ASOS",
+    "retrieved_at": "2026-11-05T20:55:41.258262+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=BB__ASOS",
+    "bytes": 675,
+    "sha256": "d291af26a8dd71debfa2697b615a558bfcc5f127cbb74af371f920e89e904dd1"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=BM__ASOS",
+    "retrieved_at": "2026-11-05T20:55:41.259936+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=BM__ASOS",
+    "bytes": 678,
+    "sha256": "1812cd7e5fb90cc63b1e6308e22d3c964bf402ff089fe8148341d00a65d6fbd0"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=BS__ASOS",
+    "retrieved_at": "2026-11-05T20:55:41.267770+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=BS__ASOS",
+    "bytes": 5762,
+    "sha256": "c1f603679303367396f2ce7c3744c0a964c695c0dc9b5768365a1eee29c0ecd8"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=CA_AB_ASOS",
+    "retrieved_at": "2026-11-05T20:55:41.280318+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=CA_AB_ASOS",
+    "bytes": 53982,
+    "sha256": "a3b7fe669c8872081b6e947e4a026cdf4802231ea03a3d9c57d16dad06ef004c"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=CA_ASOS",
+    "retrieved_at": "2026-11-05T20:55:43.642588+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=CA_ASOS",
+    "bytes": 102725,
+    "sha256": "b32143733ba7d53e6db3808ea2ce6da9b1b12063b5dd4b7a3d535775f3d8ff43"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=CA_BC_ASOS",
+    "retrieved_at": "2026-11-05T20:55:43.683919+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=CA_BC_ASOS",
+    "bytes": 53875,
+    "sha256": "2537edf19ed4cc71bd71beff9ed653e4b44ce26330d4ab0ab3c42f8365409f04"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=CA_MB_ASOS",
+    "retrieved_at": "2026-11-05T20:55:43.724264+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=CA_MB_ASOS",
+    "bytes": 16371,
+    "sha256": "a7229f1f702fc49506eda28849e7dc8f2bc8f4132ae0579569714e5da7528136"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=CA_NB_ASOS",
+    "retrieved_at": "2026-11-05T20:55:43.725337+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=CA_NB_ASOS",
+    "bytes": 7881,
+    "sha256": "3f7947e6b07513dde0a49d273650b5347d6b975eeb1751fb21cc44053e6ed6ef"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=CA_NF_ASOS",
+    "retrieved_at": "2026-11-05T20:55:43.731657+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=CA_NF_ASOS",
+    "bytes": 16284,
+    "sha256": "7fb97596eb8a8392ea821a13d63da5d7f2cd25ec305b240e0efd02c5160b0e0b"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=CA_NS_ASOS",
+    "retrieved_at": "2026-11-05T20:55:43.735732+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=CA_NS_ASOS",
+    "bytes": 15188,
+    "sha256": "6514120610f8b65571c50882e3a46640b6faf201c47f837253a4bd795e93c695"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=CA_NT_ASOS",
+    "retrieved_at": "2026-11-05T20:55:46.210806+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=CA_NT_ASOS",
+    "bytes": 25221,
+    "sha256": "a578037cb0ff38de36b97a471fca0d08157559f1c2bccc359386dd4bcebf63cf"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=CA_NU_ASOS",
+    "retrieved_at": "2026-11-05T20:55:46.211977+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=CA_NU_ASOS",
+    "bytes": 29175,
+    "sha256": "3f3de450713e9dd4bfde2f8c786da6a2a981c01118e473e51ceb3635f574b870"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=CA_ON_ASOS",
+    "retrieved_at": "2026-11-05T20:55:46.223934+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=CA_ON_ASOS",
+    "bytes": 54477,
+    "sha256": "b0212a2c8e07c2291ba480b9af2d1f20bcfbed7d91e2e78b9bf987ddfbce359a"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=CA_PE_ASOS",
+    "retrieved_at": "2026-11-05T20:55:46.244160+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=CA_PE_ASOS",
+    "bytes": 4018,
+    "sha256": "75c190b0a6850d2405844672dde58961b24a54183b4c42fd9b47c4d09f2ca3e3"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=CA_QC_ASOS",
+    "retrieved_at": "2026-11-05T20:55:46.268361+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=CA_QC_ASOS",
+    "bytes": 68213,
+    "sha256": "ec1288c1fbd53b18931263dce5c5512ef24e2b58f109c0e4d71f8283b762d34b"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=CA_SK_ASOS",
+    "retrieved_at": "2026-11-05T20:55:46.304093+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=CA_SK_ASOS",
+    "bytes": 23180,
+    "sha256": "04d2fb535d3a9a9bf475c518d6c4d639559571c573afe87d4acff99115878185"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=CA_YT_ASOS",
+    "retrieved_at": "2026-11-05T20:55:48.751069+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=CA_YT_ASOS",
+    "bytes": 8418,
+    "sha256": "90a6b1403438d6b40399b15d8404d47011202f8a9799b02785cf465b71c9eba3"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=CO_ASOS",
+    "retrieved_at": "2026-11-05T20:55:48.787740+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=CO_ASOS",
+    "bytes": 47983,
+    "sha256": "cb9aeedbbb4b1c2a0dff8476a5e6c7c2414153da8875538e44372e9a10d8a00c"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=CT_ASOS",
+    "retrieved_at": "2026-11-05T20:55:48.792298+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=CT_ASOS",
+    "bytes": 7117,
+    "sha256": "65b4aedac0439a7924ef403dda8aa6aa7c3df17a2ded193f8c8f27bd371dc458"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=CU__ASOS",
+    "retrieved_at": "2026-11-05T20:55:48.792799+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=CU__ASOS",
+    "bytes": 11372,
+    "sha256": "dc310af16da42a6052bf17da8e0a05157fd56315467ee6800bfb4867b303651c"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=DE_ASOS",
+    "retrieved_at": "2026-11-05T20:55:48.824023+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=DE_ASOS",
+    "bytes": 2616,
+    "sha256": "fcc61b0f74923f5fb198f518d36c8adef64318966820186fffd7be77778ba2b4"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=DM__ASOS",
+    "retrieved_at": "2026-11-05T20:55:48.844068+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=DM__ASOS",
+    "bytes": 2416,
+    "sha256": "ea8f018002c7550aca9a5dc63a08b1c4538db99794c818dd122195ab34c44cec"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=DO__ASOS",
+    "retrieved_at": "2026-11-05T20:55:51.360851+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=DO__ASOS",
+    "bytes": 6468,
+    "sha256": "c0033cb72f0cef8773ba87b5028f7f4a676aab93220058a978a907a3bdcd3abc"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=FL_ASOS",
+    "retrieved_at": "2026-11-05T20:55:51.411780+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=FL_ASOS",
+    "bytes": 71147,
+    "sha256": "6b5e49341da2e15ac45ffe5c91b54f90dda65013cb875561fc4d8079dfdcf547"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=GA_ASOS",
+    "retrieved_at": "2026-11-05T20:55:51.413139+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=GA_ASOS",
+    "bytes": 58670,
+    "sha256": "910d8f25d563156b3d1c5cb2be894fc053296d8a49a0f25edcc60e0950cea46b"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=GD__ASOS",
+    "retrieved_at": "2026-11-05T20:55:51.412361+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=GD__ASOS",
+    "bytes": 676,
+    "sha256": "7d7feac9c7370467a49bdd630e38cf4dd11e0dfa638b22fb9390ff908150ef78"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=GP__ASOS",
+    "retrieved_at": "2026-11-05T20:55:51.413336+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=GP__ASOS",
+    "bytes": 679,
+    "sha256": "54bdadcd453dc13f472c9f6aff3e1dc6556b1d2ea6f28aa1797ae60eaddc0fcd"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=GU_ASOS",
+    "retrieved_at": "2026-11-05T20:55:51.414307+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=GU_ASOS",
+    "bytes": 3123,
+    "sha256": "10fa9d54629f80df405bf21aa8333bd399c70847547a58d713528ac59689f277"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=HI_ASOS",
+    "retrieved_at": "2026-11-05T20:55:53.530908+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=HI_ASOS",
+    "bytes": 10924,
+    "sha256": "298e4df06828edb33b05e895468d90b642724e6025b02c307e7347a634800ab8"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=HT__ASOS",
+    "retrieved_at": "2026-11-05T20:55:53.563803+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=HT__ASOS",
+    "bytes": 1754,
+    "sha256": "e3921d2847416eca87b80f287242e35cf6831946115e4efdc70e7cb232cacfc6"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=IA_ASOS",
+    "retrieved_at": "2026-11-05T20:55:53.566911+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=IA_ASOS",
+    "bytes": 39440,
+    "sha256": "91f87b8ab4a7b20d123052ea52f2f95ac0eff9ca0af6c25341039ba3333356ed"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=ID_ASOS",
+    "retrieved_at": "2026-11-05T20:55:53.607737+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=ID_ASOS",
+    "bytes": 19049,
+    "sha256": "33c0ad570d000cb7bf20b7d79125d14933a92c6d488abf0fb93e035f920e0252"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=IL_ASOS",
+    "retrieved_at": "2026-11-05T20:55:53.611492+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=IL_ASOS",
+    "bytes": 38693,
+    "sha256": "0bdfdb446822056d3cc9919e75f547d97e23363d594a53700179d8fed9e2e5cd"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=IN_ASOS",
+    "retrieved_at": "2026-11-05T20:55:53.625450+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=IN_ASOS",
+    "bytes": 34635,
+    "sha256": "12842c5527727e754ddc8edcb0c9bc8e1563dbe6d5b5fbc76e53c7991a4000b6"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=ISUAG",
+    "retrieved_at": "2026-11-05T20:55:56.072352+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=ISUAG",
+    "bytes": 7448,
+    "sha256": "176c227646511c48ba38cc257aff653c27ea794a0ccda475592420a1bcae6a07"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=ISUSM",
+    "retrieved_at": "2026-11-05T20:55:56.072815+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=ISUSM",
+    "bytes": 16881,
+    "sha256": "41084ed8a77ed7dd93cd79de2bf150cff7070d346cd7b6bc1a759f421443574b"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=JM__ASOS",
+    "retrieved_at": "2026-11-05T20:55:56.118042+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=JM__ASOS",
+    "bytes": 1228,
+    "sha256": "ce3937b5895db7f423db4e5e58483984c76fb49df373e1b0517bb788807b96e7"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=KN__ASOS",
+    "retrieved_at": "2026-11-05T20:55:56.117566+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=KN__ASOS",
+    "bytes": 673,
+    "sha256": "069105e4098bd391179cfaf125d7ef931799e9c6453260b111d68b00b362c9f9"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=KS_ASOS",
+    "retrieved_at": "2026-11-05T20:55:56.118628+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=KS_ASOS",
+    "bytes": 43086,
+    "sha256": "c4879ef637229ffb9fd409963e5097040e45da238c6a7c02729cf35aad38c75e"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=KY__ASOS",
+    "retrieved_at": "2026-11-05T20:55:56.119119+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=KY__ASOS",
+    "bytes": 1253,
+    "sha256": "d2fd819b74907c18181c2cdc778447d159343dea98ca4e873393fb386e083d51"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=KY_ASOS",
+    "retrieved_at": "2026-11-05T20:55:58.023403+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=KY_ASOS",
+    "bytes": 29732,
+    "sha256": "651601446579cbe6768d10b684ffd7a6668612c11d9bac4fb507381c8b688ecf"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=LA_ASOS",
+    "retrieved_at": "2026-11-05T20:55:58.068088+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=LA_ASOS",
+    "bytes": 66433,
+    "sha256": "cffa877b4006db16b31126793ad2c5a597de763e344c2bda57e5779049d88b53"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=LC__ASOS",
+    "retrieved_at": "2026-11-05T20:55:58.109044+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=LC__ASOS",
+    "bytes": 1252,
+    "sha256": "12895a8752815d881e57ff76219cc55ceac74c6dba5bf49a6b2b5a4612c4e03f"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MA_ASOS",
+    "retrieved_at": "2026-11-05T20:55:58.109359+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MA_ASOS",
+    "bytes": 15408,
+    "sha256": "d5488ef7f14326d7a88ae24e5f11c3735bfa293db644a61623303499185cfecc"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MD_ASOS",
+    "retrieved_at": "2026-11-05T20:55:58.120284+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MD_ASOS",
+    "bytes": 16909,
+    "sha256": "441c8be2724fc0d2f132c394a30a5e27fa3393bb1105f41db9f55e91f6592bb3"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=ME_ASOS",
+    "retrieved_at": "2026-11-05T20:55:58.395780+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=ME_ASOS",
+    "bytes": 13981,
+    "sha256": "893a7b5f6310be4a548d6daf342377355de777ff2041639cc89b3cf1d53e6e89"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MI_ASOS",
+    "retrieved_at": "2026-11-05T20:56:02.857302+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MI_ASOS",
+    "bytes": 50042,
+    "sha256": "b4c1d8bb13487ab377201e1a377112c8d2d20d34ffb0b1a178afbecde7a74ec7"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MN_ASOS",
+    "retrieved_at": "2026-11-05T20:56:02.860896+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MN_ASOS",
+    "bytes": 66290,
+    "sha256": "b77081275bd34b91223a7ef1c90f23ebe5f0f3f1427008e466cf096cda184d7c"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MO_ASOS",
+    "retrieved_at": "2026-11-05T21:00:56.204749+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MO_ASOS",
+    "bytes": 30333,
+    "sha256": "350e41c2ca0be10c29a19a4b17ea9e109d68c85b83c4018df32e68979e34353c"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MS_ASOS",
+    "retrieved_at": "2026-11-05T20:56:02.900194+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MS_ASOS",
+    "bytes": 28743,
+    "sha256": "96527b06b1305a9139ce052b00d2d21c727d1391b8d4cf51deb6b195291c0e9d"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MT_ASOS",
+    "retrieved_at": "2026-11-05T20:56:03.055714+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MT_ASOS",
+    "bytes": 37025,
+    "sha256": "4298aaed48cadbbd5eb4537a7371868122371c32b055a7a4a8a54128df99e2bc"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX__ASOS",
+    "retrieved_at": "2026-11-05T20:56:03.056856+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX__ASOS",
+    "bytes": 39729,
+    "sha256": "7bd733043904c1901cfcaf8aaaa4ed71c077394a2d4ca3719b2f761dd2019aa8"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_BJ_DCP",
+    "retrieved_at": "2026-11-05T20:56:05.676298+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_BJ_DCP",
+    "bytes": 10768,
+    "sha256": "9d79f8c9397fab6f034ddb922daa74beede0ff02861f683040d0966589488c72"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_BR_DCP",
+    "retrieved_at": "2026-11-05T20:56:05.692566+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_BR_DCP",
+    "bytes": 4840,
+    "sha256": "7334e37b89ff3af973ae35205cc4b4dfb393ce8c6513c9a0d3aa4a08f68eda01"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_CH_DCP",
+    "retrieved_at": "2026-11-05T20:56:05.718796+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_CH_DCP",
+    "bytes": 17724,
+    "sha256": "d65c2fc2769c4680524903c41ff621383dddddc1ff43bb01d3f7912bcc55b31c"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_CI_DCP",
+    "retrieved_at": "2026-11-05T20:56:05.720479+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_CI_DCP",
+    "bytes": 1682,
+    "sha256": "ab6d0389ed6b299535e355d0942244599e57794daf9333ac631cc0d3f51c2cb8"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_CL_DCP",
+    "retrieved_at": "2026-11-05T20:56:05.765015+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_CL_DCP",
+    "bytes": 9264,
+    "sha256": "c7c07e43e7d712b6e53434276d42fe549e794fe2a73c9521edf4c0ab3e62e7c5"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_CM_DCP",
+    "retrieved_at": "2026-11-05T20:56:06.303340+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_CM_DCP",
+    "bytes": 3804,
+    "sha256": "68f38f798a9ca1a81bd8edf228b0bc9223c996842093b833d07d4e1089d09d19"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_CP_DCP",
+    "retrieved_at": "2026-11-05T20:56:08.076451+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_CP_DCP",
+    "bytes": 5432,
+    "sha256": "f6a3bf1982415d6da06977b52af8c7c5416b0444ea0d0de8d98da04433b02e1a"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_DF_DCP",
+    "retrieved_at": "2026-11-05T20:56:08.079947+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_DF_DCP",
+    "bytes": 2815,
+    "sha256": "b2c6c22dc97ad12677742579b60c97f0b97864a56996132e053f45ea65341f1b"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_DR_DCP",
+    "retrieved_at": "2026-11-05T20:56:08.116022+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_DR_DCP",
+    "bytes": 4890,
+    "sha256": "f7ed54fb6eaf12b09a9014e927f01342fed042b505f78bf18a504dd61cae2ebc"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_GJ_DCP",
+    "retrieved_at": "2026-11-05T20:56:08.120099+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_GJ_DCP",
+    "bytes": 2770,
+    "sha256": "501c97383d1ccab4e382be28948ec5705c843e7aa0cbbddfab6b9b9f880f01cf"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_GR_DCP",
+    "retrieved_at": "2026-11-05T20:56:08.121019+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_GR_DCP",
+    "bytes": 17143,
+    "sha256": "8a9726f51a183ccc5bcd16f80efb710785102245fd6e1c164aaadbf0b92ba316"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_HD_DCP",
+    "retrieved_at": "2026-11-05T20:56:08.144624+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_HD_DCP",
+    "bytes": 6544,
+    "sha256": "80b51772981667724f95d87afbec5c722f1beaf9954cd6b1abd0bb480a0275c9"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_JL_DCP",
+    "retrieved_at": "2026-11-05T20:56:10.568021+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_JL_DCP",
+    "bytes": 3854,
+    "sha256": "20b5106df6a93e097a97e923019f7f20477ca2033fcd7fb39fa356e70650671c"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_MC_DCP",
+    "retrieved_at": "2026-11-05T20:56:10.608084+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_MC_DCP",
+    "bytes": 1713,
+    "sha256": "e370aee250647fac6f4a23d38576c3338312eb5bacf37dbf2b6b04b293e5756c"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_MR_DCP",
+    "retrieved_at": "2026-11-05T20:56:10.612047+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_MR_DCP",
+    "bytes": 1708,
+    "sha256": "7b241b1fe8790b9d06174aa12438cbec32ff0e8394086aaa65cd60f8b48683e8"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_MX_DCP",
+    "retrieved_at": "2026-11-05T20:56:10.620916+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_MX_DCP",
+    "bytes": 8691,
+    "sha256": "f2e71f30c42bbba87ed5a97ad89852c4a76e10b27399008e637f34d0f2d376ff"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_NL_DCP",
+    "retrieved_at": "2026-11-05T20:56:10.622385+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_NL_DCP",
+    "bytes": 10870,
+    "sha256": "49e24e443783d893b4b1f738f1363d91539e89e8c4fb9bba534bed6d6e191ece"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_NR_DCP",
+    "retrieved_at": "2026-11-05T20:56:10.622854+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_NR_DCP",
+    "bytes": 2754,
+    "sha256": "92b82f542b88bd5a3c9ba52c53113c189bc8d8138fba6b0012a168460b2c01a0"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_OX_DCP",
+    "retrieved_at": "2026-11-05T20:56:12.915628+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_OX_DCP",
+    "bytes": 3845,
+    "sha256": "3946bc314bfe55cbeac8d163a0cd17e10f74a61f991228ed42a55cee51fe1720"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_PB_DCP",
+    "retrieved_at": "2026-11-05T20:56:12.956537+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_PB_DCP",
+    "bytes": 2740,
+    "sha256": "b849bf425b49bdd8f3d182289965bbba2709cf0e945723c97ffb682c27a06b24"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_QO_DCP",
+    "retrieved_at": "2026-11-05T20:56:12.959521+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_QO_DCP",
+    "bytes": 6419,
+    "sha256": "ced782bca2f2b08a8ce89b7bc7d62685cc343556ed808059d425e37e206c27ec"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_QR_DCP",
+    "retrieved_at": "2026-11-05T20:56:13.000470+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_QR_DCP",
+    "bytes": 621,
+    "sha256": "f17a7a7a9fed0979a645536c2415ad19f671bf515c1c6e383819f71a6c95cdba"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_SL_DCP",
+    "retrieved_at": "2026-11-05T20:56:13.004234+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_SL_DCP",
+    "bytes": 1178,
+    "sha256": "adc5279f7f693aa3803fc177c859117e60f8196a20aca16031d9fa6a6c8a324f"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_SN_DCP",
+    "retrieved_at": "2026-11-05T20:56:13.007036+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_SN_DCP",
+    "bytes": 2202,
+    "sha256": "00bd88067885bc7fab6c77afafad9b7856e64183ee96f6334476c8c68f784182"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_SO_DCP",
+    "retrieved_at": "2026-11-05T20:56:15.171942+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_SO_DCP",
+    "bytes": 8111,
+    "sha256": "9713dea91c595d4e6cb6e2003ee695493c9aa98c475cb070ececd024c0d68103"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_TL_DCP",
+    "retrieved_at": "2026-11-05T20:56:15.196817+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_TL_DCP",
+    "bytes": 1147,
+    "sha256": "2ad14302e3fc9d1c73af303e2e523ed1914498a6d9ca0de1956826f66bed4b1c"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_TP_DCP",
+    "retrieved_at": "2026-11-05T20:56:15.201870+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_TP_DCP",
+    "bytes": 13997,
+    "sha256": "dd9cccbd6d843a7d784e5ef4d8d9ecf7f14e42ab9ed1d34fbe605d02c504880f"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_VC_DCP",
+    "retrieved_at": "2026-11-05T20:56:15.202295+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_VC_DCP",
+    "bytes": 6463,
+    "sha256": "7296547948fdc182a52c6236f414239a895e33961719157c6e6e823f113d20a4"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_YC_DCP",
+    "retrieved_at": "2026-11-05T20:56:15.238000+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_YC_DCP",
+    "bytes": 4283,
+    "sha256": "006029a0d08fbc83db126a56f0a38a4bc25999727a0698ca089b75d4581c43e7"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_ZC_DCP",
+    "retrieved_at": "2026-11-05T20:56:15.243684+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=MX_ZC_DCP",
+    "bytes": 1152,
+    "sha256": "cf035123a4476e24e77e7bdf5a9028cdcee1f8256f7c1dd710bd5e7d8728b764"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=NC_ASOS",
+    "retrieved_at": "2026-11-05T20:56:17.817006+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=NC_ASOS",
+    "bytes": 51166,
+    "sha256": "dc43d36c2193cbc1d76e3d6d90bcf712978e4693dfa92653a086e1dd64e642e3"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=ND_ASOS",
+    "retrieved_at": "2026-11-05T20:56:17.856737+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=ND_ASOS",
+    "bytes": 28164,
+    "sha256": "b51762447d26f9505a20b5614e98524580a7ac729005066a26908aef98666358"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=NE_ASOS",
+    "retrieved_at": "2026-11-05T20:56:17.860976+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=NE_ASOS",
+    "bytes": 29727,
+    "sha256": "37df73019ddab9767f99dc28eb3c4d96ee73a31ae7e4903c0a0974001a5f4f01"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=NH_ASOS",
+    "retrieved_at": "2026-11-05T20:56:17.861564+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=NH_ASOS",
+    "bytes": 8322,
+    "sha256": "fc57eb7f3314e7057b9147105cdfdd22ad402798dd705b2623b6981545879251"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=NJ_ASOS",
+    "retrieved_at": "2026-11-05T20:56:17.862245+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=NJ_ASOS",
+    "bytes": 11441,
+    "sha256": "7f95e287a99356d2cb29d88d68f158e7a6613e6723ba1fabd6741f24c3815dd2"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=NM_ASOS",
+    "retrieved_at": "2026-11-05T20:56:17.863479+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=NM_ASOS",
+    "bytes": 27543,
+    "sha256": "bf8e8077e317b8007321443d8b726063a4e247741ca796b8a50e7f86898f6f40"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=NV_ASOS",
+    "retrieved_at": "2026-11-05T20:56:20.424932+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=NV_ASOS",
+    "bytes": 18423,
+    "sha256": "34a6e0ef8baa0785557211264556ef838b456eb53a86786551a9677f2b3a96e5"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=NY_ASOS",
+    "retrieved_at": "2026-11-05T20:56:20.424548+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=NY_ASOS",
+    "bytes": 34458,
+    "sha256": "09bcb4cd4ecc988a64a129b47129e68ec50058f2e1c82d20d2cb01727f0253c0"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=OH_ASOS",
+    "retrieved_at": "2026-11-05T20:56:20.425840+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=OH_ASOS",
+    "bytes": 40888,
+    "sha256": "abbf6376cba3eb72c39fa0e09afd6b279d3079c1a348c74f9d50c843fff6bcd1"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=OK_ASOS",
+    "retrieved_at": "2026-11-05T20:56:20.426656+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=OK_ASOS",
+    "bytes": 36792,
+    "sha256": "903d488d32ab2caf2afbacd5ef2047388dc7c062dc6fc9e5b8787db4bc537a55"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=OR_ASOS",
+    "retrieved_at": "2026-11-05T20:56:20.428346+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=OR_ASOS",
+    "bytes": 28170,
+    "sha256": "cdf935514c9cb432508f869046b279d948bc82217d387a6166590d336ad5c997"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=PA_ASOS",
+    "retrieved_at": "2026-11-05T20:56:20.464029+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=PA_ASOS",
+    "bytes": 34454,
+    "sha256": "babded31866fc24d944ddc17bbf61eabe76a347c010b72c99a2499ed76f1b9ee"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=PR_ASOS",
+    "retrieved_at": "2026-11-05T20:56:23.416619+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=PR_ASOS",
+    "bytes": 4376,
+    "sha256": "9ae803ac51a6626790c0c825c6aa3be090be9a3c4d8fa2950e9fcede1b3711b9"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=RI_ASOS",
+    "retrieved_at": "2026-11-05T20:56:23.460509+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=RI_ASOS",
+    "bytes": 3884,
+    "sha256": "499a91cb5b2fb0a7981ae854705afab1a7397d5aa4aae1b54531c3e64884a7f7"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=SCAN",
+    "retrieved_at": "2026-11-05T20:56:23.460937+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=SCAN",
+    "bytes": 123264,
+    "sha256": "0bbef263416bc1f77408518a96b39dc227a8b498f975f38bf81f94c95155294f"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=SC_ASOS",
+    "retrieved_at": "2026-11-05T20:56:23.461254+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=SC_ASOS",
+    "bytes": 30481,
+    "sha256": "43b94b569c46b359ae5443dd06ecf51cb571866ba257216385860bc268687092"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=SD_ASOS",
+    "retrieved_at": "2026-11-05T20:56:23.463924+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=SD_ASOS",
+    "bytes": 22678,
+    "sha256": "c4448c48cc64e0314fd4898fa76e7920ddac3dafded29efef799e67534ac6c52"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=TC__ASOS",
+    "retrieved_at": "2026-11-05T20:56:23.464330+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=TC__ASOS",
+    "bytes": 615,
+    "sha256": "b95ddce618ae87a4dc25dc6b5983deaef0179fb3bb2e71711132d6555b661cab"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=TN_ASOS",
+    "retrieved_at": "2026-11-05T20:56:25.776952+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=TN_ASOS",
+    "bytes": 34922,
+    "sha256": "3b4094b5441a89830b88269fff387a60ff630bf26a513017ccf8c09443d7ad5a"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=TT__ASOS",
+    "retrieved_at": "2026-11-05T20:56:25.828401+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=TT__ASOS",
+    "bytes": 684,
+    "sha256": "e55b71abf2c442c2717f6df99f247698f522a877a35503a28466d6ba9edd83a5"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=TX_ASOS",
+    "retrieved_at": "2026-11-05T20:56:25.859995+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=TX_ASOS",
+    "bytes": 150485,
+    "sha256": "b8002c71caa2d6a6fc88e73cef5bee7002eba842c2e7dfe2898422d346cfe78d"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=USCRN",
+    "retrieved_at": "2026-11-05T20:56:25.872038+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=USCRN",
+    "bytes": 129762,
+    "sha256": "6e6580064d3778b5b600ce8af06b2e9cd37f71b6946a773d795edfe392dc9ea5"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=UT_ASOS",
+    "retrieved_at": "2026-11-05T20:56:25.900087+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=UT_ASOS",
+    "bytes": 27712,
+    "sha256": "fce6fa5607c8736dcf95a0459c323602c8bad6614e4b166464dbbda9ce2ad7ca"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=VA_ASOS",
+    "retrieved_at": "2026-11-05T20:56:25.934789+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=VA_ASOS",
+    "bytes": 45397,
+    "sha256": "c814a7d1ada97b0ee2fef65cb187fb2b317737fbf25026308991e5153e0a6994"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=VC__ASOS",
+    "retrieved_at": "2026-11-05T20:56:28.072879+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=VC__ASOS",
+    "bytes": 2979,
+    "sha256": "01adbb910abfc6f16b32899c31bbd9e21a99fb827af79e92367dc01a61b642ae"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=VG__ASOS",
+    "retrieved_at": "2026-11-05T20:56:28.074293+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=VG__ASOS",
+    "bytes": 675,
+    "sha256": "05303aa4ad7a70a3b4d3de32ea665ec64edc617be4dd15e69e416f589d3d325a"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=VI_ASOS",
+    "retrieved_at": "2026-11-05T20:56:28.124807+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=VI_ASOS",
+    "bytes": 1414,
+    "sha256": "a37ed756a58abeab6445ce789dba53100313a878d22f8252bf600f553f2e4c7b"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=VT_ASOS",
+    "retrieved_at": "2026-11-05T20:56:28.125439+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=VT_ASOS",
+    "bytes": 7084,
+    "sha256": "7eda952060a86d488c2edfd05d57a68d00189e3776d9f3ddd036f5a9f8fca838"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=WA_ASOS",
+    "retrieved_at": "2026-11-05T20:56:28.136237+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=WA_ASOS",
+    "bytes": 34332,
+    "sha256": "5d249ec65c60f323434c38ccab16c002fa25b36cc13a83206353fc6947e55a9b"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=WI_ASOS",
+    "retrieved_at": "2026-11-05T20:56:28.184658+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=WI_ASOS",
+    "bytes": 43796,
+    "sha256": "846a38dec80cee29be2212a3f4ec575202598052a2c836494d21c72701fff4a0"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=WV_ASOS",
+    "retrieved_at": "2026-11-05T20:56:30.819320+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=WV_ASOS",
+    "bytes": 11021,
+    "sha256": "6d28060a36aecec938fe2f9295c1fe8a5cfd3a72d6ab3deefc63acc38ea50e6c"
+  },
+  {
+    "url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=WY_ASOS",
+    "retrieved_at": "2026-11-05T20:56:30.828643+00:00",
+    "status": "retrieved",
+    "http_status": 200,
+    "final_url": "https://mesonet.agron.iastate.edu/geojson/network.php?network=WY_ASOS",
+    "bytes": 42056,
+    "sha256": "57e27698e85384b557e5135dfb807b44c983cfff64b87403335d13db0f93727d"
+  }
+]

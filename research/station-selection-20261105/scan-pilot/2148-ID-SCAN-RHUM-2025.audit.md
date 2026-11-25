@@ -1,0 +1,1 @@
+USDA NRCS AWDB hourly relative humidity for Jordan Valley CWMA, 2148:ID:SCAN, 2025. 8739 distinct populated hours of 8,760 before quality screening. Original values, flags and suspect data were requested. Uncompressed SHA-256 bc00dac3e5727d11ccde3042a901fd63ab675d2a5c4107030e5271e76690e5d0.

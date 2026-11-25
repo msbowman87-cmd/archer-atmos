@@ -1,0 +1,46 @@
+name: Atmos Full NOAA v3 Hourly Walk-Forward Calibration
+on:
+  push:
+    branches: [research/daily-walk-forward-20261101]
+    paths:
+      - 'atmos/noaa_v3_full_walk_forward.py'
+      - 'tests/test_noaa_v3_full_walk_forward.py'
+      - '.github/workflows/noaa-v3-full-calibration.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  all-stations-all-years:
+    strategy:
+      fail-fast: false
+      max-parallel: 10
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39]
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify calibration logic
+        run: python -m unittest tests.test_noaa_v3_full_walk_forward -v
+      - name: Download NOAA v3 quality shard
+        run: |
+          mkdir -p input results
+          printf -v SHARD '%02d' ${{ matrix.shard }}
+          gh release download atmos-noaa-quality-2006-2025-v3 --repo msbowman87-cmd/archer-atmos --pattern "atmos-quality-shard-${SHARD}.tar" --dir input
+          sha256sum "input/atmos-quality-shard-${SHARD}.tar" > "results/shard-${SHARD}-sha256.txt"
+      - name: Calibrate and evaluate every available station-hour and year
+        run: |
+          printf -v SHARD '%02d' ${{ matrix.shard }}
+          python -m atmos.noaa_v3_full_walk_forward --archive "input/atmos-quality-shard-${SHARD}.tar" --shard ${{ matrix.shard }} --assumed-lag-hours 72 --output "results/shard-${SHARD}-report.json"
+      - name: Upload calibration results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: atmos-full-calibration-shard-${{ matrix.shard }}
+          path: results/
+          retention-days: 30

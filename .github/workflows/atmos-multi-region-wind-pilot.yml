@@ -1,0 +1,52 @@
+name: Atmos multi-region real-wind spatial holdout pilot
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - research/daily-walk-forward-20261101
+    paths:
+      - scripts/atmos_multi_region_wind_pilot.py
+      - tests/test_atmos_multi_region_wind_pilot.py
+      - .github/workflows/atmos-multi-region-wind-pilot.yml
+permissions:
+  contents: read
+  actions: read
+jobs:
+  benchmark:
+    if: github.ref == 'refs/heads/research/daily-walk-forward-20261101'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify real-wind and heldout-region tests
+        run: |
+          python -m py_compile scripts/atmos_multi_region_wind_pilot.py
+          python -m unittest discover -s tests -p 'test_atmos_multi_region_wind_pilot.py' -v
+          python -m unittest discover -s tests -p 'test_atmos_quality_policy.py' -v
+          python -m unittest discover -s tests -p 'test_atmos_regional_actual_pilot.py' -v
+      - name: Restore verified research archive index
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: python scripts/restore_hourly_checkpoint.py research/station-selection-20261105
+      - name: Verify station identity and independent geographical tiles
+        run: |
+          python scripts/verify_station_manifest.py --input research/station-selection-20261105
+          python scripts/station_training_readiness.py --manifest research/station-selection-20261105/stations.csv --coverage-batches research/station-selection-20261105/audit/coverage_batches.jsonl --out wind-regional-results
+          python scripts/atmos_regional_neighbors.py --manifest research/station-selection-20261105/stations.csv --readiness wind-regional-results/station_training_readiness.csv --out wind-regional-results --neighbors 20 --radius-km 300
+      - name: Fit shared regional model and score excluded tiles using real wind
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          python scripts/atmos_multi_region_wind_pilot.py --checkpoint research/station-selection-20261105 --neighbor-graph wind-regional-results/regional_neighbor_candidates.jsonl --out wind-regional-results --train-regions 3 --holdout-regions 2
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: atmos-multi-region-wind-spatial-benchmark
+          path: wind-regional-results/
+          retention-days: 90
+          if-no-files-found: warn

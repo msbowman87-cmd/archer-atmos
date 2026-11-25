@@ -1,0 +1,54 @@
+name: Atmos source quality and regional neighbor preparation
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - research/daily-walk-forward-20261101
+    paths:
+      - scripts/atmos_quality_policy.py
+      - scripts/atmos_regional_neighbors.py
+      - tests/test_atmos_quality_policy.py
+      - tests/test_atmos_regional_neighbors.py
+      - .github/workflows/atmos-regional-preparation.yml
+permissions:
+  contents: read
+  actions: read
+jobs:
+  prepare:
+    if: github.ref == 'refs/heads/research/daily-walk-forward-20261101'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Unit and QC regression tests
+        run: |
+          python -m py_compile scripts/atmos_quality_policy.py scripts/atmos_regional_neighbors.py scripts/station_training_readiness.py
+          python -m unittest discover -s tests -p 'test_atmos_quality_policy.py' -v
+          python -m unittest discover -s tests -p 'test_atmos_regional_neighbors.py' -v
+          python -m unittest discover -s tests -p 'test_station_training_readiness.py' -v
+      - name: Restore latest verified research archive
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: python scripts/restore_hourly_checkpoint.py research/station-selection-20261105
+      - name: Verify station identities and coordinates
+        run: python scripts/verify_station_manifest.py --input research/station-selection-20261105
+      - name: Recompute station training coverage candidates
+        run: |
+          python scripts/station_training_readiness.py --manifest research/station-selection-20261105/stations.csv --coverage-batches research/station-selection-20261105/audit/coverage_batches.jsonl --out regional-preparation-output
+      - name: Produce provider QC flag and unit profile
+        run: |
+          python scripts/atmos_quality_policy.py --coverage-batches research/station-selection-20261105/audit/coverage_batches.jsonl --out regional-preparation-output/source_quality_profile.json
+      - name: Build region-specific neighbor topology
+        run: |
+          python scripts/atmos_regional_neighbors.py --manifest research/station-selection-20261105/stations.csv --readiness regional-preparation-output/station_training_readiness.csv --out regional-preparation-output --neighbors 20 --radius-km 300
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: atmos-regional-preparation
+          path: regional-preparation-output/
+          if-no-files-found: warn
+          retention-days: 90

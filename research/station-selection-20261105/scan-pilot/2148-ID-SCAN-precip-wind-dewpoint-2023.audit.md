@@ -1,0 +1,7 @@
+# Jordan Valley CWMA hourly precipitation, wind speed, and dew point, 2023
+
+Original USDA NRCS AWDB responses for 2148:ID:SCAN with original measurements and quality flags. Counts are distinct populated hours before quality screening, out of 8,760 calendar hours.
+
+- DPTP returned 8747 populated hours. Original response SHA-256 `d316a728df800d4cb2c3093ee96aca00b60d89db0f004ecdae3b8f58f3e7e998`. [Provider request](https://wcc.sc.egov.usda.gov/awdbRestApi/services/v1/data?stationTriplets=2148%3AID%3ASCAN&elements=DPTP&duration=HOURLY&beginDate=2023-01-01&endDate=2023-12-31%2023%3A00&returnFlags=true&returnOriginalValues=true&returnSuspectData=true)
+- WSPDV returned 8748 populated hours. Original response SHA-256 `142eea688b2fad7fafa664d73d65bec9e57375d3b9d8aa8f1fe0b04dc6cd6ef7`. [Provider request](https://wcc.sc.egov.usda.gov/awdbRestApi/services/v1/data?stationTriplets=2148%3AID%3ASCAN&elements=WSPDV&duration=HOURLY&beginDate=2023-01-01&endDate=2023-12-31%2023%3A00&returnFlags=true&returnOriginalValues=true&returnSuspectData=true)
+- PRCP returned 8748 populated hours. Original response SHA-256 `43238527e409cfff2eac297bc5b41d569f792730a4f74abb2f04a950528761ba`. [Provider request](https://wcc.sc.egov.usda.gov/awdbRestApi/services/v1/data?stationTriplets=2148%3AID%3ASCAN&elements=PRCP&duration=HOURLY&beginDate=2023-01-01&endDate=2023-12-31%2023%3A00&returnFlags=true&returnOriginalValues=true&returnSuspectData=true)

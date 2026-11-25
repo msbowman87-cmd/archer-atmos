@@ -1,0 +1,51 @@
+name: Atmos verified-archive regional temperature research pilot
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - research/daily-walk-forward-20261101
+    paths:
+      - scripts/atmos_regional_actual_pilot.py
+      - tests/test_atmos_regional_actual_pilot.py
+      - .github/workflows/atmos-regional-temperature-pilot.yml
+permissions:
+  contents: read
+  actions: read
+jobs:
+  pilot:
+    if: github.ref == 'refs/heads/research/daily-walk-forward-20261101'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check temperature pilot chronology and source-QC tests
+        run: |
+          python -m py_compile scripts/atmos_regional_actual_pilot.py
+          python -m unittest discover -s tests -p 'test_atmos_regional_actual_pilot.py' -v
+          python -m unittest discover -s tests -p 'test_atmos_quality_policy.py' -v
+          python -m unittest discover -s tests -p 'test_atmos_regional_neighbors.py' -v
+      - name: Restore archived observation index
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: python scripts/restore_hourly_checkpoint.py research/station-selection-20261105
+      - name: Prepare training-only neighborhood
+        run: |
+          python scripts/station_training_readiness.py --manifest research/station-selection-20261105/stations.csv --coverage-batches research/station-selection-20261105/audit/coverage_batches.jsonl --out regional-research-output
+          python scripts/atmos_regional_neighbors.py --manifest research/station-selection-20261105/stations.csv --readiness regional-research-output/station_training_readiness.csv --out regional-research-output --neighbors 20 --radius-km 300
+      - name: Train and evaluate bounded real-observation regional pilot
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          python scripts/atmos_regional_actual_pilot.py --checkpoint research/station-selection-20261105 --neighbor-graph regional-research-output/regional_neighbor_candidates.jsonl --out regional-research-output
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: atmos-real-regional-temperature-research-pilot
+          path: regional-research-output/
+          if-no-files-found: warn
+          retention-days: 90

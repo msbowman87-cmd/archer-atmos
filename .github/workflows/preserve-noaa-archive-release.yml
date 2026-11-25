@@ -1,0 +1,121 @@
+name: Preserve Atmos 20-Year NOAA Archive (non-expiring release)
+on:
+  push:
+    branches: [research/daily-walk-forward-20261101]
+    paths: ['.github/workflows/preserve-noaa-archive-release.yml']
+permissions:
+  contents: write
+  actions: read
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      SOURCE_RUN: "41390211584"
+      PILOT_RUN: "41388148025"
+      TAG: "atmos-noaa-observations-2006-2025-v1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Download all 40 completed artifacts plus 5-station pilot
+        run: |
+          set -euo pipefail
+          mkdir -p archive pilot release-assets
+          gh run download "$SOURCE_RUN" --repo "$REPO" --pattern 'atmos-streaming-995-batch-*' --dir archive
+          gh run download "$PILOT_RUN" --repo "$REPO" --name "atmos-global-archive-41388148025" --dir pilot
+          test "$(find archive -mindepth 1 -maxdepth 1 -type d | wc -l)" -eq 40
+          test -s pilot/collection-status.json
+      - name: Audit source files, compile inventory and package
+        run: |
+          python - <<'PY'
+          import gzip,hashlib,json,tarfile
+          from pathlib import Path
+          root=Path("archive");assets=Path("release-assets")
+          payload={"schema_version":1,"source_run":41390211584,"pilot_run":41388148025,
+              "period":"2006–2025","source":"NOAA Global Hourly, unmodified raw measurement strings",
+              "date_selection":"Exact UTC hour only in this archival snapshot",
+              "batches":[],"totals":{"requested":0,"saved":0,"rows":0,"missing":0,
+                                    "no_top_of_hour_records":0,"failed":0}}
+          for i in range(40):
+              d=root/f"atmos-streaming-995-batch-{i}"
+              st=json.loads((d/"collection-status.json").read_text())
+              results=st["results"]
+              assert len(results)==(400 if i==39 else 500),(i,len(results))
+              counts={"requested":len(results),"saved":0,"rows":0,
+                      "missing":0,"no_top_of_hour_records":0,"failed":0}
+              for item in results:
+                  status=item["status"]
+                  if status=="saved":
+                      p=d/Path(item["file"]).name
+                      assert p.is_file(),str(p)
+                      with gzip.open(p,"rb") as f:
+                          while f.read(1024*1024): pass
+                      counts["saved"]+=1
+                      counts["rows"]+=item.get("rows",0)
+                  elif status in counts:counts[status]+=1
+                  else:raise ValueError(f"Unexpected archive status {status}")
+              assert counts["failed"]==0,(i,counts)
+              assert sum(counts[k] for k in ["saved","missing","no_top_of_hour_records"])==counts["requested"]
+              for key in payload["totals"]:payload["totals"][key]+=counts[key]
+              package=assets/f"atmos-noaa-shard-{i:02d}.tar.gz"
+              with tarfile.open(package,"w:gz",compresslevel=1) as tf:
+                  tf.add(d,arcname=d.name)
+              with package.open("rb") as h: sha=hashlib.file_digest(h,"sha256").hexdigest()
+              payload["batches"].append({"shard":i,**counts,"filename":package.name,
+                                         "sha256":sha,"bytes":package.stat().st_size})
+              print("Packed",package.name,counts,flush=True)
+          assert payload["totals"]["requested"]==19900
+          assert payload["totals"]["saved"]==18230
+          assert payload["totals"]["rows"]==15548692
+          pilot=Path("pilot")
+          pilot_status=json.loads((pilot/"collection-status.json").read_text())
+          pilot_archive=assets/"atmos-noaa-first-five-stations.tar.gz"
+          with tarfile.open(pilot_archive,"w:gz",compresslevel=1) as tf:
+              tf.add(pilot,arcname="atmos-first-five")
+          with pilot_archive.open("rb") as h: pilot_sha=hashlib.file_digest(h,"sha256").hexdigest()
+          payload["pilot"]={"name":pilot_archive.name,
+                  "sha256":pilot_sha,"bytes":pilot_archive.stat().st_size,
+                  "saved":pilot_status.get("successful_year_files"),
+                  "source_run":41388148025}
+          (assets/"atmos-archive-manifest.json").write_text(json.dumps(payload,indent=2))
+          print("FINAL",json.dumps(payload["totals"]),flush=True)
+          PY
+      - name: Create or reuse tagged research prerelease
+        run: |
+          set -euo pipefail
+          if ! gh release view "$TAG" --repo "$REPO" >/dev/null 2>&1; then
+            gh release create "$TAG" --repo "$REPO" --target "$GITHUB_SHA" \
+              --title "Atmos NOAA Observations 2006–2025 (research archive)" \
+              --notes "Research backup of 40 NOAA station shards (995 stations) and original 5-station pilot. See atmos-archive-manifest.json for coverage, checksums and source runs. Original source observations, not a validated forecast product. An independent object-storage backup is still recommended." \
+              --prerelease
+          fi
+      - name: Upload all 41 archives and manifest
+        run: |
+          set -euo pipefail
+          for file in release-assets/*.tar.gz release-assets/atmos-archive-manifest.json; do
+            gh release upload "$TAG" "$file" --repo "$REPO" --clobber
+            echo "Uploaded $(basename "$file")"
+          done
+      - name: Verify released assets against archive manifest
+        run: |
+          set -euo pipefail
+          gh api "repos/$REPO/releases/tags/$TAG" > release.json
+          python - <<'PY'
+          import json
+          manifest=json.load(open("release-assets/atmos-archive-manifest.json"))
+          release=json.load(open("release.json"))
+          assets={a["name"]:a for a in release["assets"]}
+          assert len(assets)>=42,(len(assets),list(assets))
+          expected=manifest["batches"]+[manifest["pilot"]]
+          for entry in expected:
+              name=entry.get("filename",entry.get("name"))
+              assert name in assets,name
+              assert assets[name]["state"]=="uploaded"
+              assert assets[name]["size"]==entry["bytes"],(name,assets[name]["size"],entry["bytes"])
+          assert "atmos-archive-manifest.json" in assets
+          print(f"Verified {len(expected)} archive assets and manifest at {release['html_url']}")
+          PY

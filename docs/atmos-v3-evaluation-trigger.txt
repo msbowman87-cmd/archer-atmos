@@ -1,0 +1,1 @@
+Launch approved Atmos V3 research-only V2 comparison after successful four-season historical source collection 42094763476. Each weather variable and forecast horizon must be evaluated separately. Keep excluded stations outside training and report all blockers, no synthetic accuracy claims.

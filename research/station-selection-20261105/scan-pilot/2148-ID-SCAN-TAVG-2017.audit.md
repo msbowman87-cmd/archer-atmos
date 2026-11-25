@@ -1,0 +1,1 @@
+USDA NRCS SCAN station 2148:ID:SCAN, hourly TAVG. The 2017 calendar-year request returned 8,752 populated rows out of 8,760 expected hours. Original values and quality flags were requested, including suspect data. Uncompressed source SHA-256: 76aa7459f99627ce39e2978d20eb52112f8ed755907dc99e7ae7a12109ca7523.
